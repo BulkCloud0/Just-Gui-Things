@@ -4,32 +4,54 @@ A technology-focused Minecraft Forge mod for **Minecraft 1.16.5**.
 
 ## Current milestone: Core Industrial
 
-The first milestone establishes the reusable infrastructure for an industrial tech mod.
+The first milestone establishes reusable infrastructure for an industrial tech mod.
 
 ### Implemented
 
 - Forge Energy-compatible internal storage
-- DeferredRegister-based block, item, tile entity and container registration
+- DeferredRegister-based block, item, tile entity, container and recipe serializer registration
 - Coal Generator with 100,000 FE buffer
 - 40 FE/t generation from coal or charcoal
 - Up to 200 FE/t automatic output to adjacent Forge Energy consumers
-- Persistent machine inventory, energy and burn state via NBT
+- Persistent machine inventory, energy and processing state via NBT
 - Forge item and energy capabilities
 - Server-authoritative container/menu opening
-- Synchronized burn and energy data for the machine GUI
-- Custom tech-style generator screen with fuel and FE indicators
-- Shift-click handling for the fuel slot
+- Synchronized machine GUI data
+- Custom tech-style generator and Crusher screens
+- Crusher with 100,000 FE buffer and two-slot processing inventory
+- Data-driven Crusher recipes loaded from JSON/datapacks
+- Per-recipe processing time and FE/t cost
+- Initial ore doubling: Iron Ore -> 2 Iron Dust and Gold Ore -> 2 Gold Dust
+- Utility crushing: Cobblestone -> Gravel -> Sand
+- Iron Dust and Gold Dust smelting recipes
+- Shift-click handling for machine input slots
 - English and Brazilian Portuguese translations
 - GitHub Actions build validation
 
+### Crusher recipe format
+
+Crusher recipes live under `data/<namespace>/recipes/` and use the `justguithings:crushing` serializer.
+
+```json
+{
+  "type": "justguithings:crushing",
+  "ingredient": { "item": "minecraft:iron_ore" },
+  "result": { "item": "justguithings:iron_dust", "count": 2 },
+  "processing_time": 100,
+  "energy_per_tick": 20
+}
+```
+
+Because the machine uses Minecraft's recipe manager, datapacks and other mods can provide additional Crusher recipes without changing Java code.
+
 ### Next
 
-- Crusher and machine processing architecture
-- Custom processing recipes
+- JEI integration for Crusher recipes
 - Energy cables
 - Machine tiers and upgrades
 - Side configuration
-- Fluids and advanced industrial processing
+- More processing machines and recipe types
+- Fluids, heat/pressure and advanced industrial processing
 
 ## Environment
 

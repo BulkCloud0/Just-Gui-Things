@@ -1,20 +1,22 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
-import com.bulkcloud0.justguithings.registry.ModItems;
+import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
+import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIntArray;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -27,18 +29,19 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class CrusherTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
     public static final int CAPACITY = 100_000;
     public static final int MAX_RECEIVE = 1_000;
-    public static final int ENERGY_PER_TICK = 20;
-    public static final int PROCESS_TICKS = 100;
+    public static final int DEFAULT_ENERGY_PER_TICK = 20;
+    public static final int DEFAULT_PROCESS_TICKS = 100;
 
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0);
     private final ItemStackHandler inventory = new ItemStackHandler(2) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return slot == 0 && isProcessableInput(stack);
+            return slot == 0 && canAcceptInput(stack);
         }
 
         @Override
@@ -57,6 +60,10 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
                     return energyStorage.getEnergyStored() & 0xFFFF;
                 case 2:
                     return (energyStorage.getEnergyStored() >>> 16) & 0xFFFF;
+                case 3:
+                    return currentProcessTicks;
+                case 4:
+                    return currentEnergyPerTick;
                 default:
                     return 0;
             }
@@ -74,6 +81,12 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
                 case 2:
                     energyStorage.setEnergy((energyStorage.getEnergyStored() & 0x0000FFFF) | ((value & 0xFFFF) << 16));
                     break;
+                case 3:
+                    currentProcessTicks = value;
+                    break;
+                case 4:
+                    currentEnergyPerTick = value;
+                    break;
                 default:
                     break;
             }
@@ -81,13 +94,16 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
 
         @Override
         public int getCount() {
-            return 3;
+            return 5;
         }
     };
 
     private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
     private LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
     private int progress;
+    private int currentProcessTicks = DEFAULT_PROCESS_TICKS;
+    private int currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
+    private ResourceLocation activeRecipeId;
 
     public CrusherTileEntity() {
         super(ModTileEntities.CRUSHER.get());
@@ -99,31 +115,58 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
             return;
         }
 
-        if (!canProcess()) {
-            if (progress != 0) {
-                progress = 0;
-                setChanged();
-            }
+        Optional<CrusherRecipe> recipeOptional = findRecipe(inventory.getStackInSlot(0));
+        if (!recipeOptional.isPresent()) {
+            resetProcessing();
             return;
         }
 
-        if (energyStorage.getEnergyStored() < ENERGY_PER_TICK) {
+        CrusherRecipe recipe = recipeOptional.get();
+        if (activeRecipeId == null || !activeRecipeId.equals(recipe.getId())) {
+            progress = 0;
+            activeRecipeId = recipe.getId();
+        }
+
+        currentProcessTicks = recipe.getProcessingTime();
+        currentEnergyPerTick = recipe.getEnergyPerTick();
+
+        if (!canProcess(recipe) || energyStorage.getEnergyStored() < currentEnergyPerTick) {
             return;
         }
 
-        energyStorage.consumeEnergy(ENERGY_PER_TICK);
+        energyStorage.consumeEnergy(currentEnergyPerTick);
         progress++;
 
-        if (progress >= PROCESS_TICKS) {
-            processItem();
+        if (progress >= currentProcessTicks) {
+            processItem(recipe);
             progress = 0;
+            activeRecipeId = null;
         }
 
         setChanged();
     }
 
-    private boolean canProcess() {
-        ItemStack result = getProcessingResult(inventory.getStackInSlot(0));
+    private void resetProcessing() {
+        if (progress != 0 || activeRecipeId != null) {
+            progress = 0;
+            activeRecipeId = null;
+            setChanged();
+        }
+        currentProcessTicks = DEFAULT_PROCESS_TICKS;
+        currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
+    }
+
+    private Optional<CrusherRecipe> findRecipe(ItemStack input) {
+        if (level == null || input.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Inventory recipeInventory = new Inventory(input.copy());
+        return level.getRecipeManager().getRecipeFor(ModRecipes.CRUSHING_TYPE, recipeInventory, level);
+    }
+
+    private boolean canProcess(CrusherRecipe recipe) {
+        ItemStack result = recipe.getResultItem();
         if (result.isEmpty()) {
             return false;
         }
@@ -132,14 +175,14 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         if (output.isEmpty()) {
             return true;
         }
-        if (!ItemStack.isSame(output, result)) {
+        if (!ItemStack.isSame(output, result) || !ItemStack.tagMatches(output, result)) {
             return false;
         }
         return output.getCount() + result.getCount() <= output.getMaxStackSize();
     }
 
-    private void processItem() {
-        ItemStack result = getProcessingResult(inventory.getStackInSlot(0));
+    private void processItem(CrusherRecipe recipe) {
+        ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
         if (result.isEmpty()) {
             return;
         }
@@ -149,32 +192,14 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         if (output.isEmpty()) {
             inventory.setStackInSlot(1, result.copy());
         } else {
-            output.grow(result.getCount());
-            inventory.setStackInSlot(1, output);
+            ItemStack combined = output.copy();
+            combined.grow(result.getCount());
+            inventory.setStackInSlot(1, combined);
         }
     }
 
-    public static boolean isProcessableInput(ItemStack stack) {
-        return !getProcessingResult(stack).isEmpty();
-    }
-
-    private static ItemStack getProcessingResult(ItemStack input) {
-        if (input.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-        if (input.getItem() == Items.IRON_ORE) {
-            return new ItemStack(ModItems.IRON_DUST.get(), 2);
-        }
-        if (input.getItem() == Items.GOLD_ORE) {
-            return new ItemStack(ModItems.GOLD_DUST.get(), 2);
-        }
-        if (input.getItem() == Items.COBBLESTONE) {
-            return new ItemStack(Items.GRAVEL);
-        }
-        if (input.getItem() == Items.GRAVEL) {
-            return new ItemStack(Items.SAND);
-        }
-        return ItemStack.EMPTY;
+    public boolean canAcceptInput(ItemStack stack) {
+        return findRecipe(stack).isPresent();
     }
 
     public ItemStackHandler getInventory() {
@@ -202,6 +227,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         inventory.deserializeNBT(nbt.getCompound("Inventory"));
         energyStorage.setEnergy(nbt.getInt("Energy"));
         progress = nbt.getInt("Progress");
+        activeRecipeId = null;
     }
 
     @Override

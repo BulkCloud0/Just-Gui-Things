@@ -1,0 +1,12 @@
+{
+  "type": "justguithings:crushing",
+  "ingredient": {
+    "item": "minecraft:gold_ore"
+  },
+  "result": {
+    "item": "justguithings:gold_dust",
+    "count": 2
+  },
+  "processing_time": 100,
+  "energy_per_tick": 20
+}

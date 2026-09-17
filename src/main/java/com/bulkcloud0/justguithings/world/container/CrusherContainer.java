@@ -28,7 +28,12 @@ public class CrusherContainer extends Container {
         this.tileEntity = tileEntity;
         this.data = tileEntity.getDataAccess();
 
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 44, 35));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 44, 35) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return tileEntity.canAcceptInput(stack);
+            }
+        });
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 116, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
@@ -58,7 +63,8 @@ public class CrusherContainer extends Container {
         }
 
         for (int column = 0; column < 9; column++) {
-            this.addSlot(new Slot(playerInventory, column, 8 + column * 18, 142));
+            this.addSlot(new Slot(playerInventory, column,
+                    8 + column * 18, 142));
         }
     }
 
@@ -84,7 +90,7 @@ public class CrusherContainer extends Container {
                 if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (CrusherTileEntity.isProcessableInput(stack)) {
+            } else if (tileEntity.canAcceptInput(stack)) {
                 if (!this.moveItemStackTo(stack, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -121,7 +127,12 @@ public class CrusherContainer extends Container {
     }
 
     public int getProgressScaled(int pixels) {
-        return data.get(0) * pixels / CrusherTileEntity.PROCESS_TICKS;
+        int processTicks = Math.max(1, data.get(3));
+        return data.get(0) * pixels / processTicks;
+    }
+
+    public int getEnergyPerTick() {
+        return data.get(4);
     }
 
     public boolean isProcessing() {

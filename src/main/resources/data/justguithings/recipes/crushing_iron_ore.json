@@ -1,0 +1,12 @@
+{
+  "type": "justguithings:crushing",
+  "ingredient": {
+    "item": "minecraft:iron_ore"
+  },
+  "result": {
+    "item": "justguithings:iron_dust",
+    "count": 2
+  },
+  "processing_time": 100,
+  "energy_per_tick": 20
+}
