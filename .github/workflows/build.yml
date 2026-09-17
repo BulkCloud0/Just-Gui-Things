@@ -4,8 +4,11 @@ on:
   push:
     branches:
       - main
-      - 'dev/**'
   pull_request:
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
