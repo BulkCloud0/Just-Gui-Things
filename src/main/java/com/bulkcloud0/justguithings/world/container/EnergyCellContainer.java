@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.container;
 
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,12 +10,14 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.math.BlockPos;
 
 public class EnergyCellContainer extends Container {
     private final EnergyCellTileEntity tileEntity;
     private final IIntArray data;
+    private final SideConfigContainerData sideData;
 
     public EnergyCellContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(windowId, playerInventory, getTileEntity(playerInventory, buffer));
@@ -24,9 +27,11 @@ public class EnergyCellContainer extends Container {
         super(ModContainers.ENERGY_CELL.get(), windowId);
         this.tileEntity = tileEntity;
         this.data = tileEntity.getDataAccess();
+        this.sideData = new SideConfigContainerData(tileEntity, tileEntity::getSideMode);
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
+        addDataSlots(sideData);
     }
 
     private static EnergyCellTileEntity getTileEntity(PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -92,5 +97,9 @@ public class EnergyCellContainer extends Container {
 
     public int getEnergyScaled(int pixels) {
         return (int) ((long) getEnergyStored() * pixels / EnergyCellTileEntity.CAPACITY);
+    }
+
+    public MachineSideMode getSideMode(Direction direction) {
+        return sideData.getMode(direction);
     }
 }

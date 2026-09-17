@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.container;
 
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
@@ -10,6 +11,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
@@ -21,6 +23,7 @@ public class CrusherContainer extends Container {
 
     private final CrusherTileEntity tileEntity;
     private final IIntArray data;
+    private final SideConfigContainerData sideData;
 
     public CrusherContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(windowId, playerInventory, getTileEntity(playerInventory, buffer));
@@ -30,6 +33,7 @@ public class CrusherContainer extends Container {
         super(ModContainers.CRUSHER.get(), windowId);
         this.tileEntity = tileEntity;
         this.data = tileEntity.getDataAccess();
+        this.sideData = new SideConfigContainerData(tileEntity, tileEntity::getSideMode);
 
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 44, 35));
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 116, 35) {
@@ -45,6 +49,7 @@ public class CrusherContainer extends Container {
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
+        addDataSlots(sideData);
     }
 
     private static CrusherTileEntity getTileEntity(PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -180,5 +185,9 @@ public class CrusherContainer extends Container {
 
     public int getMaximumBatchSize() {
         return 1 + getBatchUpgradeCount();
+    }
+
+    public MachineSideMode getSideMode(Direction direction) {
+        return sideData.getMode(direction);
     }
 }

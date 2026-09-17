@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.container;
 
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import com.bulkcloud0.justguithings.world.tile.QuenchChamberTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,6 +10,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
@@ -20,6 +22,7 @@ public class QuenchChamberContainer extends Container {
 
     private final QuenchChamberTileEntity tileEntity;
     private final IIntArray data;
+    private final SideConfigContainerData sideData;
 
     public QuenchChamberContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(windowId, playerInventory, getTileEntity(playerInventory, buffer));
@@ -29,6 +32,7 @@ public class QuenchChamberContainer extends Container {
         super(ModContainers.QUENCH_CHAMBER.get(), windowId);
         this.tileEntity = tileEntity;
         this.data = tileEntity.getDataAccess();
+        this.sideData = new SideConfigContainerData(tileEntity, tileEntity::getSideMode);
 
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 44, 35));
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 116, 35) {
@@ -40,6 +44,7 @@ public class QuenchChamberContainer extends Container {
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
+        addDataSlots(sideData);
     }
 
     private static QuenchChamberTileEntity getTileEntity(PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -134,5 +139,9 @@ public class QuenchChamberContainer extends Container {
 
     public int getFluidScaled(int pixels) {
         return (int) ((long) getFluidAmount() * pixels / QuenchChamberTileEntity.TANK_CAPACITY);
+    }
+
+    public MachineSideMode getSideMode(Direction direction) {
+        return sideData.getMode(direction);
     }
 }

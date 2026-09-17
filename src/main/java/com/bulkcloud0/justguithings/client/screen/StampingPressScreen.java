@@ -76,6 +76,7 @@ public class StampingPressScreen extends ContainerScreen<StampingPressContainer>
     @Override
     protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
         this.font.draw(matrixStack, this.title, 8.0F, 6.0F, TEXT_COLOR);
+        SideConfigRenderer.drawHorizontal(matrixStack, this.font, 8.0F, 19.0F, this.menu::getSideMode);
         this.font.draw(matrixStack, this.inventory.getDisplayName(), 8.0F, this.inventoryLabelY, TEXT_COLOR);
         this.font.draw(matrixStack,
                 "FE: " + this.menu.getEnergyStored() + " / " + StampingPressTileEntity.CAPACITY,

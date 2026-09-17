@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.container;
 
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import com.bulkcloud0.justguithings.world.tile.IndustrialMixerTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,6 +10,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
@@ -20,6 +22,7 @@ public class IndustrialMixerContainer extends Container {
 
     private final IndustrialMixerTileEntity tileEntity;
     private final IIntArray data;
+    private final SideConfigContainerData sideData;
 
     public IndustrialMixerContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(windowId, playerInventory, getTileEntity(playerInventory, buffer));
@@ -29,6 +32,7 @@ public class IndustrialMixerContainer extends Container {
         super(ModContainers.INDUSTRIAL_MIXER.get(), windowId);
         this.tileEntity = tileEntity;
         this.data = tileEntity.getDataAccess();
+        this.sideData = new SideConfigContainerData(tileEntity, tileEntity::getSideMode);
 
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 35, 35));
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 53, 35));
@@ -41,6 +45,7 @@ public class IndustrialMixerContainer extends Container {
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
+        addDataSlots(sideData);
     }
 
     private static IndustrialMixerTileEntity getTileEntity(PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -129,5 +134,9 @@ public class IndustrialMixerContainer extends Container {
 
     public int getCurrentEnergyPerTick() {
         return data.get(4);
+    }
+
+    public MachineSideMode getSideMode(Direction direction) {
+        return sideData.getMode(direction);
     }
 }

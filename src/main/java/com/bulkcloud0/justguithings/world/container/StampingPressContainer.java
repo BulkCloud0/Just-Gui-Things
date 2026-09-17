@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.container;
 
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
@@ -10,6 +11,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
@@ -21,6 +23,7 @@ public class StampingPressContainer extends Container {
 
     private final StampingPressTileEntity tileEntity;
     private final IIntArray data;
+    private final SideConfigContainerData sideData;
 
     public StampingPressContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(windowId, playerInventory, getTileEntity(playerInventory, buffer));
@@ -30,6 +33,7 @@ public class StampingPressContainer extends Container {
         super(ModContainers.STAMPING_PRESS.get(), windowId);
         this.tileEntity = tileEntity;
         this.data = tileEntity.getDataAccess();
+        this.sideData = new SideConfigContainerData(tileEntity, tileEntity::getSideMode);
 
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 44, 35));
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 116, 35) {
@@ -43,6 +47,7 @@ public class StampingPressContainer extends Container {
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
+        addDataSlots(sideData);
     }
 
     private static StampingPressTileEntity getTileEntity(PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -143,5 +148,9 @@ public class StampingPressContainer extends Container {
 
     public int getEfficiencyUpgradeCount() {
         return data.get(6);
+    }
+
+    public MachineSideMode getSideMode(Direction direction) {
+        return sideData.getMode(direction);
     }
 }

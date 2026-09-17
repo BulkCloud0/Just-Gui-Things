@@ -69,6 +69,7 @@ public class EnergyCellScreen extends ContainerScreen<EnergyCellContainer> {
     @Override
     protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
         this.font.draw(matrixStack, this.title, 8.0F, 6.0F, TEXT_COLOR);
+        SideConfigRenderer.drawCompactGrid(matrixStack, this.font, 8.0F, 29.0F, this.menu::getSideMode);
         this.font.draw(matrixStack, this.inventory.getDisplayName(), 8.0F, this.inventoryLabelY, TEXT_COLOR);
         this.font.draw(matrixStack,
                 "FE: " + this.menu.getEnergyStored() + " / " + EnergyCellTileEntity.CAPACITY,
@@ -77,7 +78,7 @@ public class EnergyCellScreen extends ContainerScreen<EnergyCellContainer> {
                 TEXT_COLOR);
         this.font.draw(matrixStack,
                 EnergyCellTileEntity.MAX_TRANSFER + " FE/t I/O",
-                57.0F,
+                104.0F,
                 60.0F,
                 TEXT_COLOR);
     }
