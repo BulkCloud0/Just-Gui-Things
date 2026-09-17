@@ -2,6 +2,8 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
+import com.bulkcloud0.justguithings.machine.MachineSidedItemHandler;
+import com.bulkcloud0.justguithings.machine.SidedEnergyInputHandler;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -28,7 +30,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RangedWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -70,9 +71,9 @@ public class IndustrialMixerTileEntity extends TileEntity implements ITickableTi
         }
     };
 
-    private final RangedWrapper inputHandler = new RangedWrapper(inventory, 0, 2);
-    private final RangedWrapper outputHandler = new RangedWrapper(inventory, 2, 3);
     private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
 
     private final IIntArray dataAccess = new IIntArray() {
         @Override
@@ -107,8 +108,6 @@ public class IndustrialMixerTileEntity extends TileEntity implements ITickableTi
 
     private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
     private LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
-    private LazyOptional<IItemHandler> inputCapability = LazyOptional.of(() -> inputHandler);
-    private LazyOptional<IItemHandler> outputCapability = LazyOptional.of(() -> outputHandler);
 
     private int progress;
     private int currentProcessTicks = DEFAULT_PROCESS_TICKS;
@@ -123,6 +122,17 @@ public class IndustrialMixerTileEntity extends TileEntity implements ITickableTi
         sideModes.put(Direction.SOUTH, MachineSideMode.ENERGY);
         sideModes.put(Direction.WEST, MachineSideMode.ENERGY);
         sideModes.put(Direction.EAST, MachineSideMode.ENERGY);
+        initializeSidedCapabilities();
+    }
+
+    private void initializeSidedCapabilities() {
+        for (Direction direction : Direction.values()) {
+            final Direction side = direction;
+            sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
+                    inventory, 0, 2, 2, 1, () -> getSideMode(side))));
+            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new SidedEnergyInputHandler(
+                    energyStorage, () -> getSideMode(side) == MachineSideMode.ENERGY)));
+        }
     }
 
     @Override
@@ -273,8 +283,22 @@ public class IndustrialMixerTileEntity extends TileEntity implements ITickableTi
         super.load(state, nbt);
         inventory.deserializeNBT(nbt.getCompound("Inventory"));
         energyStorage.setEnergy(nbt.getInt("Energy"));
-        progress = nbt.getInt("Progress");
+        progress = Math.max(0, nbt.getInt("Progress"));
         activeRecipeId = null;
+
+        String activeRecipe = nbt.getString("ActiveRecipe");
+        if (!activeRecipe.isEmpty()) {
+            try {
+                activeRecipeId = new ResourceLocation(activeRecipe);
+            } catch (RuntimeException ignored) {
+                activeRecipeId = null;
+                progress = 0;
+            }
+        }
+        if (activeRecipeId == null) {
+            progress = 0;
+        }
+
         if (nbt.contains("SideConfig")) {
             CompoundNBT config = nbt.getCompound("SideConfig");
             for (Direction direction : Direction.values()) {
@@ -292,6 +316,9 @@ public class IndustrialMixerTileEntity extends TileEntity implements ITickableTi
         nbt.put("Inventory", inventory.serializeNBT());
         nbt.putInt("Energy", energyStorage.getEnergyStored());
         nbt.putInt("Progress", progress);
+        if (activeRecipeId != null && progress > 0) {
+            nbt.putString("ActiveRecipe", activeRecipeId.toString());
+        }
         CompoundNBT config = new CompoundNBT();
         for (Direction direction : Direction.values()) {
             config.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
@@ -304,8 +331,12 @@ public class IndustrialMixerTileEntity extends TileEntity implements ITickableTi
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            if (side == null || getSideMode(side) == MachineSideMode.ENERGY) {
+            if (side == null) {
                 return energyCapability.cast();
+            }
+            if (getSideMode(side) == MachineSideMode.ENERGY) {
+                LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
+                return sided == null ? LazyOptional.empty() : sided.cast();
             }
             return LazyOptional.empty();
         }
@@ -314,11 +345,9 @@ public class IndustrialMixerTileEntity extends TileEntity implements ITickableTi
                 return itemCapability.cast();
             }
             MachineSideMode mode = getSideMode(side);
-            if (mode == MachineSideMode.INPUT) {
-                return inputCapability.cast();
-            }
-            if (mode == MachineSideMode.OUTPUT) {
-                return outputCapability.cast();
+            if (mode == MachineSideMode.INPUT || mode == MachineSideMode.OUTPUT) {
+                LazyOptional<IItemHandler> sided = sidedItemCapabilities.get(side);
+                return sided == null ? LazyOptional.empty() : sided.cast();
             }
             return LazyOptional.empty();
         }
@@ -330,7 +359,11 @@ public class IndustrialMixerTileEntity extends TileEntity implements ITickableTi
         super.setRemoved();
         energyCapability.invalidate();
         itemCapability.invalidate();
-        inputCapability.invalidate();
-        outputCapability.invalidate();
+        for (LazyOptional<IItemHandler> capability : sidedItemCapabilities.values()) {
+            capability.invalidate();
+        }
+        for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
+            capability.invalidate();
+        }
     }
 }
