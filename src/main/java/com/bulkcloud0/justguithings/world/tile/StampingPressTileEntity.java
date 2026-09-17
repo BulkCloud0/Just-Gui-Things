@@ -276,7 +276,9 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
-        inventory.deserializeNBT(nbt.getCompound("Inventory"));
+        CompoundNBT inventoryNbt = nbt.getCompound("Inventory").copy();
+        inventoryNbt.putInt("Size", 4);
+        inventory.deserializeNBT(inventoryNbt);
         energyStorage.setEnergy(nbt.getInt("Energy"));
         progress = nbt.getInt("Progress");
         if (nbt.contains("SideConfig")) {
