@@ -15,18 +15,24 @@ The first milestone establishes reusable infrastructure for an industrial tech m
 - Up to 200 FE/t automatic output to adjacent Forge Energy consumers
 - Basic Energy Cable network with 500 FE/t transfer throughput
 - Connected cable discovery and network-level distribution to adjacent consumers
+- Energy Cell with 1,000,000 FE storage and 2,000 FE/t bidirectional I/O
 - Persistent machine/cable energy and machine inventory state via NBT
 - Forge item and energy capabilities
 - Server-authoritative container/menu opening
 - Synchronized machine GUI data
-- Custom tech-style generator and Crusher screens
-- Crusher with 100,000 FE buffer and two-slot processing inventory
+- Custom tech-style generator, Crusher and Energy Cell screens
+- Crusher with 100,000 FE buffer and data-driven processing
+- Speed and Efficiency modules, with up to four of each installed directly in the Crusher
+- No fixed machine tier ladder: progression is driven by machine-specific modules, components and future specialization systems
+- Configurator tool for per-face Crusher automation modes
+- Crusher sides can be set to Input, Output, Energy or Disabled and persist through NBT
+- Default Crusher automation layout: top input, bottom output, horizontal energy
 - Data-driven Crusher recipes loaded from JSON/datapacks
 - Per-recipe processing time and FE/t cost
 - Initial ore doubling: Iron Ore -> 2 Iron Dust and Gold Ore -> 2 Gold Dust
 - Utility crushing: Cobblestone -> Gravel -> Sand
 - Iron Dust and Gold Dust smelting recipes
-- Shift-click handling for machine input slots
+- Shift-click handling for machine input/module slots
 - English and Brazilian Portuguese translations
 - GitHub Actions build validation
 
@@ -46,13 +52,17 @@ Crusher recipes live under `data/<namespace>/recipes/` and use the `justguithing
 
 Because the machine uses Minecraft's recipe manager, datapacks and other mods can provide additional Crusher recipes without changing Java code.
 
+### Progression direction
+
+Machines do not progress through a Basic/Reinforced/Advanced/Elite ladder. Instead, each machine has its own base characteristics and evolves through modules, better components, specialized processing paths and later industrial systems such as fluids, heat and pressure.
+
 ### Next
 
+- Extend side configuration to the Energy Cell and future machines
 - JEI integration for Crusher recipes
-- Machine tiers and upgrades
-- Side configuration
-- Energy storage blocks
+- Additional module types such as Buffer and Parallel Processing
 - Additional processing machines and recipe types
+- Improve cable network caching/performance and connection visuals
 - Fluids, heat/pressure and advanced industrial processing
 - Proper custom cable/machine textures and models
 
