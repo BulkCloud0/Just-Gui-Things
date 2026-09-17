@@ -2,7 +2,6 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
-import com.bulkcloud0.justguithings.machine.MachineTier;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -42,7 +41,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     public static final int MAX_RECEIVE = 1_000;
     public static final int DEFAULT_ENERGY_PER_TICK = 20;
     public static final int DEFAULT_PROCESS_TICKS = 100;
-    public static final MachineTier TIER = MachineTier.MK_I;
+    public static final int MAX_MODULES_PER_TYPE = 4;
 
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
         @Override
@@ -73,7 +72,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         @Override
         public int getSlotLimit(int slot) {
             if (slot == 2 || slot == 3) {
-                return TIER.getMaxModulesPerType();
+                return MAX_MODULES_PER_TYPE;
             }
             return super.getSlotLimit(slot);
         }
@@ -265,11 +264,11 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     }
 
     public int getSpeedUpgradeCount() {
-        return Math.min(TIER.getMaxModulesPerType(), inventory.getStackInSlot(2).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(2).getCount());
     }
 
     public int getEfficiencyUpgradeCount() {
-        return Math.min(TIER.getMaxModulesPerType(), inventory.getStackInSlot(3).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(3).getCount());
     }
 
     public MachineSideMode getSideMode(Direction side) {
