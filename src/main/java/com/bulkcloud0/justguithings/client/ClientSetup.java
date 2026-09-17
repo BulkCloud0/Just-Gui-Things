@@ -17,8 +17,8 @@ public final class ClientSetup {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            ScreenManager.registerFactory(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new);
-            ScreenManager.registerFactory(ModContainers.CRUSHER.get(), CrusherScreen::new);
+            ScreenManager.register(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new);
+            ScreenManager.register(ModContainers.CRUSHER.get(), CrusherScreen::new);
         });
     }
 }
