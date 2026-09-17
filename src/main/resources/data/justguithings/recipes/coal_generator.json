@@ -4,7 +4,7 @@
   "key": {
     "I": {"item": "minecraft:iron_ingot"},
     "R": {"item": "minecraft:redstone"},
-    "C": {"item": "minecraft:copper_ingot"},
+    "C": {"item": "minecraft:coal"},
     "F": {"item": "justguithings:machine_frame"}
   },
   "result": {"item": "justguithings:coal_generator"}
