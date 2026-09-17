@@ -1,7 +1,7 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
-import com.bulkcloud0.justguithings.machine.MachineTier;
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -28,9 +29,11 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.RangedWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.Optional;
 
 public class CrusherTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
@@ -38,7 +41,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     public static final int MAX_RECEIVE = 1_000;
     public static final int DEFAULT_ENERGY_PER_TICK = 20;
     public static final int DEFAULT_PROCESS_TICKS = 100;
-    public static final MachineTier TIER = MachineTier.BASIC;
+    public static final int MAX_MODULES_PER_TYPE = 4;
 
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
         @Override
@@ -69,7 +72,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         @Override
         public int getSlotLimit(int slot) {
             if (slot == 2 || slot == 3) {
-                return TIER.getMaxUpgradeLevel();
+                return MAX_MODULES_PER_TYPE;
             }
             return super.getSlotLimit(slot);
         }
@@ -79,6 +82,10 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
             setChanged();
         }
     };
+
+    private final RangedWrapper inputHandler = new RangedWrapper(inventory, 0, 1);
+    private final RangedWrapper outputHandler = new RangedWrapper(inventory, 1, 2);
+    private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
 
     private final IIntArray dataAccess = new IIntArray() {
         @Override
@@ -95,10 +102,8 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
                 case 4:
                     return currentEnergyPerTick;
                 case 5:
-                    return TIER.ordinal();
-                case 6:
                     return getSpeedUpgradeCount();
-                case 7:
+                case 6:
                     return getEfficiencyUpgradeCount();
                 default:
                     return 0;
@@ -130,12 +135,14 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
 
         @Override
         public int getCount() {
-            return 8;
+            return 7;
         }
     };
 
     private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
     private LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
+    private LazyOptional<IItemHandler> inputCapability = LazyOptional.of(() -> inputHandler);
+    private LazyOptional<IItemHandler> outputCapability = LazyOptional.of(() -> outputHandler);
     private int progress;
     private int currentProcessTicks = DEFAULT_PROCESS_TICKS;
     private int currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
@@ -143,6 +150,16 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
 
     public CrusherTileEntity() {
         super(ModTileEntities.CRUSHER.get());
+        initializeDefaultSides();
+    }
+
+    private void initializeDefaultSides() {
+        sideModes.put(Direction.UP, MachineSideMode.INPUT);
+        sideModes.put(Direction.DOWN, MachineSideMode.OUTPUT);
+        sideModes.put(Direction.NORTH, MachineSideMode.ENERGY);
+        sideModes.put(Direction.SOUTH, MachineSideMode.ENERGY);
+        sideModes.put(Direction.WEST, MachineSideMode.ENERGY);
+        sideModes.put(Direction.EAST, MachineSideMode.ENERGY);
     }
 
     @Override
@@ -247,11 +264,22 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     }
 
     public int getSpeedUpgradeCount() {
-        return Math.min(TIER.getMaxUpgradeLevel(), inventory.getStackInSlot(2).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(2).getCount());
     }
 
     public int getEfficiencyUpgradeCount() {
-        return Math.min(TIER.getMaxUpgradeLevel(), inventory.getStackInSlot(3).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(3).getCount());
+    }
+
+    public MachineSideMode getSideMode(Direction side) {
+        return sideModes.getOrDefault(side, MachineSideMode.DISABLED);
+    }
+
+    public MachineSideMode cycleSideMode(Direction side) {
+        MachineSideMode mode = getSideMode(side).next();
+        sideModes.put(side, mode);
+        setChanged();
+        return mode;
     }
 
     public boolean canAcceptInput(ItemStack stack) {
@@ -284,6 +312,16 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         energyStorage.setEnergy(nbt.getInt("Energy"));
         progress = nbt.getInt("Progress");
         activeRecipeId = null;
+
+        if (nbt.contains("SideConfig")) {
+            CompoundNBT sideConfig = nbt.getCompound("SideConfig");
+            for (Direction direction : Direction.values()) {
+                String key = "Side" + direction.ordinal();
+                if (sideConfig.contains(key)) {
+                    sideModes.put(direction, MachineSideMode.fromOrdinal(sideConfig.getInt(key)));
+                }
+            }
+        }
     }
 
     @Override
@@ -292,17 +330,36 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         nbt.put("Inventory", inventory.serializeNBT());
         nbt.putInt("Energy", energyStorage.getEnergyStored());
         nbt.putInt("Progress", progress);
+
+        CompoundNBT sideConfig = new CompoundNBT();
+        for (Direction direction : Direction.values()) {
+            sideConfig.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
+        }
+        nbt.put("SideConfig", sideConfig);
         return nbt;
     }
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable net.minecraft.util.Direction side) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            return energyCapability.cast();
+            if (side == null || getSideMode(side) == MachineSideMode.ENERGY) {
+                return energyCapability.cast();
+            }
+            return LazyOptional.empty();
         }
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return itemCapability.cast();
+            if (side == null) {
+                return itemCapability.cast();
+            }
+            MachineSideMode mode = getSideMode(side);
+            if (mode == MachineSideMode.INPUT) {
+                return inputCapability.cast();
+            }
+            if (mode == MachineSideMode.OUTPUT) {
+                return outputCapability.cast();
+            }
+            return LazyOptional.empty();
         }
         return super.getCapability(cap, side);
     }
@@ -312,5 +369,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         super.setRemoved();
         energyCapability.invalidate();
         itemCapability.invalidate();
+        inputCapability.invalidate();
+        outputCapability.invalidate();
     }
 }
