@@ -6,7 +6,6 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 public class CrusherScreen extends ContainerScreen<CrusherContainer> {
     private static final int PANEL_COLOR = 0xFF20262E;
@@ -84,13 +83,8 @@ public class CrusherScreen extends ContainerScreen<CrusherContainer> {
                 6.0F,
                 TEXT_COLOR);
         this.font.draw(matrixStack,
-                new TranslationTextComponent(this.menu.getTier().getTranslationKey()),
+                "Modules S:" + this.menu.getSpeedUpgradeCount() + " E:" + this.menu.getEfficiencyUpgradeCount(),
                 8.0F,
-                60.0F,
-                TEXT_COLOR);
-        this.font.draw(matrixStack,
-                "S:" + this.menu.getSpeedUpgradeCount() + " E:" + this.menu.getEfficiencyUpgradeCount(),
-                112.0F,
                 60.0F,
                 TEXT_COLOR);
     }
