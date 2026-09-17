@@ -7,7 +7,7 @@
   ],
   "key": {
     "R": { "item": "minecraft:redstone" },
-    "I": { "item": "minecraft:iron_ingot" },
+    "I": { "item": "justguithings:iron_plate" },
     "B": { "item": "minecraft:redstone_block" }
   },
   "result": {
