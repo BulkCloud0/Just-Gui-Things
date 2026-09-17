@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": { "item": "justguithings:steel_blend" },
+  "result": "justguithings:steel_ingot",
+  "experience": 0.7,
+  "cookingtime": 200
+}

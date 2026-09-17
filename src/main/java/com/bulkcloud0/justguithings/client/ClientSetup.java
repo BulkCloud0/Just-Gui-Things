@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.client.screen.CoalGeneratorScreen;
 import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
 import com.bulkcloud0.justguithings.client.screen.EnergyCellScreen;
+import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import net.minecraft.client.gui.ScreenManager;
@@ -22,6 +23,7 @@ public final class ClientSetup {
             ScreenManager.register(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new);
             ScreenManager.register(ModContainers.CRUSHER.get(), CrusherScreen::new);
             ScreenManager.register(ModContainers.STAMPING_PRESS.get(), StampingPressScreen::new);
+            ScreenManager.register(ModContainers.INDUSTRIAL_MIXER.get(), IndustrialMixerScreen::new);
             ScreenManager.register(ModContainers.ENERGY_CELL.get(), EnergyCellScreen::new);
         });
     }

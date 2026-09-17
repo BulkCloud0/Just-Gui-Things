@@ -5,6 +5,8 @@
   "container.justguithings.crusher": "Crusher",
   "block.justguithings.stamping_press": "Stamping Press",
   "container.justguithings.stamping_press": "Stamping Press",
+  "block.justguithings.industrial_mixer": "Industrial Mixer",
+  "container.justguithings.industrial_mixer": "Industrial Mixer",
   "block.justguithings.energy_cell": "Energy Cell",
   "container.justguithings.energy_cell": "Energy Cell",
   "block.justguithings.basic_energy_cable": "Basic Energy Cable",
@@ -15,8 +17,12 @@
   "item.justguithings.batch_upgrade": "Batch Module",
   "item.justguithings.iron_dust": "Iron Dust",
   "item.justguithings.gold_dust": "Gold Dust",
+  "item.justguithings.coal_dust": "Coal Dust",
   "item.justguithings.iron_plate": "Iron Plate",
   "item.justguithings.gold_plate": "Gold Plate",
+  "item.justguithings.steel_blend": "Steel Blend",
+  "item.justguithings.steel_ingot": "Steel Ingot",
   "jei.justguithings.crushing": "Crushing",
-  "jei.justguithings.pressing": "Pressing"
+  "jei.justguithings.pressing": "Pressing",
+  "jei.justguithings.mixing": "Industrial Mixing"
 }

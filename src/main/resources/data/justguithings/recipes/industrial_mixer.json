@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "RFR",
+    "PPP"
+  ],
+  "key": {
+    "P": { "item": "justguithings:iron_plate" },
+    "R": { "item": "minecraft:redstone" },
+    "F": { "item": "minecraft:furnace" }
+  },
+  "result": { "item": "justguithings:industrial_mixer" }
+}

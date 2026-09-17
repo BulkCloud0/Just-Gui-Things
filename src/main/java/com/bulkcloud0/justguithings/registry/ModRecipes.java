@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
+import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
@@ -17,11 +18,15 @@ public final class ModRecipes {
             IRecipeType.register(JustGuiThings.MOD_ID + ":crushing");
     public static final IRecipeType<PressingRecipe> PRESSING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":pressing");
+    public static final IRecipeType<MixingRecipe> MIXING_TYPE =
+            IRecipeType.register(JustGuiThings.MOD_ID + ":mixing");
 
     public static final RegistryObject<IRecipeSerializer<CrusherRecipe>> CRUSHING_SERIALIZER =
             RECIPE_SERIALIZERS.register("crushing", CrusherRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<PressingRecipe>> PRESSING_SERIALIZER =
             RECIPE_SERIALIZERS.register("pressing", PressingRecipe.Serializer::new);
+    public static final RegistryObject<IRecipeSerializer<MixingRecipe>> MIXING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("mixing", MixingRecipe.Serializer::new);
 
     private ModRecipes() {}
 }

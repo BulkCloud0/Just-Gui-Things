@@ -1,0 +1,8 @@
+{
+  "type": "justguithings:mixing",
+  "primary": { "item": "justguithings:iron_dust" },
+  "secondary": { "item": "justguithings:coal_dust" },
+  "result": { "item": "justguithings:steel_blend", "count": 2 },
+  "processing_time": 160,
+  "energy_per_tick": 45
+}

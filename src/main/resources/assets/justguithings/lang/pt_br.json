@@ -5,6 +5,8 @@
   "container.justguithings.crusher": "Triturador",
   "block.justguithings.stamping_press": "Prensa de Estampagem",
   "container.justguithings.stamping_press": "Prensa de Estampagem",
+  "block.justguithings.industrial_mixer": "Misturador Industrial",
+  "container.justguithings.industrial_mixer": "Misturador Industrial",
   "block.justguithings.energy_cell": "Célula de Energia",
   "container.justguithings.energy_cell": "Célula de Energia",
   "block.justguithings.basic_energy_cable": "Cabo de Energia Básico",
@@ -15,8 +17,12 @@
   "item.justguithings.batch_upgrade": "Módulo de Lote",
   "item.justguithings.iron_dust": "Pó de Ferro",
   "item.justguithings.gold_dust": "Pó de Ouro",
+  "item.justguithings.coal_dust": "Pó de Carvão",
   "item.justguithings.iron_plate": "Chapa de Ferro",
   "item.justguithings.gold_plate": "Chapa de Ouro",
+  "item.justguithings.steel_blend": "Mistura de Aço",
+  "item.justguithings.steel_ingot": "Lingote de Aço",
   "jei.justguithings.crushing": "Trituração",
-  "jei.justguithings.pressing": "Estampagem"
+  "jei.justguithings.pressing": "Estampagem",
+  "jei.justguithings.mixing": "Mistura Industrial"
 }
