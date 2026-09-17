@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.client;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.client.screen.CoalGeneratorScreen;
+import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,6 +16,9 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> ScreenManager.registerFactory(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new));
+        event.enqueueWork(() -> {
+            ScreenManager.registerFactory(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new);
+            ScreenManager.registerFactory(ModContainers.CRUSHER.get(), CrusherScreen::new);
+        });
     }
 }
