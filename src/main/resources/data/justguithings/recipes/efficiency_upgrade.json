@@ -8,7 +8,7 @@
   "key": {
     "Q": { "item": "minecraft:quartz" },
     "R": { "item": "minecraft:redstone" },
-    "G": { "item": "minecraft:gold_ingot" }
+    "G": { "item": "justguithings:gold_plate" }
   },
   "result": {
     "item": "justguithings:efficiency_upgrade"
