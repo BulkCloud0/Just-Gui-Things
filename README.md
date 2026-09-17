@@ -1,24 +1,23 @@
 # Just Gui Things
 
-Industrial technology mod for Minecraft 1.16.5 built with Minecraft Forge.
+A technology-focused Minecraft Forge mod for **Minecraft 1.16.5**.
 
-## Direction
+## Current milestone: Core Industrial
 
-The project aims for a progression-driven tech experience inspired by large industrial mods while keeping its own systems and architecture.
+The first milestone establishes the reusable infrastructure for an industrial tech mod:
 
-Initial milestone:
+- Forge Energy-compatible internal storage
+- Machine registration architecture
+- Coal Generator as the first energy-producing machine
+- Persistent machine state via NBT
+- Capability exposure for energy and inventory
+- Foundation for GUIs, cables, upgrades, processing machines, fluids and automation
 
-- Forge Energy (FE) infrastructure
-- reusable machine base
-- generator and processing machine
-- machine menus/screens
-- custom processing recipes
-- future-ready upgrade/side configuration hooks
-
-## Development target
+## Environment
 
 - Minecraft 1.16.5
-- Forge 36.2.39
+- Forge 36.2.41
 - Java 8
+- ForgeGradle 5.1+
 
-> The public mod name is provisional. The repository name comes from the author's nickname.
+Development work happens on feature branches and is merged through pull requests.

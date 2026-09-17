@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="justguithings"
+version="${file.jarVersion}"
+displayName="Just Gui Things"
+authors="BulkCloud0"
+description='''
+An industrial technology mod focused on power generation, processing, automation and scalable progression.
+'''
+
+[[dependencies.justguithings]]
+modId="forge"
+mandatory=true
+versionRange="[36.2.41,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.justguithings]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.16.5,1.17)"
+ordering="NONE"
+side="BOTH"

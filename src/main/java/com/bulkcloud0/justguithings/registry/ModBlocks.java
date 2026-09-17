@@ -1,0 +1,23 @@
+package com.bulkcloud0.justguithings.registry;
+
+import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.world.block.CoalGeneratorBlock;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.common.ToolType;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+
+public final class ModBlocks {
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, JustGuiThings.MOD_ID);
+
+    public static final RegistryObject<Block> COAL_GENERATOR = BLOCKS.register("coal_generator",
+            () -> new CoalGeneratorBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(3.5F)
+                    .harvestTool(ToolType.PICKAXE)
+                    .harvestLevel(1)));
+
+    private ModBlocks() {}
+}
