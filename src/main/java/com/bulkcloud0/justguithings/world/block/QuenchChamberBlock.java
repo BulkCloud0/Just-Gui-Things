@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.block;
 
+import com.bulkcloud0.justguithings.machine.MachineInventoryDropHelper;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.QuenchChamberTileEntity;
@@ -36,6 +37,17 @@ public class QuenchChamberBlock extends Block {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new QuenchChamberTileEntity();
+    }
+
+    @Override
+    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            TileEntity tile = world.getBlockEntity(pos);
+            if (tile instanceof QuenchChamberTileEntity) {
+                MachineInventoryDropHelper.dropContents(world, pos, ((QuenchChamberTileEntity) tile).getInventory());
+            }
+        }
+        super.onRemove(state, world, pos, newState, isMoving);
     }
 
     @Override

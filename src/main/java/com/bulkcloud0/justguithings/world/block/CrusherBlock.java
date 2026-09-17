@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.block;
 
+import com.bulkcloud0.justguithings.machine.MachineInventoryDropHelper;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
@@ -35,6 +36,17 @@ public class CrusherBlock extends Block {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new CrusherTileEntity();
+    }
+
+    @Override
+    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            TileEntity tile = world.getBlockEntity(pos);
+            if (tile instanceof CrusherTileEntity) {
+                MachineInventoryDropHelper.dropContents(world, pos, ((CrusherTileEntity) tile).getInventory());
+            }
+        }
+        super.onRemove(state, world, pos, newState, isMoving);
     }
 
     @Override
