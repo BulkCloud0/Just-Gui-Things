@@ -1,4 +1,8 @@
 {
   "block.justguithings.coal_generator": "Coal Generator",
-  "container.justguithings.coal_generator": "Coal Generator"
+  "container.justguithings.coal_generator": "Coal Generator",
+  "block.justguithings.crusher": "Crusher",
+  "container.justguithings.crusher": "Crusher",
+  "item.justguithings.iron_dust": "Iron Dust",
+  "item.justguithings.gold_dust": "Gold Dust"
 }
