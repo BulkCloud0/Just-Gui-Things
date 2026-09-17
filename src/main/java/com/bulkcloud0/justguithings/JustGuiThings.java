@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings;
 
 import com.bulkcloud0.justguithings.registry.ModBlocks;
+import com.bulkcloud0.justguithings.registry.ModContainers;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import net.minecraftforge.fml.common.Mod;
@@ -14,5 +15,6 @@ public class JustGuiThings {
         ModBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModTileEntities.TILE_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ModContainers.CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 }
