@@ -21,6 +21,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.INDUSTRIAL_MIXER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> QUENCH_CHAMBER = ITEMS.register("quench_chamber",
             () -> new BlockItem(ModBlocks.QUENCH_CHAMBER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> THERMAL_KILN = ITEMS.register("thermal_kiln",
+            () -> new BlockItem(ModBlocks.THERMAL_KILN.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
             () -> new BlockItem(ModBlocks.ENERGY_CELL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> BASIC_ENERGY_CABLE = ITEMS.register("basic_energy_cable",
@@ -52,6 +54,8 @@ public final class ModItems {
     public static final RegistryObject<Item> STEEL_INGOT = ITEMS.register("steel_ingot",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> TEMPERED_STEEL_INGOT = ITEMS.register("tempered_steel_ingot",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> CERAMIC_INSULATOR = ITEMS.register("ceramic_insulator",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
 
     private ModItems() {}

@@ -9,6 +9,8 @@
   "container.justguithings.industrial_mixer": "Misturador Industrial",
   "block.justguithings.quench_chamber": "Câmara de Têmpera",
   "container.justguithings.quench_chamber": "Câmara de Têmpera",
+  "block.justguithings.thermal_kiln": "Forno Térmico",
+  "container.justguithings.thermal_kiln": "Forno Térmico",
   "block.justguithings.energy_cell": "Célula de Energia",
   "container.justguithings.energy_cell": "Célula de Energia",
   "block.justguithings.basic_energy_cable": "Cabo de Energia Básico",
@@ -25,8 +27,10 @@
   "item.justguithings.steel_blend": "Mistura de Aço",
   "item.justguithings.steel_ingot": "Lingote de Aço",
   "item.justguithings.tempered_steel_ingot": "Lingote de Aço Temperado",
+  "item.justguithings.ceramic_insulator": "Isolador Cerâmico",
   "jei.justguithings.crushing": "Trituração",
   "jei.justguithings.pressing": "Estampagem",
   "jei.justguithings.mixing": "Mistura Industrial",
-  "jei.justguithings.quenching": "Têmpera"
+  "jei.justguithings.quenching": "Têmpera",
+  "jei.justguithings.thermal_processing": "Processamento Térmico"
 }

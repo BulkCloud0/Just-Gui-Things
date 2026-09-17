@@ -1,11 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "QRQ",
+    "CQC",
     "RGR",
-    "QRQ"
+    "CQC"
   ],
   "key": {
+    "C": { "item": "justguithings:ceramic_insulator" },
     "Q": { "item": "minecraft:quartz" },
     "R": { "item": "minecraft:redstone" },
     "G": { "item": "justguithings:gold_plate" }

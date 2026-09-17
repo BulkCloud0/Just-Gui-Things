@@ -8,6 +8,7 @@ import com.bulkcloud0.justguithings.world.block.EnergyCellBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialMixerBlock;
 import com.bulkcloud0.justguithings.world.block.QuenchChamberBlock;
 import com.bulkcloud0.justguithings.world.block.StampingPressBlock;
+import com.bulkcloud0.justguithings.world.block.ThermalKilnBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -37,6 +38,10 @@ public final class ModBlocks {
 
     public static final RegistryObject<Block> QUENCH_CHAMBER = BLOCKS.register("quench_chamber",
             () -> new QuenchChamberBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+
+    public static final RegistryObject<Block> THERMAL_KILN = BLOCKS.register("thermal_kiln",
+            () -> new ThermalKilnBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
 
     public static final RegistryObject<Block> ENERGY_CELL = BLOCKS.register("energy_cell",

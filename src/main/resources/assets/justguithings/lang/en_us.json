@@ -9,6 +9,8 @@
   "container.justguithings.industrial_mixer": "Industrial Mixer",
   "block.justguithings.quench_chamber": "Quench Chamber",
   "container.justguithings.quench_chamber": "Quench Chamber",
+  "block.justguithings.thermal_kiln": "Thermal Kiln",
+  "container.justguithings.thermal_kiln": "Thermal Kiln",
   "block.justguithings.energy_cell": "Energy Cell",
   "container.justguithings.energy_cell": "Energy Cell",
   "block.justguithings.basic_energy_cable": "Basic Energy Cable",
@@ -25,8 +27,10 @@
   "item.justguithings.steel_blend": "Steel Blend",
   "item.justguithings.steel_ingot": "Steel Ingot",
   "item.justguithings.tempered_steel_ingot": "Tempered Steel Ingot",
+  "item.justguithings.ceramic_insulator": "Ceramic Insulator",
   "jei.justguithings.crushing": "Crushing",
   "jei.justguithings.pressing": "Pressing",
   "jei.justguithings.mixing": "Industrial Mixing",
-  "jei.justguithings.quenching": "Quenching"
+  "jei.justguithings.quenching": "Quenching",
+  "jei.justguithings.thermal_processing": "Thermal Processing"
 }

@@ -8,6 +8,7 @@ import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
 import com.bulkcloud0.justguithings.world.tile.IndustrialMixerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.QuenchChamberTileEntity;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
+import com.bulkcloud0.justguithings.world.tile.ThermalKilnTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -26,6 +27,8 @@ public final class ModTileEntities {
             "industrial_mixer", () -> TileEntityType.Builder.of(IndustrialMixerTileEntity::new, ModBlocks.INDUSTRIAL_MIXER.get()).build(null));
     public static final RegistryObject<TileEntityType<QuenchChamberTileEntity>> QUENCH_CHAMBER = TILE_ENTITIES.register(
             "quench_chamber", () -> TileEntityType.Builder.of(QuenchChamberTileEntity::new, ModBlocks.QUENCH_CHAMBER.get()).build(null));
+    public static final RegistryObject<TileEntityType<ThermalKilnTileEntity>> THERMAL_KILN = TILE_ENTITIES.register(
+            "thermal_kiln", () -> TileEntityType.Builder.of(ThermalKilnTileEntity::new, ModBlocks.THERMAL_KILN.get()).build(null));
     public static final RegistryObject<TileEntityType<EnergyCellTileEntity>> ENERGY_CELL = TILE_ENTITIES.register(
             "energy_cell", () -> TileEntityType.Builder.of(EnergyCellTileEntity::new, ModBlocks.ENERGY_CELL.get()).build(null));
     public static final RegistryObject<TileEntityType<BasicEnergyCableTileEntity>> BASIC_ENERGY_CABLE = TILE_ENTITIES.register(
