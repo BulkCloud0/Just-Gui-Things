@@ -6,7 +6,7 @@
     "IRI"
   ],
   "key": {
-    "I": { "item": "minecraft:iron_ingot" },
+    "I": { "item": "justguithings:iron_plate" },
     "R": { "item": "minecraft:redstone" },
     "H": { "item": "minecraft:hopper" }
   },
