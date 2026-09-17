@@ -37,7 +37,17 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     public static final int DEFAULT_ENERGY_PER_TICK = 20;
     public static final int DEFAULT_PROCESS_TICKS = 100;
 
-    private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0);
+    private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
+        @Override
+        public int receiveEnergy(int maxReceive, boolean simulate) {
+            int received = super.receiveEnergy(maxReceive, simulate);
+            if (!simulate && received > 0) {
+                setChanged();
+            }
+            return received;
+        }
+    };
+
     private final ItemStackHandler inventory = new ItemStackHandler(2) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
