@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.world.container;
 
 import com.bulkcloud0.justguithings.registry.ModContainers;
+import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class StampingPressContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 2;
+    private static final int MACHINE_SLOT_COUNT = 4;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -37,6 +38,8 @@ public class StampingPressContainer extends Container {
                 return false;
             }
         });
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 72, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 3, 90, 56));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -84,6 +87,14 @@ public class StampingPressContainer extends Container {
                 if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
+            } else if (stack.getItem() == ModItems.SPEED_UPGRADE.get()) {
+                if (!this.moveItemStackTo(stack, 2, 3, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get()) {
+                if (!this.moveItemStackTo(stack, 3, 4, false)) {
+                    return ItemStack.EMPTY;
+                }
             } else if (tileEntity.canAcceptInput(stack)) {
                 if (!this.moveItemStackTo(stack, 0, 1, false)) {
                     return ItemStack.EMPTY;
@@ -124,5 +135,13 @@ public class StampingPressContainer extends Container {
 
     public int getCurrentEnergyPerTick() {
         return data.get(4);
+    }
+
+    public int getSpeedUpgradeCount() {
+        return data.get(5);
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return data.get(6);
     }
 }

@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.world.tile;
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
+import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
@@ -39,6 +40,7 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
     public static final int MAX_RECEIVE = 1_000;
     public static final int DEFAULT_PROCESS_TICKS = 120;
     public static final int DEFAULT_ENERGY_PER_TICK = 30;
+    public static final int MAX_MODULES_PER_TYPE = 4;
 
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
         @Override
@@ -51,10 +53,27 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
         }
     };
 
-    private final ItemStackHandler inventory = new ItemStackHandler(2) {
+    private final ItemStackHandler inventory = new ItemStackHandler(4) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return slot == 0 && canAcceptInput(stack);
+            switch (slot) {
+                case 0:
+                    return canAcceptInput(stack);
+                case 2:
+                    return stack.getItem() == ModItems.SPEED_UPGRADE.get();
+                case 3:
+                    return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            if (slot == 2 || slot == 3) {
+                return MAX_MODULES_PER_TYPE;
+            }
+            return super.getSlotLimit(slot);
         }
 
         @Override
@@ -76,6 +95,8 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
                 case 2: return (energyStorage.getEnergyStored() >>> 16) & 0xFFFF;
                 case 3: return currentProcessTicks;
                 case 4: return currentEnergyPerTick;
+                case 5: return getSpeedUpgradeCount();
+                case 6: return getEfficiencyUpgradeCount();
                 default: return 0;
             }
         }
@@ -94,7 +115,7 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
 
         @Override
         public int getCount() {
-            return 5;
+            return 7;
         }
     };
 
@@ -130,8 +151,8 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
         }
 
         PressingRecipe recipe = recipeOptional.get();
-        currentProcessTicks = recipe.getProcessingTime();
-        currentEnergyPerTick = recipe.getEnergyPerTick();
+        currentProcessTicks = getEffectiveProcessingTime(recipe);
+        currentEnergyPerTick = getEffectiveEnergyPerTick(recipe);
 
         if (!canProcess(recipe)) {
             resetProgress();
@@ -196,6 +217,26 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
             combined.grow(result.getCount());
             inventory.setStackInSlot(1, combined);
         }
+    }
+
+    private int getEffectiveProcessingTime(PressingRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
+    }
+
+    private int getEffectiveEnergyPerTick(PressingRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
+        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
+        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+    }
+
+    public int getSpeedUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(2).getCount());
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(3).getCount());
     }
 
     public boolean canAcceptInput(ItemStack stack) {
