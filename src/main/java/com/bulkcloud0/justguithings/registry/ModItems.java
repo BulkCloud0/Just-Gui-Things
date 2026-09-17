@@ -17,8 +17,17 @@ public final class ModItems {
     public static final RegistryObject<Item> CRUSHER = ITEMS.register("crusher",
             () -> new BlockItem(ModBlocks.CRUSHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
+            () -> new BlockItem(ModBlocks.ENERGY_CELL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
     public static final RegistryObject<Item> BASIC_ENERGY_CABLE = ITEMS.register("basic_energy_cable",
             () -> new BlockItem(ModBlocks.BASIC_ENERGY_CABLE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
+    public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
+    public static final RegistryObject<Item> EFFICIENCY_UPGRADE = ITEMS.register("efficiency_upgrade",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));

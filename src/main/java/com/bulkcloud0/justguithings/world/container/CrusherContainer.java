@@ -1,6 +1,8 @@
 package com.bulkcloud0.justguithings.world.container;
 
+import com.bulkcloud0.justguithings.machine.MachineTier;
 import com.bulkcloud0.justguithings.registry.ModContainers;
+import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,7 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class CrusherContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 2;
+    private static final int MACHINE_SLOT_COUNT = 4;
+    private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
+    private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
     private final CrusherTileEntity tileEntity;
     private final IIntArray data;
@@ -28,18 +32,15 @@ public class CrusherContainer extends Container {
         this.tileEntity = tileEntity;
         this.data = tileEntity.getDataAccess();
 
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 44, 35) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return tileEntity.canAcceptInput(stack);
-            }
-        });
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 44, 35));
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 116, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
             }
         });
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 72, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 3, 90, 56));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -63,8 +64,7 @@ public class CrusherContainer extends Container {
         }
 
         for (int column = 0; column < 9; column++) {
-            this.addSlot(new Slot(playerInventory, column,
-                    8 + column * 18, 142));
+            this.addSlot(new Slot(playerInventory, column, 8 + column * 18, 142));
         }
     }
 
@@ -90,15 +90,23 @@ public class CrusherContainer extends Container {
                 if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
+            } else if (stack.getItem() == ModItems.SPEED_UPGRADE.get()) {
+                if (!this.moveItemStackTo(stack, 2, 3, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get()) {
+                if (!this.moveItemStackTo(stack, 3, 4, false)) {
+                    return ItemStack.EMPTY;
+                }
             } else if (tileEntity.canAcceptInput(stack)) {
                 if (!this.moveItemStackTo(stack, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (index < 29) {
-                if (!this.moveItemStackTo(stack, 29, 38, false)) {
+            } else if (index < PLAYER_MAIN_END) {
+                if (!this.moveItemStackTo(stack, PLAYER_MAIN_END, PLAYER_END, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(stack, 2, 29, false)) {
+            } else if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, PLAYER_MAIN_END, false)) {
                 return ItemStack.EMPTY;
             }
 
@@ -131,11 +139,23 @@ public class CrusherContainer extends Container {
         return data.get(0) * pixels / processTicks;
     }
 
-    public int getEnergyPerTick() {
+    public boolean isProcessing() {
+        return data.get(0) > 0;
+    }
+
+    public int getCurrentEnergyPerTick() {
         return data.get(4);
     }
 
-    public boolean isProcessing() {
-        return data.get(0) > 0;
+    public MachineTier getTier() {
+        return MachineTier.fromOrdinal(data.get(5));
+    }
+
+    public int getSpeedUpgradeCount() {
+        return data.get(6);
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return data.get(7);
     }
 }

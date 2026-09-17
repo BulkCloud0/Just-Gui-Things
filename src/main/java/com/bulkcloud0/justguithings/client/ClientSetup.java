@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.client;
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.client.screen.CoalGeneratorScreen;
 import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
+import com.bulkcloud0.justguithings.client.screen.EnergyCellScreen;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,6 +20,7 @@ public final class ClientSetup {
         event.enqueueWork(() -> {
             ScreenManager.register(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new);
             ScreenManager.register(ModContainers.CRUSHER.get(), CrusherScreen::new);
+            ScreenManager.register(ModContainers.ENERGY_CELL.get(), EnergyCellScreen::new);
         });
     }
 }

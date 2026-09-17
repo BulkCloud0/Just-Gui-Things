@@ -1,25 +1,23 @@
 package com.bulkcloud0.justguithings.client.screen;
 
-import com.bulkcloud0.justguithings.world.container.CrusherContainer;
+import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
+import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
-public class CrusherScreen extends ContainerScreen<CrusherContainer> {
+public class EnergyCellScreen extends ContainerScreen<EnergyCellContainer> {
     private static final int PANEL_COLOR = 0xFF20262E;
     private static final int INNER_COLOR = 0xFF313942;
     private static final int SLOT_COLOR = 0xFF11161C;
     private static final int SLOT_BORDER_COLOR = 0xFF697582;
     private static final int ENERGY_BG_COLOR = 0xFF101419;
     private static final int ENERGY_COLOR = 0xFF2FC3D8;
-    private static final int PROGRESS_BG_COLOR = 0xFF101419;
-    private static final int PROGRESS_COLOR = 0xFFB8C44A;
     private static final int TEXT_COLOR = 0xFFE5E9ED;
 
-    public CrusherScreen(CrusherContainer menu, PlayerInventory inventory, ITextComponent title) {
+    public EnergyCellScreen(EnergyCellContainer menu, PlayerInventory inventory, ITextComponent title) {
         super(menu, inventory, title);
         this.imageWidth = 176;
         this.imageHeight = 166;
@@ -42,10 +40,16 @@ public class CrusherScreen extends ContainerScreen<CrusherContainer> {
         AbstractGui.fill(matrixStack, left + 5, top + 18, left + 171, top + 76, INNER_COLOR);
         AbstractGui.fill(matrixStack, left + 5, top + 80, left + 171, top + 161, INNER_COLOR);
 
-        drawSlot(matrixStack, left + 43, top + 34);
-        drawSlot(matrixStack, left + 115, top + 34);
-        drawSlot(matrixStack, left + 71, top + 55);
-        drawSlot(matrixStack, left + 89, top + 55);
+        int energyHeight = this.menu.getEnergyScaled(46);
+        AbstractGui.fill(matrixStack, left + 81, top + 24, left + 95, top + 72, ENERGY_BG_COLOR);
+        if (energyHeight > 0) {
+            AbstractGui.fill(matrixStack,
+                    left + 83,
+                    top + 70 - energyHeight,
+                    left + 93,
+                    top + 70,
+                    ENERGY_COLOR);
+        }
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -54,18 +58,6 @@ public class CrusherScreen extends ContainerScreen<CrusherContainer> {
         }
         for (int column = 0; column < 9; column++) {
             drawSlot(matrixStack, left + 7 + column * 18, top + 141);
-        }
-
-        AbstractGui.fill(matrixStack, left + 69, top + 38, left + 105, top + 50, PROGRESS_BG_COLOR);
-        int progressWidth = this.menu.getProgressScaled(34);
-        if (progressWidth > 0) {
-            AbstractGui.fill(matrixStack, left + 70, top + 39, left + 70 + progressWidth, top + 49, PROGRESS_COLOR);
-        }
-
-        int energyHeight = this.menu.getEnergyScaled(48);
-        AbstractGui.fill(matrixStack, left + 147, top + 24, left + 158, top + 74, ENERGY_BG_COLOR);
-        if (energyHeight > 0) {
-            AbstractGui.fill(matrixStack, left + 149, top + 72 - energyHeight, left + 156, top + 72, ENERGY_COLOR);
         }
     }
 
@@ -79,18 +71,13 @@ public class CrusherScreen extends ContainerScreen<CrusherContainer> {
         this.font.draw(matrixStack, this.title, 8.0F, 6.0F, TEXT_COLOR);
         this.font.draw(matrixStack, this.inventory.getDisplayName(), 8.0F, this.inventoryLabelY, TEXT_COLOR);
         this.font.draw(matrixStack,
-                "FE: " + this.menu.getEnergyStored() + " / " + com.bulkcloud0.justguithings.world.tile.CrusherTileEntity.CAPACITY,
-                92.0F,
+                "FE: " + this.menu.getEnergyStored() + " / " + EnergyCellTileEntity.CAPACITY,
+                48.0F,
                 6.0F,
                 TEXT_COLOR);
         this.font.draw(matrixStack,
-                new TranslationTextComponent(this.menu.getTier().getTranslationKey()),
-                8.0F,
-                60.0F,
-                TEXT_COLOR);
-        this.font.draw(matrixStack,
-                "S:" + this.menu.getSpeedUpgradeCount() + " E:" + this.menu.getEfficiencyUpgradeCount(),
-                112.0F,
+                EnergyCellTileEntity.MAX_TRANSFER + " FE/t I/O",
+                57.0F,
                 60.0F,
                 TEXT_COLOR);
     }

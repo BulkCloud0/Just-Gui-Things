@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SRS",
+    "RIR",
+    "SRS"
+  ],
+  "key": {
+    "S": { "item": "minecraft:sugar" },
+    "R": { "item": "minecraft:redstone" },
+    "I": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "item": "justguithings:speed_upgrade"
+  }
+}

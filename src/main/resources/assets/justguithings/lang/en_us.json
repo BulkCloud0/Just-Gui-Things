@@ -3,7 +3,15 @@
   "container.justguithings.coal_generator": "Coal Generator",
   "block.justguithings.crusher": "Crusher",
   "container.justguithings.crusher": "Crusher",
+  "block.justguithings.energy_cell": "Energy Cell",
+  "container.justguithings.energy_cell": "Energy Cell",
   "block.justguithings.basic_energy_cable": "Basic Energy Cable",
+  "item.justguithings.speed_upgrade": "Speed Upgrade",
+  "item.justguithings.efficiency_upgrade": "Efficiency Upgrade",
   "item.justguithings.iron_dust": "Iron Dust",
-  "item.justguithings.gold_dust": "Gold Dust"
+  "item.justguithings.gold_dust": "Gold Dust",
+  "tier.justguithings.basic": "Basic",
+  "tier.justguithings.reinforced": "Reinforced",
+  "tier.justguithings.advanced": "Advanced",
+  "tier.justguithings.elite": "Elite"
 }

@@ -1,7 +1,9 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.machine.MachineTier;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
+import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
@@ -36,6 +38,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     public static final int MAX_RECEIVE = 1_000;
     public static final int DEFAULT_ENERGY_PER_TICK = 20;
     public static final int DEFAULT_PROCESS_TICKS = 100;
+    public static final MachineTier TIER = MachineTier.BASIC;
 
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
         @Override
@@ -48,10 +51,27 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         }
     };
 
-    private final ItemStackHandler inventory = new ItemStackHandler(2) {
+    private final ItemStackHandler inventory = new ItemStackHandler(4) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return slot == 0 && canAcceptInput(stack);
+            switch (slot) {
+                case 0:
+                    return canAcceptInput(stack);
+                case 2:
+                    return stack.getItem() == ModItems.SPEED_UPGRADE.get();
+                case 3:
+                    return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            if (slot == 2 || slot == 3) {
+                return TIER.getMaxUpgradeLevel();
+            }
+            return super.getSlotLimit(slot);
         }
 
         @Override
@@ -74,6 +94,12 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
                     return currentProcessTicks;
                 case 4:
                     return currentEnergyPerTick;
+                case 5:
+                    return TIER.ordinal();
+                case 6:
+                    return getSpeedUpgradeCount();
+                case 7:
+                    return getEfficiencyUpgradeCount();
                 default:
                     return 0;
             }
@@ -104,7 +130,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
 
         @Override
         public int getCount() {
-            return 5;
+            return 8;
         }
     };
 
@@ -137,8 +163,8 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
             activeRecipeId = recipe.getId();
         }
 
-        currentProcessTicks = recipe.getProcessingTime();
-        currentEnergyPerTick = recipe.getEnergyPerTick();
+        currentProcessTicks = getEffectiveProcessingTime(recipe);
+        currentEnergyPerTick = getEffectiveEnergyPerTick(recipe);
 
         if (!canProcess(recipe) || energyStorage.getEnergyStored() < currentEnergyPerTick) {
             return;
@@ -206,6 +232,26 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
             combined.grow(result.getCount());
             inventory.setStackInSlot(1, combined);
         }
+    }
+
+    private int getEffectiveProcessingTime(CrusherRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
+    }
+
+    private int getEffectiveEnergyPerTick(CrusherRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
+        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
+        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+    }
+
+    public int getSpeedUpgradeCount() {
+        return Math.min(TIER.getMaxUpgradeLevel(), inventory.getStackInSlot(2).getCount());
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return Math.min(TIER.getMaxUpgradeLevel(), inventory.getStackInSlot(3).getCount());
     }
 
     public boolean canAcceptInput(ItemStack stack) {
