@@ -1,6 +1,8 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "all": "minecraft:block/redstone_block"
+    "side": "justguithings:block/energy_cell_side",
+    "top": "justguithings:block/machine_casing_top",
+    "bottom": "justguithings:block/machine_casing_bottom"
   }
 }

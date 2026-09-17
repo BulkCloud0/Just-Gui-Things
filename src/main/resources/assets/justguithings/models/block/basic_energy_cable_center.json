@@ -1,7 +1,7 @@
 {
   "textures": {
-    "cable": "minecraft:block/iron_block",
-    "particle": "minecraft:block/iron_block"
+    "cable": "justguithings:block/basic_energy_cable",
+    "particle": "justguithings:block/basic_energy_cable"
   },
   "elements": [
     {
