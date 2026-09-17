@@ -18,8 +18,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -86,8 +86,13 @@ public class CrusherTileEntity extends BaseMachineTileEntity implements ITickabl
             inventory.extractItem(0, 1, false);
             ItemStack result = recipe.getResultItem().copy();
             ItemStack output = inventory.getStackInSlot(1);
-            if (output.isEmpty()) inventory.setStackInSlot(1, result);
-            else output.grow(result.getCount());
+            if (output.isEmpty()) {
+                inventory.setStackInSlot(1, result);
+            } else {
+                ItemStack combined = output.copy();
+                combined.grow(result.getCount());
+                inventory.setStackInSlot(1, combined);
+            }
             progress = 0;
             setChanged();
         }
