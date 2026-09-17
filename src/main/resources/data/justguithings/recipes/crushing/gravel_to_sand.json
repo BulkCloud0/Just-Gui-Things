@@ -1,0 +1,7 @@
+{
+  "type": "justguithings:crushing",
+  "ingredient": {"item": "minecraft:gravel"},
+  "result": {"item": "minecraft:sand", "count": 1},
+  "processing_time": 80,
+  "energy_per_tick": 12
+}
