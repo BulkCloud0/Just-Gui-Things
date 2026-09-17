@@ -17,6 +17,9 @@ public final class ModItems {
     public static final RegistryObject<Item> CRUSHER = ITEMS.register("crusher",
             () -> new BlockItem(ModBlocks.CRUSHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> BASIC_ENERGY_CABLE = ITEMS.register("basic_energy_cable",
+            () -> new BlockItem(ModBlocks.BASIC_ENERGY_CABLE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
 

@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
 import com.bulkcloud0.justguithings.world.block.CoalGeneratorBlock;
 import com.bulkcloud0.justguithings.world.block.CrusherBlock;
 import net.minecraft.block.AbstractBlock;
@@ -25,6 +26,12 @@ public final class ModBlocks {
                     .strength(4.0F)
                     .harvestTool(ToolType.PICKAXE)
                     .harvestLevel(1)));
+
+    public static final RegistryObject<Block> BASIC_ENERGY_CABLE = BLOCKS.register("basic_energy_cable",
+            () -> new BasicEnergyCableBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(1.5F)
+                    .harvestTool(ToolType.PICKAXE)
+                    .harvestLevel(0)));
 
     private ModBlocks() {}
 }

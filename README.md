@@ -13,7 +13,9 @@ The first milestone establishes reusable infrastructure for an industrial tech m
 - Coal Generator with 100,000 FE buffer
 - 40 FE/t generation from coal or charcoal
 - Up to 200 FE/t automatic output to adjacent Forge Energy consumers
-- Persistent machine inventory, energy and processing state via NBT
+- Basic Energy Cable network with 500 FE/t transfer throughput
+- Connected cable discovery and network-level distribution to adjacent consumers
+- Persistent machine/cable energy and machine inventory state via NBT
 - Forge item and energy capabilities
 - Server-authoritative container/menu opening
 - Synchronized machine GUI data
@@ -47,11 +49,12 @@ Because the machine uses Minecraft's recipe manager, datapacks and other mods ca
 ### Next
 
 - JEI integration for Crusher recipes
-- Energy cables
 - Machine tiers and upgrades
 - Side configuration
-- More processing machines and recipe types
+- Energy storage blocks
+- Additional processing machines and recipe types
 - Fluids, heat/pressure and advanced industrial processing
+- Proper custom cable/machine textures and models
 
 ## Environment
 

@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CoalGeneratorTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -18,6 +19,10 @@ public final class ModTileEntities {
     public static final RegistryObject<TileEntityType<CrusherTileEntity>> CRUSHER = TILE_ENTITIES.register(
             "crusher",
             () -> TileEntityType.Builder.of(CrusherTileEntity::new, ModBlocks.CRUSHER.get()).build(null));
+
+    public static final RegistryObject<TileEntityType<BasicEnergyCableTileEntity>> BASIC_ENERGY_CABLE = TILE_ENTITIES.register(
+            "basic_energy_cable",
+            () -> TileEntityType.Builder.of(BasicEnergyCableTileEntity::new, ModBlocks.BASIC_ENERGY_CABLE.get()).build(null));
 
     private ModTileEntities() {}
 }
