@@ -14,5 +14,14 @@ public final class ModItems {
     public static final RegistryObject<Item> COAL_GENERATOR = ITEMS.register("coal_generator",
             () -> new BlockItem(ModBlocks.COAL_GENERATOR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> CRUSHER = ITEMS.register("crusher",
+            () -> new BlockItem(ModBlocks.CRUSHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
+    public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+
+    public static final RegistryObject<Item> GOLD_DUST = ITEMS.register("gold_dust",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+
     private ModItems() {}
 }
