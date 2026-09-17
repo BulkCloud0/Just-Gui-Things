@@ -1,4 +1,8 @@
 {
   "block.justguithings.coal_generator": "Gerador a Carvão",
-  "container.justguithings.coal_generator": "Gerador a Carvão"
+  "container.justguithings.coal_generator": "Gerador a Carvão",
+  "block.justguithings.crusher": "Triturador",
+  "container.justguithings.crusher": "Triturador",
+  "item.justguithings.iron_dust": "Pó de Ferro",
+  "item.justguithings.gold_dust": "Pó de Ouro"
 }
