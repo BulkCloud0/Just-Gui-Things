@@ -1,6 +1,4 @@
 {
   "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "minecraft:item/iron_ingot"
-  }
+  "textures": { "layer0": "justguithings:item/tempered_steel_ingot" }
 }

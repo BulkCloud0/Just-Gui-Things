@@ -1,6 +1,4 @@
 {
   "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "minecraft:item/quartz"
-  }
+  "textures": { "layer0": "justguithings:item/ceramic_insulator" }
 }
