@@ -6,12 +6,9 @@
   "block.justguithings.energy_cell": "Célula de Energia",
   "container.justguithings.energy_cell": "Célula de Energia",
   "block.justguithings.basic_energy_cable": "Cabo de Energia Básico",
-  "item.justguithings.speed_upgrade": "Upgrade de Velocidade",
-  "item.justguithings.efficiency_upgrade": "Upgrade de Eficiência",
+  "item.justguithings.configurator": "Configurador",
+  "item.justguithings.speed_upgrade": "Módulo de Velocidade",
+  "item.justguithings.efficiency_upgrade": "Módulo de Eficiência",
   "item.justguithings.iron_dust": "Pó de Ferro",
-  "item.justguithings.gold_dust": "Pó de Ouro",
-  "tier.justguithings.basic": "Básico",
-  "tier.justguithings.reinforced": "Reforçado",
-  "tier.justguithings.advanced": "Avançado",
-  "tier.justguithings.elite": "Elite"
+  "item.justguithings.gold_dust": "Pó de Ouro"
 }
