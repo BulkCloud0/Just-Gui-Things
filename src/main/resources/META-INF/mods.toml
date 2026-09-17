@@ -24,3 +24,10 @@ mandatory=true
 versionRange="[1.16.5,1.17)"
 ordering="NONE"
 side="BOTH"
+
+[[dependencies.justguithings]]
+modId="jei"
+mandatory=false
+versionRange="[7.8.0,)"
+ordering="AFTER"
+side="CLIENT"
