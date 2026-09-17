@@ -5,6 +5,7 @@ import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
 import com.bulkcloud0.justguithings.world.block.CoalGeneratorBlock;
 import com.bulkcloud0.justguithings.world.block.CrusherBlock;
 import com.bulkcloud0.justguithings.world.block.EnergyCellBlock;
+import com.bulkcloud0.justguithings.world.block.StampingPressBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -24,6 +25,12 @@ public final class ModBlocks {
 
     public static final RegistryObject<Block> CRUSHER = BLOCKS.register("crusher",
             () -> new CrusherBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.0F)
+                    .harvestTool(ToolType.PICKAXE)
+                    .harvestLevel(1)));
+
+    public static final RegistryObject<Block> STAMPING_PRESS = BLOCKS.register("stamping_press",
+            () -> new StampingPressBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F)
                     .harvestTool(ToolType.PICKAXE)
                     .harvestLevel(1)));

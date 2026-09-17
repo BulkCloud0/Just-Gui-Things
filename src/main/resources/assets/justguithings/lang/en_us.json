@@ -3,6 +3,8 @@
   "container.justguithings.coal_generator": "Coal Generator",
   "block.justguithings.crusher": "Crusher",
   "container.justguithings.crusher": "Crusher",
+  "block.justguithings.stamping_press": "Stamping Press",
+  "container.justguithings.stamping_press": "Stamping Press",
   "block.justguithings.energy_cell": "Energy Cell",
   "container.justguithings.energy_cell": "Energy Cell",
   "block.justguithings.basic_energy_cable": "Basic Energy Cable",
@@ -13,5 +15,8 @@
   "item.justguithings.batch_upgrade": "Batch Module",
   "item.justguithings.iron_dust": "Iron Dust",
   "item.justguithings.gold_dust": "Gold Dust",
-  "jei.justguithings.crushing": "Crushing"
+  "item.justguithings.iron_plate": "Iron Plate",
+  "item.justguithings.gold_plate": "Gold Plate",
+  "jei.justguithings.crushing": "Crushing",
+  "jei.justguithings.pressing": "Pressing"
 }

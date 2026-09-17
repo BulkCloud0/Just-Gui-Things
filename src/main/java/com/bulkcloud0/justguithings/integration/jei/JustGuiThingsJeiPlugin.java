@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.integration.jei;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
+import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import mezz.jei.api.IModPlugin;
@@ -26,7 +27,9 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
-        registration.addRecipeCategories(new CrusherRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
+        registration.addRecipeCategories(
+                new CrusherRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
+                new PressingRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -36,16 +39,21 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
             registration.addRecipes(
                     world.getRecipeManager().getAllRecipesFor(ModRecipes.CRUSHING_TYPE),
                     CrusherRecipeCategory.UID);
+            registration.addRecipes(
+                    world.getRecipeManager().getAllRecipesFor(ModRecipes.PRESSING_TYPE),
+                    PressingRecipeCategory.UID);
         }
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(ModItems.CRUSHER.get()), CrusherRecipeCategory.UID);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.STAMPING_PRESS.get()), PressingRecipeCategory.UID);
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(CrusherScreen.class, 69, 38, 36, 12, CrusherRecipeCategory.UID);
+        registration.addRecipeClickArea(StampingPressScreen.class, 69, 38, 36, 12, PressingRecipeCategory.UID);
     }
 }

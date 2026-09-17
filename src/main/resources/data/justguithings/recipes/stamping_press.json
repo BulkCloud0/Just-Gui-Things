@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IPI",
+    "RFR",
+    "III"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "P": { "item": "minecraft:piston" },
+    "R": { "item": "minecraft:redstone" },
+    "F": { "item": "minecraft:furnace" }
+  },
+  "result": {
+    "item": "justguithings:stamping_press"
+  }
+}

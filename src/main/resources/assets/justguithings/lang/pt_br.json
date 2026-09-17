@@ -3,6 +3,8 @@
   "container.justguithings.coal_generator": "Gerador a Carvão",
   "block.justguithings.crusher": "Triturador",
   "container.justguithings.crusher": "Triturador",
+  "block.justguithings.stamping_press": "Prensa de Estampagem",
+  "container.justguithings.stamping_press": "Prensa de Estampagem",
   "block.justguithings.energy_cell": "Célula de Energia",
   "container.justguithings.energy_cell": "Célula de Energia",
   "block.justguithings.basic_energy_cable": "Cabo de Energia Básico",
@@ -13,5 +15,8 @@
   "item.justguithings.batch_upgrade": "Módulo de Lote",
   "item.justguithings.iron_dust": "Pó de Ferro",
   "item.justguithings.gold_dust": "Pó de Ouro",
-  "jei.justguithings.crushing": "Trituração"
+  "item.justguithings.iron_plate": "Chapa de Ferro",
+  "item.justguithings.gold_plate": "Chapa de Ouro",
+  "jei.justguithings.crushing": "Trituração",
+  "jei.justguithings.pressing": "Estampagem"
 }

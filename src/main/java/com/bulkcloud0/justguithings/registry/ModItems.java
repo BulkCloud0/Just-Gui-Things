@@ -17,6 +17,9 @@ public final class ModItems {
     public static final RegistryObject<Item> CRUSHER = ITEMS.register("crusher",
             () -> new BlockItem(ModBlocks.CRUSHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> STAMPING_PRESS = ITEMS.register("stamping_press",
+            () -> new BlockItem(ModBlocks.STAMPING_PRESS.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
     public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
             () -> new BlockItem(ModBlocks.ENERGY_CELL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
@@ -42,6 +45,12 @@ public final class ModItems {
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
 
     public static final RegistryObject<Item> GOLD_DUST = ITEMS.register("gold_dust",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+
+    public static final RegistryObject<Item> IRON_PLATE = ITEMS.register("iron_plate",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+
+    public static final RegistryObject<Item> GOLD_PLATE = ITEMS.register("gold_plate",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
 
     private ModItems() {}

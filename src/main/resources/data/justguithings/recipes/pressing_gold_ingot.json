@@ -1,0 +1,11 @@
+{
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "item": "minecraft:gold_ingot"
+  },
+  "result": {
+    "item": "justguithings:gold_plate"
+  },
+  "processing_time": 120,
+  "energy_per_tick": 30
+}

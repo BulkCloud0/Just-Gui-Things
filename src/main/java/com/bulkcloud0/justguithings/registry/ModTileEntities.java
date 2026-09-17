@@ -5,6 +5,7 @@ import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CoalGeneratorTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
 import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
+import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -20,6 +21,10 @@ public final class ModTileEntities {
     public static final RegistryObject<TileEntityType<CrusherTileEntity>> CRUSHER = TILE_ENTITIES.register(
             "crusher",
             () -> TileEntityType.Builder.of(CrusherTileEntity::new, ModBlocks.CRUSHER.get()).build(null));
+
+    public static final RegistryObject<TileEntityType<StampingPressTileEntity>> STAMPING_PRESS = TILE_ENTITIES.register(
+            "stamping_press",
+            () -> TileEntityType.Builder.of(StampingPressTileEntity::new, ModBlocks.STAMPING_PRESS.get()).build(null));
 
     public static final RegistryObject<TileEntityType<EnergyCellTileEntity>> ENERGY_CELL = TILE_ENTITIES.register(
             "energy_cell",
