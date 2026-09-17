@@ -9,8 +9,6 @@
   "container.justguithings.industrial_mixer": "Misturador Industrial",
   "block.justguithings.quench_chamber": "Câmara de Têmpera",
   "container.justguithings.quench_chamber": "Câmara de Têmpera",
-  "block.justguithings.thermal_kiln": "Forno Térmico",
-  "container.justguithings.thermal_kiln": "Forno Térmico",
   "block.justguithings.energy_cell": "Célula de Energia",
   "container.justguithings.energy_cell": "Célula de Energia",
   "block.justguithings.basic_energy_cable": "Cabo de Energia Básico",
@@ -19,7 +17,6 @@
   "item.justguithings.efficiency_upgrade": "Módulo de Eficiência",
   "item.justguithings.buffer_upgrade": "Módulo de Buffer",
   "item.justguithings.batch_upgrade": "Módulo de Lote",
-  "item.justguithings.thermal_liner_module": "Módulo de Revestimento Térmico",
   "item.justguithings.iron_dust": "Pó de Ferro",
   "item.justguithings.gold_dust": "Pó de Ouro",
   "item.justguithings.coal_dust": "Pó de Carvão",
@@ -28,8 +25,6 @@
   "item.justguithings.steel_blend": "Mistura de Aço",
   "item.justguithings.steel_ingot": "Lingote de Aço",
   "item.justguithings.tempered_steel_ingot": "Lingote de Aço Temperado",
-  "item.justguithings.ceramic_insulator": "Isolador Cerâmico",
-  "screen.justguithings.thermal_liner_short": "Isol. x%s",
   "tooltip.justguithings.energy_cell.energy": "Energia armazenada: %s / %s FE",
   "tooltip.justguithings.energy_cell.portable": "Mantém FE armazenado e configuração das faces ao ser quebrada.",
   "tooltip.justguithings.configurator.use": "Clique com o botão direito em uma face para alternar Entrada / Saída / Energia / Desativado.",
@@ -41,11 +36,8 @@
   "tooltip.justguithings.buffer_module.compatibility": "Compatível: Triturador",
   "tooltip.justguithings.batch_module.effect": "+1 item de entrada por operação do Triturador por módulo, até x5 no total.",
   "tooltip.justguithings.batch_module.compatibility": "Compatível: Triturador",
-  "tooltip.justguithings.thermal_liner_module.effect": "+2 ticks entre cada passo de resfriamento passivo por módulo.",
-  "tooltip.justguithings.thermal_liner_module.compatibility": "Compatível: Forno Térmico",
   "jei.justguithings.crushing": "Trituração",
   "jei.justguithings.pressing": "Estampagem",
   "jei.justguithings.mixing": "Mistura Industrial",
-  "jei.justguithings.quenching": "Têmpera",
-  "jei.justguithings.thermal_processing": "Processamento Térmico"
+  "jei.justguithings.quenching": "Têmpera"
 }

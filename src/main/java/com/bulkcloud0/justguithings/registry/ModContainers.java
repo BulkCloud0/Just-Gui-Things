@@ -7,7 +7,6 @@ import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
 import com.bulkcloud0.justguithings.world.container.QuenchChamberContainer;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
-import com.bulkcloud0.justguithings.world.container.ThermalKilnContainer;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.fml.RegistryObject;
@@ -28,8 +27,6 @@ public final class ModContainers {
             CONTAINERS.register("industrial_mixer", () -> IForgeContainerType.create(IndustrialMixerContainer::new));
     public static final RegistryObject<ContainerType<QuenchChamberContainer>> QUENCH_CHAMBER =
             CONTAINERS.register("quench_chamber", () -> IForgeContainerType.create(QuenchChamberContainer::new));
-    public static final RegistryObject<ContainerType<ThermalKilnContainer>> THERMAL_KILN =
-            CONTAINERS.register("thermal_kiln", () -> IForgeContainerType.create(ThermalKilnContainer::new));
     public static final RegistryObject<ContainerType<EnergyCellContainer>> ENERGY_CELL =
             CONTAINERS.register("energy_cell", () -> IForgeContainerType.create(EnergyCellContainer::new));
 

@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "side": "justguithings:block/thermal_kiln_side",
-    "top": "justguithings:block/machine_casing_top",
-    "bottom": "justguithings:block/machine_casing_bottom"
-  }
-}

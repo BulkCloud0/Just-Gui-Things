@@ -1,15 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CQC",
+    "QRQ",
     "RGR",
-    "CQC"
+    "QRQ"
   ],
   "key": {
-    "C": { "item": "justguithings:ceramic_insulator" },
-    "Q": { "item": "minecraft:quartz" },
-    "R": { "item": "minecraft:redstone" },
-    "G": { "tag": "forge:plates/gold" }
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "G": {
+      "tag": "forge:plates/gold"
+    }
   },
   "result": {
     "item": "justguithings:efficiency_upgrade"

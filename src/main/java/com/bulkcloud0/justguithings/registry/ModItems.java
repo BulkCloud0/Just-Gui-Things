@@ -23,8 +23,6 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.INDUSTRIAL_MIXER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> QUENCH_CHAMBER = ITEMS.register("quench_chamber",
             () -> new BlockItem(ModBlocks.QUENCH_CHAMBER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
-    public static final RegistryObject<Item> THERMAL_KILN = ITEMS.register("thermal_kiln",
-            () -> new BlockItem(ModBlocks.THERMAL_KILN.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
             () -> new EnergyCellBlockItem(ModBlocks.ENERGY_CELL.get(),
                     new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
@@ -50,10 +48,6 @@ public final class ModItems {
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
                     "tooltip.justguithings.batch_module.effect",
                     "tooltip.justguithings.batch_module.compatibility"));
-    public static final RegistryObject<Item> THERMAL_LINER_MODULE = ITEMS.register("thermal_liner_module",
-            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
-                    "tooltip.justguithings.thermal_liner_module.effect",
-                    "tooltip.justguithings.thermal_liner_module.compatibility"));
 
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
@@ -70,8 +64,6 @@ public final class ModItems {
     public static final RegistryObject<Item> STEEL_INGOT = ITEMS.register("steel_ingot",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> TEMPERED_STEEL_INGOT = ITEMS.register("tempered_steel_ingot",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
-    public static final RegistryObject<Item> CERAMIC_INSULATOR = ITEMS.register("ceramic_insulator",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
 
     private ModItems() {}
