@@ -375,9 +375,26 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         inventory.deserializeNBT(nbt.getCompound("Inventory"));
         energyStorage.setCapacity(getEnergyCapacity());
         energyStorage.setEnergy(nbt.getInt("Energy"));
-        progress = nbt.getInt("Progress");
+        progress = Math.max(0, nbt.getInt("Progress"));
         activeRecipeId = null;
         activeBatchSize = 1;
+
+        String activeRecipe = nbt.getString("ActiveRecipe");
+        if (!activeRecipe.isEmpty()) {
+            try {
+                activeRecipeId = new ResourceLocation(activeRecipe);
+                activeBatchSize = Math.max(1, nbt.getInt("ActiveBatchSize"));
+            } catch (RuntimeException ignored) {
+                activeRecipeId = null;
+                progress = 0;
+                activeBatchSize = 1;
+            }
+        }
+
+        if (activeRecipeId == null) {
+            progress = 0;
+            activeBatchSize = 1;
+        }
 
         if (nbt.contains("SideConfig")) {
             CompoundNBT sideConfig = nbt.getCompound("SideConfig");
@@ -396,6 +413,10 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         nbt.put("Inventory", inventory.serializeNBT());
         nbt.putInt("Energy", energyStorage.getEnergyStored());
         nbt.putInt("Progress", progress);
+        if (activeRecipeId != null && progress > 0) {
+            nbt.putString("ActiveRecipe", activeRecipeId.toString());
+            nbt.putInt("ActiveBatchSize", Math.max(1, activeBatchSize));
+        }
 
         CompoundNBT sideConfig = new CompoundNBT();
         for (Direction direction : Direction.values()) {
