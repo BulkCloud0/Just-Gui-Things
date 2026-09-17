@@ -6,9 +6,9 @@
     "IRI"
   ],
   "key": {
-    "I": { "item": "minecraft:iron_ingot" },
+    "I": { "item": "justguithings:iron_plate" },
     "R": { "item": "minecraft:redstone" },
-    "G": { "item": "minecraft:gold_ingot" }
+    "G": { "item": "justguithings:gold_plate" }
   },
   "result": {
     "item": "justguithings:energy_cell"
