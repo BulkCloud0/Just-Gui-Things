@@ -6,7 +6,7 @@ import dev.bulkcloud0.justguithings.tile.CoalGeneratorTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.IWorldPosCallable;
+import net.minecraft.inventory.container.ContainerLevelAccess;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -49,7 +49,7 @@ public class CoalGeneratorContainer extends Container {
 
     @Override
     public boolean stillValid(PlayerEntity player) {
-        return stillValid(IWorldPosCallable.create(tile.getLevel(), tile.getBlockPos()), player, ModBlocks.COAL_GENERATOR.get());
+        return stillValid(ContainerLevelAccess.create(tile.getLevel(), tile.getBlockPos()), player, ModBlocks.COAL_GENERATOR.get());
     }
 
     @Override
