@@ -1,6 +1,5 @@
 package com.bulkcloud0.justguithings.world.container;
 
-import com.bulkcloud0.justguithings.machine.MachineTier;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
@@ -147,15 +146,11 @@ public class CrusherContainer extends Container {
         return data.get(4);
     }
 
-    public MachineTier getTier() {
-        return MachineTier.fromOrdinal(data.get(5));
-    }
-
     public int getSpeedUpgradeCount() {
-        return data.get(6);
+        return data.get(5);
     }
 
     public int getEfficiencyUpgradeCount() {
-        return data.get(7);
+        return data.get(6);
     }
 }
