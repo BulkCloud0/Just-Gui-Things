@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.container;
 
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModContainers;
+import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.ThermalKilnTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -16,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ThermalKilnContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 2;
+    private static final int MACHINE_SLOT_COUNT = 3;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -41,6 +42,7 @@ public class ThermalKilnContainer extends Container {
                 return false;
             }
         });
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 17, 35));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -87,6 +89,10 @@ public class ThermalKilnContainer extends Container {
 
             if (index < MACHINE_SLOT_COUNT) {
                 if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, this.slots.size(), true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (stack.getItem() == ModItems.THERMAL_LINER_MODULE.get()) {
+                if (!this.moveItemStackTo(stack, 2, 3, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (tileEntity.canAcceptInput(stack)) {
@@ -137,6 +143,10 @@ public class ThermalKilnContainer extends Container {
 
     public int getTargetTemperature() {
         return data.get(6);
+    }
+
+    public int getThermalLinerModuleCount() {
+        return data.get(7);
     }
 
     public int getTemperatureScaled(int pixels) {

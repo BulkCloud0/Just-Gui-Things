@@ -5,6 +5,7 @@ import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.machine.MachineSidedItemHandler;
 import com.bulkcloud0.justguithings.machine.SidedEnergyInputHandler;
 import com.bulkcloud0.justguithings.recipe.ThermalRecipe;
+import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.ThermalKilnContainer;
@@ -46,6 +47,7 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
     public static final int HEATING_ENERGY_PER_TICK = 25;
     public static final int DEFAULT_PROCESS_TICKS = 100;
     public static final int DEFAULT_ENERGY_PER_TICK = 30;
+    public static final int MAX_THERMAL_LINER_MODULES = 4;
 
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
         @Override
@@ -58,10 +60,18 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
         }
     };
 
-    private final ItemStackHandler inventory = new ItemStackHandler(2) {
+    private final ItemStackHandler inventory = new ItemStackHandler(3) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return slot == 0 && canAcceptInput(stack);
+            if (slot == 0) {
+                return canAcceptInput(stack);
+            }
+            return slot == 2 && stack.getItem() == ModItems.THERMAL_LINER_MODULE.get();
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return slot == 2 ? MAX_THERMAL_LINER_MODULES : super.getSlotLimit(slot);
         }
 
         @Override
@@ -85,6 +95,7 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
                 case 4: return currentEnergyPerTick;
                 case 5: return temperature;
                 case 6: return targetTemperature;
+                case 7: return getThermalLinerModuleCount();
                 default: return 0;
             }
         }
@@ -105,7 +116,7 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
 
         @Override
         public int getCount() {
-            return 7;
+            return 8;
         }
     };
 
@@ -117,6 +128,7 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
     private int currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
     private int temperature = AMBIENT_TEMPERATURE;
     private int targetTemperature = AMBIENT_TEMPERATURE;
+    private int coolingTicker;
     private ResourceLocation activeRecipeId;
 
     public ThermalKilnTileEntity() {
@@ -167,6 +179,7 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
             if (energyStorage.getEnergyStored() >= HEATING_ENERGY_PER_TICK) {
                 energyStorage.consumeEnergy(HEATING_ENERGY_PER_TICK);
                 temperature = Math.min(targetTemperature, temperature + HEAT_RATE);
+                coolingTicker = 0;
                 setChanged();
             } else {
                 coolTowardAmbient();
@@ -175,6 +188,7 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
         }
 
         if (!canProcess(recipe)) {
+            coolTowardAmbient();
             return;
         }
 
@@ -185,6 +199,7 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
 
         energyStorage.consumeEnergy(currentEnergyPerTick);
         progress++;
+        coolingTicker = 0;
 
         if (progress >= currentProcessTicks) {
             process(recipe);
@@ -217,10 +232,19 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
     }
 
     private void coolTowardAmbient() {
-        if (temperature > AMBIENT_TEMPERATURE) {
-            temperature = Math.max(AMBIENT_TEMPERATURE, temperature - COOL_RATE);
-            setChanged();
+        if (temperature <= AMBIENT_TEMPERATURE) {
+            coolingTicker = 0;
+            return;
         }
+
+        coolingTicker++;
+        if (coolingTicker < getCoolingIntervalTicks()) {
+            return;
+        }
+
+        coolingTicker = 0;
+        temperature = Math.max(AMBIENT_TEMPERATURE, temperature - COOL_RATE);
+        setChanged();
     }
 
     private boolean canProcess(ThermalRecipe recipe) {
@@ -268,6 +292,14 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
         return false;
     }
 
+    public int getThermalLinerModuleCount() {
+        return Math.min(MAX_THERMAL_LINER_MODULES, inventory.getStackInSlot(2).getCount());
+    }
+
+    public int getCoolingIntervalTicks() {
+        return 1 + getThermalLinerModuleCount() * 2;
+    }
+
     public ItemStackHandler getInventory() {
         return inventory;
     }
@@ -301,13 +333,16 @@ public class ThermalKilnTileEntity extends TileEntity implements ITickableTileEn
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
-        inventory.deserializeNBT(nbt.getCompound("Inventory"));
+        CompoundNBT inventoryNbt = nbt.getCompound("Inventory").copy();
+        inventoryNbt.putInt("Size", 3);
+        inventory.deserializeNBT(inventoryNbt);
         energyStorage.setEnergy(nbt.getInt("Energy"));
         progress = Math.max(0, nbt.getInt("Progress"));
         temperature = nbt.contains("Temperature")
                 ? Math.max(AMBIENT_TEMPERATURE, Math.min(MAX_TEMPERATURE, nbt.getInt("Temperature")))
                 : AMBIENT_TEMPERATURE;
         activeRecipeId = null;
+        coolingTicker = 0;
 
         String activeRecipe = nbt.getString("ActiveRecipe");
         if (!activeRecipe.isEmpty()) {

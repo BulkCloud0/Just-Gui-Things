@@ -38,6 +38,8 @@ public final class ModItems {
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> BATCH_UPGRADE = ITEMS.register("batch_upgrade",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> THERMAL_LINER_MODULE = ITEMS.register("thermal_liner_module",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class ThermalKilnScreen extends ContainerScreen<ThermalKilnContainer> {
     private static final int PANEL_COLOR = 0xFF20262E;
@@ -25,7 +26,7 @@ public class ThermalKilnScreen extends ContainerScreen<ThermalKilnContainer> {
         super(menu, inventory, title);
         this.imageWidth = 176;
         this.imageHeight = 166;
-        this.inventoryLabelY = 72;
+        this.inventoryLabelY = 75;
     }
 
     @Override
@@ -46,6 +47,7 @@ public class ThermalKilnScreen extends ContainerScreen<ThermalKilnContainer> {
 
         drawSlot(matrixStack, left + 43, top + 34);
         drawSlot(matrixStack, left + 115, top + 34);
+        drawSlot(matrixStack, left + 16, top + 34);
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
                 drawSlot(matrixStack, left + 7 + column * 18, top + 83 + row * 18);
@@ -85,13 +87,16 @@ public class ThermalKilnScreen extends ContainerScreen<ThermalKilnContainer> {
         SideConfigRenderer.drawHorizontal(matrixStack, this.font, 8.0F, 19.0F, this.menu::getSideMode);
         this.font.draw(matrixStack, this.inventory.getDisplayName(), 8.0F, this.inventoryLabelY, TEXT_COLOR);
         this.font.draw(matrixStack,
+                new TranslationTextComponent("screen.justguithings.thermal_liner_short", this.menu.getThermalLinerModuleCount()),
+                8.0F, 65.0F, TEXT_COLOR);
+        this.font.draw(matrixStack,
+                "Heat " + ThermalKilnTileEntity.HEATING_ENERGY_PER_TICK + " FE/t",
+                8.0F, 55.0F, TEXT_COLOR);
+        this.font.draw(matrixStack,
                 "T: " + this.menu.getTemperature() + "/" + this.menu.getTargetTemperature() + " C",
                 76.0F, 55.0F, TEXT_COLOR);
         this.font.draw(matrixStack,
                 this.menu.getCurrentEnergyPerTick() + " FE/t",
-                8.0F, 61.0F, TEXT_COLOR);
-        this.font.draw(matrixStack,
-                "Heat " + ThermalKilnTileEntity.HEATING_ENERGY_PER_TICK + " FE/t",
-                8.0F, 51.0F, TEXT_COLOR);
+                76.0F, 65.0F, TEXT_COLOR);
     }
 }
