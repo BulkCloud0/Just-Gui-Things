@@ -14,7 +14,7 @@ An industrial technology mod focused on power generation, processing, automation
 [[dependencies.justguithings]]
 modId="forge"
 mandatory=true
-versionRange="[36.2.41,)"
+versionRange="[36.2.42,)"
 ordering="NONE"
 side="BOTH"
 
