@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["IPI", "RFR", "ICI"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "P": {"item": "minecraft:piston"},
+    "R": {"item": "minecraft:redstone"},
+    "F": {"item": "justguithings:machine_frame"},
+    "C": {"item": "minecraft:comparator"}
+  },
+  "result": {"item": "justguithings:crusher"}
+}

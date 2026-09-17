@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["IRI", "CFC", "III"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "R": {"item": "minecraft:redstone"},
+    "C": {"item": "minecraft:coal"},
+    "F": {"item": "justguithings:machine_frame"}
+  },
+  "result": {"item": "justguithings:coal_generator"}
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["IRI", "R R", "IRI"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "R": {"item": "minecraft:redstone"}
+  },
+  "result": {"item": "justguithings:machine_frame"}
+}
