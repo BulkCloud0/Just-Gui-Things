@@ -1,12 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "IRI",
+    "SRS",
     "RGR",
-    "IRI"
+    "SRS"
   ],
   "key": {
-    "I": { "item": "justguithings:iron_plate" },
+    "S": { "item": "justguithings:steel_ingot" },
     "R": { "item": "minecraft:redstone" },
     "G": { "item": "justguithings:gold_plate" }
   },
