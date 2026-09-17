@@ -41,10 +41,16 @@ minecraft {
 
 repositories {
     mavenCentral()
+    maven {
+        url = 'https://www.cursemaven.com'
+    }
 }
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.42'
+
+    compileOnly fg.deobf('curse.maven:jei-238222:4371666')
+    runtimeOnly fg.deobf('curse.maven:jei-238222:4371666')
 }
 
 tasks.named('jar', Jar).configure {
