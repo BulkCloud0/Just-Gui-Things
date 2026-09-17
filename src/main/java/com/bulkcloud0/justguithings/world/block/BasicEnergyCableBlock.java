@@ -75,6 +75,19 @@ public class BasicEnergyCableBlock extends Block {
         return shape;
     }
 
+    public static void refreshConnections(World world, BlockPos pos) {
+        BlockState current = world.getBlockState(pos);
+        if (!(current.getBlock() instanceof BasicEnergyCableBlock)) {
+            return;
+        }
+
+        BasicEnergyCableBlock cable = (BasicEnergyCableBlock) current.getBlock();
+        BlockState updated = cable.updateConnections(current, world, pos);
+        if (!updated.equals(current)) {
+            world.setBlock(pos, updated, 3);
+        }
+    }
+
     private BlockState updateConnections(BlockState state, IBlockReader world, BlockPos pos) {
         for (Direction direction : Direction.values()) {
             state = state.setValue(propertyFor(direction), canConnect(world, pos, direction));

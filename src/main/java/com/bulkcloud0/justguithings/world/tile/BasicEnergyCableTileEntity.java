@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
+import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -27,6 +28,7 @@ public class BasicEnergyCableTileEntity extends TileEntity implements ITickableT
     public static final int INTERNAL_BUFFER = 1_000;
     public static final int TRANSFER_RATE = 500;
     private static final int NETWORK_CACHE_TTL = 100;
+    private static final int VISUAL_REFRESH_INTERVAL = 10;
 
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(INTERNAL_BUFFER, TRANSFER_RATE, TRANSFER_RATE) {
         @Override
@@ -62,6 +64,10 @@ public class BasicEnergyCableTileEntity extends TileEntity implements ITickableT
     public void tick() {
         if (level == null || level.isClientSide) {
             return;
+        }
+
+        if ((level.getGameTime() + worldPosition.asLong()) % VISUAL_REFRESH_INTERVAL == 0L) {
+            BasicEnergyCableBlock.refreshConnections(level, worldPosition);
         }
 
         ensureNetworkCache();
