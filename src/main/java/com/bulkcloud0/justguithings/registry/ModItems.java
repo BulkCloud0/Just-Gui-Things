@@ -23,6 +23,9 @@ public final class ModItems {
     public static final RegistryObject<Item> BASIC_ENERGY_CABLE = ITEMS.register("basic_energy_cable",
             () -> new BlockItem(ModBlocks.BASIC_ENERGY_CABLE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
+
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
