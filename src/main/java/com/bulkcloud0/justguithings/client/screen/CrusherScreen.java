@@ -43,8 +43,10 @@ public class CrusherScreen extends ContainerScreen<CrusherContainer> {
 
         drawSlot(matrixStack, left + 43, top + 34);
         drawSlot(matrixStack, left + 115, top + 34);
+        drawSlot(matrixStack, left + 53, top + 55);
         drawSlot(matrixStack, left + 71, top + 55);
         drawSlot(matrixStack, left + 89, top + 55);
+        drawSlot(matrixStack, left + 107, top + 55);
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -78,12 +80,15 @@ public class CrusherScreen extends ContainerScreen<CrusherContainer> {
         this.font.draw(matrixStack, this.title, 8.0F, 6.0F, TEXT_COLOR);
         this.font.draw(matrixStack, this.inventory.getDisplayName(), 8.0F, this.inventoryLabelY, TEXT_COLOR);
         this.font.draw(matrixStack,
-                "FE: " + this.menu.getEnergyStored() + " / " + com.bulkcloud0.justguithings.world.tile.CrusherTileEntity.CAPACITY,
-                92.0F,
+                "FE: " + this.menu.getEnergyStored() + " / " + this.menu.getEnergyCapacity(),
+                80.0F,
                 6.0F,
                 TEXT_COLOR);
         this.font.draw(matrixStack,
-                "Modules S:" + this.menu.getSpeedUpgradeCount() + " E:" + this.menu.getEfficiencyUpgradeCount(),
+                "S" + this.menu.getSpeedUpgradeCount()
+                        + " E" + this.menu.getEfficiencyUpgradeCount()
+                        + " B" + this.menu.getBufferUpgradeCount()
+                        + " Batch x" + this.menu.getMaximumBatchSize(),
                 8.0F,
                 60.0F,
                 TEXT_COLOR);

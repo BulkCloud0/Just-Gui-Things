@@ -9,6 +9,8 @@
   "item.justguithings.configurator": "Configurador",
   "item.justguithings.speed_upgrade": "Módulo de Velocidade",
   "item.justguithings.efficiency_upgrade": "Módulo de Eficiência",
+  "item.justguithings.buffer_upgrade": "Módulo de Buffer",
+  "item.justguithings.batch_upgrade": "Módulo de Lote",
   "item.justguithings.iron_dust": "Pó de Ferro",
   "item.justguithings.gold_dust": "Pó de Ouro"
 }

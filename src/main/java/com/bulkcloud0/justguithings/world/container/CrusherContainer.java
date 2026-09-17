@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class CrusherContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 4;
+    private static final int MACHINE_SLOT_COUNT = 6;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -38,8 +38,10 @@ public class CrusherContainer extends Container {
                 return false;
             }
         });
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 72, 56));
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 3, 90, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 54, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 3, 72, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 4, 90, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 5, 108, 56));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -97,6 +99,14 @@ public class CrusherContainer extends Container {
                 if (!this.moveItemStackTo(stack, 3, 4, false)) {
                     return ItemStack.EMPTY;
                 }
+            } else if (stack.getItem() == ModItems.BUFFER_UPGRADE.get()) {
+                if (!this.moveItemStackTo(stack, 4, 5, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (stack.getItem() == ModItems.BATCH_UPGRADE.get()) {
+                if (!this.moveItemStackTo(stack, 5, 6, false)) {
+                    return ItemStack.EMPTY;
+                }
             } else if (tileEntity.canAcceptInput(stack)) {
                 if (!this.moveItemStackTo(stack, 0, 1, false)) {
                     return ItemStack.EMPTY;
@@ -129,8 +139,14 @@ public class CrusherContainer extends Container {
         return (data.get(1) & 0xFFFF) | ((data.get(2) & 0xFFFF) << 16);
     }
 
+    public int getEnergyCapacity() {
+        return CrusherTileEntity.CAPACITY
+                + CrusherTileEntity.BUFFER_CAPACITY_PER_MODULE * getBufferUpgradeCount();
+    }
+
     public int getEnergyScaled(int pixels) {
-        return (int) ((long) getEnergyStored() * pixels / CrusherTileEntity.CAPACITY);
+        int capacity = Math.max(1, getEnergyCapacity());
+        return (int) Math.min(pixels, (long) getEnergyStored() * pixels / capacity);
     }
 
     public int getProgressScaled(int pixels) {
@@ -152,5 +168,17 @@ public class CrusherContainer extends Container {
 
     public int getEfficiencyUpgradeCount() {
         return data.get(6);
+    }
+
+    public int getBufferUpgradeCount() {
+        return data.get(7);
+    }
+
+    public int getBatchUpgradeCount() {
+        return data.get(8);
+    }
+
+    public int getMaximumBatchSize() {
+        return 1 + getBatchUpgradeCount();
     }
 }

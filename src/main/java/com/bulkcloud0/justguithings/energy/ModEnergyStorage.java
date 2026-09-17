@@ -7,8 +7,16 @@ public class ModEnergyStorage extends EnergyStorage {
         super(capacity, maxReceive, maxExtract);
     }
 
+    @Override
+    public int receiveEnergy(int maxReceive, boolean simulate) {
+        if (energy >= capacity) {
+            return 0;
+        }
+        return super.receiveEnergy(maxReceive, simulate);
+    }
+
     public int addEnergy(int amount) {
-        int accepted = Math.min(capacity - energy, amount);
+        int accepted = Math.max(0, Math.min(capacity - energy, amount));
         energy += accepted;
         return accepted;
     }
@@ -21,5 +29,9 @@ public class ModEnergyStorage extends EnergyStorage {
 
     public void setEnergy(int amount) {
         energy = Math.max(0, Math.min(capacity, amount));
+    }
+
+    public void setCapacity(int amount) {
+        capacity = Math.max(0, amount);
     }
 }

@@ -38,6 +38,7 @@ import java.util.Optional;
 
 public class CrusherTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
     public static final int CAPACITY = 100_000;
+    public static final int BUFFER_CAPACITY_PER_MODULE = 100_000;
     public static final int MAX_RECEIVE = 1_000;
     public static final int DEFAULT_ENERGY_PER_TICK = 20;
     public static final int DEFAULT_PROCESS_TICKS = 100;
@@ -54,7 +55,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         }
     };
 
-    private final ItemStackHandler inventory = new ItemStackHandler(4) {
+    private final ItemStackHandler inventory = new ItemStackHandler(6) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             switch (slot) {
@@ -64,6 +65,10 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
                     return stack.getItem() == ModItems.SPEED_UPGRADE.get();
                 case 3:
                     return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
+                case 4:
+                    return stack.getItem() == ModItems.BUFFER_UPGRADE.get();
+                case 5:
+                    return stack.getItem() == ModItems.BATCH_UPGRADE.get();
                 default:
                     return false;
             }
@@ -71,7 +76,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
 
         @Override
         public int getSlotLimit(int slot) {
-            if (slot == 2 || slot == 3) {
+            if (slot >= 2 && slot <= 5) {
                 return MAX_MODULES_PER_TYPE;
             }
             return super.getSlotLimit(slot);
@@ -79,6 +84,9 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
 
         @Override
         protected void onContentsChanged(int slot) {
+            if (slot == 4) {
+                energyStorage.setCapacity(getEnergyCapacity());
+            }
             setChanged();
         }
     };
@@ -105,6 +113,10 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
                     return getSpeedUpgradeCount();
                 case 6:
                     return getEfficiencyUpgradeCount();
+                case 7:
+                    return getBufferUpgradeCount();
+                case 8:
+                    return getBatchUpgradeCount();
                 default:
                     return 0;
             }
@@ -135,7 +147,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
 
         @Override
         public int getCount() {
-            return 7;
+            return 9;
         }
     };
 
@@ -146,6 +158,7 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     private int progress;
     private int currentProcessTicks = DEFAULT_PROCESS_TICKS;
     private int currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
+    private int activeBatchSize = 1;
     private ResourceLocation activeRecipeId;
 
     public CrusherTileEntity() {
@@ -178,12 +191,18 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         if (activeRecipeId == null || !activeRecipeId.equals(recipe.getId())) {
             progress = 0;
             activeRecipeId = recipe.getId();
+            activeBatchSize = resolveBatchSize(recipe);
+        }
+
+        if (activeBatchSize <= 0 || !canProcess(recipe, activeBatchSize)) {
+            resetProcessing();
+            return;
         }
 
         currentProcessTicks = getEffectiveProcessingTime(recipe);
-        currentEnergyPerTick = getEffectiveEnergyPerTick(recipe);
+        currentEnergyPerTick = getEffectiveEnergyPerTick(recipe, activeBatchSize);
 
-        if (!canProcess(recipe) || energyStorage.getEnergyStored() < currentEnergyPerTick) {
+        if (energyStorage.getEnergyStored() < currentEnergyPerTick) {
             return;
         }
 
@@ -191,18 +210,20 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         progress++;
 
         if (progress >= currentProcessTicks) {
-            processItem(recipe);
+            processItem(recipe, activeBatchSize);
             progress = 0;
             activeRecipeId = null;
+            activeBatchSize = 1;
         }
 
         setChanged();
     }
 
     private void resetProcessing() {
-        if (progress != 0 || activeRecipeId != null) {
+        if (progress != 0 || activeRecipeId != null || activeBatchSize != 1) {
             progress = 0;
             activeRecipeId = null;
+            activeBatchSize = 1;
             setChanged();
         }
         currentProcessTicks = DEFAULT_PROCESS_TICKS;
@@ -218,35 +239,66 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         return level.getRecipeManager().getRecipeFor(ModRecipes.CRUSHING_TYPE, recipeInventory, level);
     }
 
-    private boolean canProcess(CrusherRecipe recipe) {
+    private int resolveBatchSize(CrusherRecipe recipe) {
+        ItemStack input = inventory.getStackInSlot(0);
+        ItemStack result = recipe.getResultItem();
+        if (input.isEmpty() || result.isEmpty() || result.getCount() <= 0) {
+            return 0;
+        }
+
+        ItemStack output = inventory.getStackInSlot(1);
+        int availableOutput;
+        if (output.isEmpty()) {
+            availableOutput = result.getMaxStackSize();
+        } else {
+            if (!ItemStack.isSame(output, result) || !ItemStack.tagMatches(output, result)) {
+                return 0;
+            }
+            availableOutput = output.getMaxStackSize() - output.getCount();
+        }
+
+        int byOutput = availableOutput / result.getCount();
+        int desired = 1 + getBatchUpgradeCount();
+        return Math.max(0, Math.min(desired, Math.min(input.getCount(), byOutput)));
+    }
+
+    private boolean canProcess(CrusherRecipe recipe, int batchSize) {
+        if (batchSize <= 0 || inventory.getStackInSlot(0).getCount() < batchSize) {
+            return false;
+        }
+
         ItemStack result = recipe.getResultItem();
         if (result.isEmpty()) {
             return false;
         }
 
+        int producedCount = result.getCount() * batchSize;
         ItemStack output = inventory.getStackInSlot(1);
         if (output.isEmpty()) {
-            return true;
+            return producedCount <= result.getMaxStackSize();
         }
         if (!ItemStack.isSame(output, result) || !ItemStack.tagMatches(output, result)) {
             return false;
         }
-        return output.getCount() + result.getCount() <= output.getMaxStackSize();
+        return output.getCount() + producedCount <= output.getMaxStackSize();
     }
 
-    private void processItem(CrusherRecipe recipe) {
+    private void processItem(CrusherRecipe recipe, int batchSize) {
         ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
-        if (result.isEmpty()) {
+        if (result.isEmpty() || batchSize <= 0) {
             return;
         }
 
-        inventory.extractItem(0, 1, false);
+        ItemStack produced = result.copy();
+        produced.setCount(result.getCount() * batchSize);
+        inventory.extractItem(0, batchSize, false);
+
         ItemStack output = inventory.getStackInSlot(1);
         if (output.isEmpty()) {
-            inventory.setStackInSlot(1, result.copy());
+            inventory.setStackInSlot(1, produced);
         } else {
             ItemStack combined = output.copy();
-            combined.grow(result.getCount());
+            combined.grow(produced.getCount());
             inventory.setStackInSlot(1, combined);
         }
     }
@@ -256,10 +308,10 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
     }
 
-    private int getEffectiveEnergyPerTick(CrusherRecipe recipe) {
+    private int getEffectiveEnergyPerTick(CrusherRecipe recipe, int batchSize) {
         int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
         int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
-        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
+        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier * Math.max(1, batchSize);
         return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
     }
 
@@ -269,6 +321,18 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
 
     public int getEfficiencyUpgradeCount() {
         return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(3).getCount());
+    }
+
+    public int getBufferUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(4).getCount());
+    }
+
+    public int getBatchUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(5).getCount());
+    }
+
+    public int getEnergyCapacity() {
+        return CAPACITY + BUFFER_CAPACITY_PER_MODULE * getBufferUpgradeCount();
     }
 
     public MachineSideMode getSideMode(Direction side) {
@@ -309,9 +373,11 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
         inventory.deserializeNBT(nbt.getCompound("Inventory"));
+        energyStorage.setCapacity(getEnergyCapacity());
         energyStorage.setEnergy(nbt.getInt("Energy"));
         progress = nbt.getInt("Progress");
         activeRecipeId = null;
+        activeBatchSize = 1;
 
         if (nbt.contains("SideConfig")) {
             CompoundNBT sideConfig = nbt.getCompound("SideConfig");

@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import net.minecraft.block.BlockState;
@@ -22,6 +23,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 
 public class EnergyCellTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
     public static final int CAPACITY = 1_000_000;
@@ -46,6 +48,9 @@ public class EnergyCellTileEntity extends TileEntity implements ITickableTileEnt
             return extracted;
         }
     };
+
+    private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
 
     private final IIntArray dataAccess = new IIntArray() {
         @Override
@@ -84,6 +89,19 @@ public class EnergyCellTileEntity extends TileEntity implements ITickableTileEnt
 
     public EnergyCellTileEntity() {
         super(ModTileEntities.ENERGY_CELL.get());
+        initializeDefaultSides();
+        for (Direction direction : Direction.values()) {
+            sidedEnergyCapabilities.put(direction, LazyOptional.of(() -> new SidedEnergyStorage(direction)));
+        }
+    }
+
+    private void initializeDefaultSides() {
+        sideModes.put(Direction.UP, MachineSideMode.INPUT);
+        sideModes.put(Direction.DOWN, MachineSideMode.OUTPUT);
+        sideModes.put(Direction.NORTH, MachineSideMode.ENERGY);
+        sideModes.put(Direction.SOUTH, MachineSideMode.ENERGY);
+        sideModes.put(Direction.WEST, MachineSideMode.ENERGY);
+        sideModes.put(Direction.EAST, MachineSideMode.ENERGY);
     }
 
     @Override
@@ -94,6 +112,10 @@ public class EnergyCellTileEntity extends TileEntity implements ITickableTileEnt
 
         int budget = Math.min(MAX_TRANSFER, energyStorage.getEnergyStored());
         for (Direction direction : Direction.values()) {
+            MachineSideMode mode = getSideMode(direction);
+            if (mode != MachineSideMode.OUTPUT && mode != MachineSideMode.ENERGY) {
+                continue;
+            }
             if (budget <= 0 || energyStorage.getEnergyStored() <= 0) {
                 break;
             }
@@ -125,6 +147,17 @@ public class EnergyCellTileEntity extends TileEntity implements ITickableTileEnt
         }
     }
 
+    public MachineSideMode getSideMode(Direction side) {
+        return sideModes.getOrDefault(side, MachineSideMode.DISABLED);
+    }
+
+    public MachineSideMode cycleSideMode(Direction side) {
+        MachineSideMode mode = getSideMode(side).next();
+        sideModes.put(side, mode);
+        setChanged();
+        return mode;
+    }
+
     public IIntArray getDataAccess() {
         return dataAccess;
     }
@@ -144,12 +177,28 @@ public class EnergyCellTileEntity extends TileEntity implements ITickableTileEnt
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
         energyStorage.setEnergy(nbt.getInt("Energy"));
+
+        if (nbt.contains("SideConfig")) {
+            CompoundNBT sideConfig = nbt.getCompound("SideConfig");
+            for (Direction direction : Direction.values()) {
+                String key = "Side" + direction.ordinal();
+                if (sideConfig.contains(key)) {
+                    sideModes.put(direction, MachineSideMode.fromOrdinal(sideConfig.getInt(key)));
+                }
+            }
+        }
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         super.save(nbt);
         nbt.putInt("Energy", energyStorage.getEnergyStored());
+
+        CompoundNBT sideConfig = new CompoundNBT();
+        for (Direction direction : Direction.values()) {
+            sideConfig.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
+        }
+        nbt.put("SideConfig", sideConfig);
         return nbt;
     }
 
@@ -157,7 +206,14 @@ public class EnergyCellTileEntity extends TileEntity implements ITickableTileEnt
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            return energyCapability.cast();
+            if (side == null) {
+                return energyCapability.cast();
+            }
+            if (getSideMode(side) == MachineSideMode.DISABLED) {
+                return LazyOptional.empty();
+            }
+            LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
+            return sided == null ? LazyOptional.empty() : sided.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -166,5 +222,56 @@ public class EnergyCellTileEntity extends TileEntity implements ITickableTileEnt
     public void setRemoved() {
         super.setRemoved();
         energyCapability.invalidate();
+        for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
+            capability.invalidate();
+        }
+    }
+
+    private final class SidedEnergyStorage implements IEnergyStorage {
+        private final Direction side;
+
+        private SidedEnergyStorage(Direction side) {
+            this.side = side;
+        }
+
+        @Override
+        public int receiveEnergy(int maxReceive, boolean simulate) {
+            MachineSideMode mode = getSideMode(side);
+            if (mode != MachineSideMode.INPUT && mode != MachineSideMode.ENERGY) {
+                return 0;
+            }
+            return energyStorage.receiveEnergy(maxReceive, simulate);
+        }
+
+        @Override
+        public int extractEnergy(int maxExtract, boolean simulate) {
+            MachineSideMode mode = getSideMode(side);
+            if (mode != MachineSideMode.OUTPUT && mode != MachineSideMode.ENERGY) {
+                return 0;
+            }
+            return energyStorage.extractEnergy(maxExtract, simulate);
+        }
+
+        @Override
+        public int getEnergyStored() {
+            return energyStorage.getEnergyStored();
+        }
+
+        @Override
+        public int getMaxEnergyStored() {
+            return energyStorage.getMaxEnergyStored();
+        }
+
+        @Override
+        public boolean canExtract() {
+            MachineSideMode mode = getSideMode(side);
+            return mode == MachineSideMode.OUTPUT || mode == MachineSideMode.ENERGY;
+        }
+
+        @Override
+        public boolean canReceive() {
+            MachineSideMode mode = getSideMode(side);
+            return mode == MachineSideMode.INPUT || mode == MachineSideMode.ENERGY;
+        }
     }
 }

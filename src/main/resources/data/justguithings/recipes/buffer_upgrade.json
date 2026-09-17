@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RIR",
+    "IBI",
+    "RIR"
+  ],
+  "key": {
+    "R": { "item": "minecraft:redstone" },
+    "I": { "item": "minecraft:iron_ingot" },
+    "B": { "item": "minecraft:redstone_block" }
+  },
+  "result": {
+    "item": "justguithings:buffer_upgrade"
+  }
+}

@@ -32,6 +32,12 @@ public final class ModItems {
     public static final RegistryObject<Item> EFFICIENCY_UPGRADE = ITEMS.register("efficiency_upgrade",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> BUFFER_UPGRADE = ITEMS.register("buffer_upgrade",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
+    public static final RegistryObject<Item> BATCH_UPGRADE = ITEMS.register("batch_upgrade",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
 
