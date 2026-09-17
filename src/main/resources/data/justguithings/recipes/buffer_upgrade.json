@@ -1,13 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "RIR",
-    "IBI",
-    "RIR"
+    "RTR",
+    "TBT",
+    "RTR"
   ],
   "key": {
     "R": { "item": "minecraft:redstone" },
-    "I": { "item": "justguithings:iron_plate" },
+    "T": { "item": "justguithings:tempered_steel_ingot" },
     "B": { "item": "minecraft:redstone_block" }
   },
   "result": {

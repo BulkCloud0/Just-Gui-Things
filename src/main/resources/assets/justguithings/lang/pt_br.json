@@ -7,6 +7,8 @@
   "container.justguithings.stamping_press": "Prensa de Estampagem",
   "block.justguithings.industrial_mixer": "Misturador Industrial",
   "container.justguithings.industrial_mixer": "Misturador Industrial",
+  "block.justguithings.quench_chamber": "Câmara de Têmpera",
+  "container.justguithings.quench_chamber": "Câmara de Têmpera",
   "block.justguithings.energy_cell": "Célula de Energia",
   "container.justguithings.energy_cell": "Célula de Energia",
   "block.justguithings.basic_energy_cable": "Cabo de Energia Básico",
@@ -22,7 +24,9 @@
   "item.justguithings.gold_plate": "Chapa de Ouro",
   "item.justguithings.steel_blend": "Mistura de Aço",
   "item.justguithings.steel_ingot": "Lingote de Aço",
+  "item.justguithings.tempered_steel_ingot": "Lingote de Aço Temperado",
   "jei.justguithings.crushing": "Trituração",
   "jei.justguithings.pressing": "Estampagem",
-  "jei.justguithings.mixing": "Mistura Industrial"
+  "jei.justguithings.mixing": "Mistura Industrial",
+  "jei.justguithings.quenching": "Têmpera"
 }

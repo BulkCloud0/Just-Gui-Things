@@ -1,0 +1,13 @@
+{
+  "type": "justguithings:quenching",
+  "ingredient": {
+    "item": "justguithings:steel_ingot"
+  },
+  "fluid": "minecraft:water",
+  "fluid_amount": 250,
+  "result": {
+    "item": "justguithings:tempered_steel_ingot"
+  },
+  "processing_time": 160,
+  "energy_per_tick": 45
+}

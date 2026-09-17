@@ -7,6 +7,8 @@
   "container.justguithings.stamping_press": "Stamping Press",
   "block.justguithings.industrial_mixer": "Industrial Mixer",
   "container.justguithings.industrial_mixer": "Industrial Mixer",
+  "block.justguithings.quench_chamber": "Quench Chamber",
+  "container.justguithings.quench_chamber": "Quench Chamber",
   "block.justguithings.energy_cell": "Energy Cell",
   "container.justguithings.energy_cell": "Energy Cell",
   "block.justguithings.basic_energy_cable": "Basic Energy Cable",
@@ -22,7 +24,9 @@
   "item.justguithings.gold_plate": "Gold Plate",
   "item.justguithings.steel_blend": "Steel Blend",
   "item.justguithings.steel_ingot": "Steel Ingot",
+  "item.justguithings.tempered_steel_ingot": "Tempered Steel Ingot",
   "jei.justguithings.crushing": "Crushing",
   "jei.justguithings.pressing": "Pressing",
-  "jei.justguithings.mixing": "Industrial Mixing"
+  "jei.justguithings.mixing": "Industrial Mixing",
+  "jei.justguithings.quenching": "Quenching"
 }
