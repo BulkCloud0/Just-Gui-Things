@@ -1,6 +1,8 @@
 package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.item.EnergyCellBlockItem;
+import com.bulkcloud0.justguithings.item.TooltipItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -24,22 +26,34 @@ public final class ModItems {
     public static final RegistryObject<Item> THERMAL_KILN = ITEMS.register("thermal_kiln",
             () -> new BlockItem(ModBlocks.THERMAL_KILN.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
-            () -> new BlockItem(ModBlocks.ENERGY_CELL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
+            () -> new EnergyCellBlockItem(ModBlocks.ENERGY_CELL.get(),
+                    new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
     public static final RegistryObject<Item> BASIC_ENERGY_CABLE = ITEMS.register("basic_energy_cable",
             () -> new BlockItem(ModBlocks.BASIC_ENERGY_CABLE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
+                    "tooltip.justguithings.configurator.use"));
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+                    "tooltip.justguithings.speed_module.effect",
+                    "tooltip.justguithings.speed_module.compatibility"));
     public static final RegistryObject<Item> EFFICIENCY_UPGRADE = ITEMS.register("efficiency_upgrade",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+                    "tooltip.justguithings.efficiency_module.effect",
+                    "tooltip.justguithings.efficiency_module.compatibility"));
     public static final RegistryObject<Item> BUFFER_UPGRADE = ITEMS.register("buffer_upgrade",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+                    "tooltip.justguithings.buffer_module.effect",
+                    "tooltip.justguithings.buffer_module.compatibility"));
     public static final RegistryObject<Item> BATCH_UPGRADE = ITEMS.register("batch_upgrade",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+                    "tooltip.justguithings.batch_module.effect",
+                    "tooltip.justguithings.batch_module.compatibility"));
     public static final RegistryObject<Item> THERMAL_LINER_MODULE = ITEMS.register("thermal_liner_module",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+                    "tooltip.justguithings.thermal_liner_module.effect",
+                    "tooltip.justguithings.thermal_liner_module.compatibility"));
 
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
