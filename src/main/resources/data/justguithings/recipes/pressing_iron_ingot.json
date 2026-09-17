@@ -1,7 +1,7 @@
 {
   "type": "justguithings:pressing",
   "ingredient": {
-    "item": "minecraft:iron_ingot"
+    "tag": "forge:ingots/iron"
   },
   "result": {
     "item": "justguithings:iron_plate"

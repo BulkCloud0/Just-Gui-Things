@@ -1,7 +1,7 @@
 {
   "type": "justguithings:quenching",
   "ingredient": {
-    "item": "justguithings:steel_ingot"
+    "tag": "forge:ingots/steel"
   },
   "fluid": "minecraft:water",
   "fluid_amount": 250,

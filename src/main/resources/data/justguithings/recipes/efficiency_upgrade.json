@@ -9,7 +9,7 @@
     "C": { "item": "justguithings:ceramic_insulator" },
     "Q": { "item": "minecraft:quartz" },
     "R": { "item": "minecraft:redstone" },
-    "G": { "item": "justguithings:gold_plate" }
+    "G": { "tag": "forge:plates/gold" }
   },
   "result": {
     "item": "justguithings:efficiency_upgrade"

@@ -8,7 +8,7 @@
   "key": {
     "S": { "item": "minecraft:sugar" },
     "R": { "item": "minecraft:redstone" },
-    "I": { "item": "justguithings:iron_plate" }
+    "I": { "tag": "forge:plates/iron" }
   },
   "result": {
     "item": "justguithings:speed_upgrade"

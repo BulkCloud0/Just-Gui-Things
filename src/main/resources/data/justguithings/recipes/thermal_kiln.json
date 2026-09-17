@@ -6,7 +6,7 @@
     "SRS"
   ],
   "key": {
-    "S": { "item": "justguithings:steel_ingot" },
+    "S": { "tag": "forge:ingots/steel" },
     "B": { "item": "minecraft:brick" },
     "F": { "item": "minecraft:furnace" },
     "R": { "item": "minecraft:redstone" }

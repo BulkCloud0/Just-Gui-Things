@@ -6,7 +6,7 @@
     "PPP"
   ],
   "key": {
-    "P": { "item": "justguithings:iron_plate" },
+    "P": { "tag": "forge:plates/iron" },
     "R": { "item": "minecraft:redstone" },
     "F": { "item": "minecraft:furnace" }
   },

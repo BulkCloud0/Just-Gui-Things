@@ -37,6 +37,11 @@ public class CoalGeneratorTileEntity extends TileEntity implements ITickableTile
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, 0, MAX_OUTPUT_PER_TICK);
     private final ItemStackHandler inventory = new ItemStackHandler(1) {
         @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+            return slot == 0 && CoalGeneratorTileEntity.this.isCoalFuel(stack);
+        }
+
+        @Override
         protected void onContentsChanged(int slot) {
             setChanged();
         }

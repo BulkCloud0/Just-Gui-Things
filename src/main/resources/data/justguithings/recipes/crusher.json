@@ -6,7 +6,7 @@
     "IRI"
   ],
   "key": {
-    "I": { "item": "justguithings:iron_plate" },
+    "I": { "tag": "forge:plates/iron" },
     "R": { "item": "minecraft:redstone" },
     "P": { "item": "minecraft:piston" },
     "F": { "item": "minecraft:furnace" }

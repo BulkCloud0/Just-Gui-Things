@@ -1,7 +1,7 @@
 {
   "type": "justguithings:crushing",
   "ingredient": {
-    "item": "minecraft:gold_ore"
+    "tag": "forge:ores/gold"
   },
   "result": {
     "item": "justguithings:gold_dust",

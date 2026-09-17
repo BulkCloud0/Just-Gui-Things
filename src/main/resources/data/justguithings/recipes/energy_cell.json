@@ -6,9 +6,9 @@
     "SRS"
   ],
   "key": {
-    "S": { "item": "justguithings:steel_ingot" },
+    "S": { "tag": "forge:ingots/steel" },
     "R": { "item": "minecraft:redstone" },
-    "G": { "item": "justguithings:gold_plate" }
+    "G": { "tag": "forge:plates/gold" }
   },
   "result": {
     "item": "justguithings:energy_cell"

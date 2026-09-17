@@ -6,9 +6,9 @@
     "SRS"
   ],
   "key": {
-    "S": { "item": "justguithings:steel_ingot" },
-    "P": { "item": "justguithings:iron_plate" },
-    "I": { "item": "minecraft:iron_ingot" },
+    "S": { "tag": "forge:ingots/steel" },
+    "P": { "tag": "forge:plates/iron" },
+    "I": { "tag": "forge:ingots/iron" },
     "C": { "item": "minecraft:cauldron" },
     "R": { "item": "minecraft:redstone" }
   },
