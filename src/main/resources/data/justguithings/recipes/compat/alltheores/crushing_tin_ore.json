@@ -1,0 +1,1 @@
+{"conditions":[{"type":"forge:mod_loaded","modid":"alltheores"},{"type":"forge:item_exists","item":"alltheores:tin_dust"}],"type":"justguithings:crushing","ingredient":{"tag":"forge:ores/tin"},"result":{"item":"alltheores:tin_dust","count":2},"processing_time":100,"energy_per_tick":20}

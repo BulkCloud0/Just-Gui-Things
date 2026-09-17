@@ -1,0 +1,1 @@
+{"conditions":[{"type":"forge:mod_loaded","modid":"alltheores"},{"type":"forge:item_exists","item":"alltheores:lead_dust"}],"type":"justguithings:crushing","ingredient":{"tag":"forge:ingots/lead"},"result":{"item":"alltheores:lead_dust","count":1},"processing_time":80,"energy_per_tick":15}
