@@ -1,6 +1,6 @@
 package com.bulkcloud0.justguithings.world.tile;
 
-import com.bulkcloud0.justguithings.logistics.ItemPipeSideMode;
+import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.logistics.ItemTransferHelper;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import net.minecraft.block.BlockState;
@@ -24,14 +24,14 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
     private static final int NETWORK_CACHE_TTL = 100;
     private static final int VISUAL_REFRESH_INTERVAL = 10;
 
-    private final EnumMap<Direction, ItemPipeSideMode> sideModes = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, ConduitTransferMode> sideModes = new EnumMap<>(Direction.class);
     private int sourceCursor;
     private int targetCursor;
 
     public BasicItemPipeTileEntity() {
         super(ModTileEntities.BASIC_ITEM_PIPE.get(), NETWORK_CACHE_TTL);
         for (Direction direction : Direction.values()) {
-            sideModes.put(direction, ItemPipeSideMode.BOTH);
+            sideModes.put(direction, ConduitTransferMode.BOTH);
         }
     }
 
@@ -60,12 +60,12 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         transferItems(getCachedNetwork());
     }
 
-    public ItemPipeSideMode getSideMode(Direction direction) {
-        return sideModes.getOrDefault(direction, ItemPipeSideMode.BOTH);
+    public ConduitTransferMode getSideMode(Direction direction) {
+        return sideModes.getOrDefault(direction, ConduitTransferMode.BOTH);
     }
 
-    public ItemPipeSideMode cycleSideMode(Direction direction) {
-        ItemPipeSideMode next = getSideMode(direction).next();
+    public ConduitTransferMode cycleSideMode(Direction direction) {
+        ConduitTransferMode next = getSideMode(direction).next();
         sideModes.put(direction, next);
         setChanged();
         return next;
@@ -131,8 +131,8 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
         for (BasicItemPipeTileEntity pipe : network) {
             for (Direction direction : Direction.values()) {
-                ItemPipeSideMode mode = pipe.getSideMode(direction);
-                if (mode == ItemPipeSideMode.DISABLED) {
+                ConduitTransferMode mode = pipe.getSideMode(direction);
+                if (mode == ConduitTransferMode.DISABLED) {
                     continue;
                 }
 
@@ -207,7 +207,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
             for (Direction direction : Direction.values()) {
                 String key = "Side" + direction.ordinal();
                 if (config.contains(key)) {
-                    sideModes.put(direction, ItemPipeSideMode.fromOrdinal(config.getInt(key)));
+                    sideModes.put(direction, ConduitTransferMode.fromOrdinal(config.getInt(key)));
                 }
             }
         }

@@ -1,6 +1,6 @@
 package com.bulkcloud0.justguithings.world.block;
 
-import com.bulkcloud0.justguithings.logistics.ItemPipeSideMode;
+import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
 import net.minecraft.block.BlockState;
@@ -35,7 +35,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
 
         TileEntity self = world.getBlockEntity(pos);
         if (self instanceof BasicItemPipeTileEntity
-                && ((BasicItemPipeTileEntity) self).getSideMode(direction) == ItemPipeSideMode.DISABLED) {
+                && ((BasicItemPipeTileEntity) self).getSideMode(direction) == ConduitTransferMode.DISABLED) {
             return false;
         }
 
@@ -85,7 +85,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
 
         if (!world.isClientSide) {
             BasicItemPipeTileEntity pipe = (BasicItemPipeTileEntity) tile;
-            ItemPipeSideMode mode = pipe.cycleSideMode(hit.getDirection());
+            ConduitTransferMode mode = pipe.cycleSideMode(hit.getDirection());
             AbstractConduitBlock.refreshConnections(world, pos);
 
             String face = hit.getDirection().toString().toUpperCase(Locale.ROOT);
