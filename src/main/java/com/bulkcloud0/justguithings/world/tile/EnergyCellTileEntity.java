@@ -155,7 +155,9 @@ public class EnergyCellTileEntity extends BaseMachineTileEntity {
             int extracted = energyStorage.extractEnergy(accepted, false);
             int inserted = receiver.receiveEnergy(extracted, false);
             if (inserted < extracted) {
-                energyStorage.addEnergy(extracted - inserted);
+                int refunded = extracted - inserted;
+                energyStorage.addEnergy(refunded);
+                refundEnergyExtractBudget(refunded);
             }
             budget -= inserted;
         }
