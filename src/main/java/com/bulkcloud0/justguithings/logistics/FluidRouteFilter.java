@@ -76,9 +76,17 @@ public final class FluidRouteFilter {
         samples.clear();
     }
 
+    public RoutingFilterMode getMode() {
+        return mode;
+    }
+
     public RoutingFilterMode cycleMode() {
         mode = mode.next();
         return mode;
+    }
+
+    public boolean isMatchNbt() {
+        return matchNbt;
     }
 
     public boolean toggleMatchNbt() {

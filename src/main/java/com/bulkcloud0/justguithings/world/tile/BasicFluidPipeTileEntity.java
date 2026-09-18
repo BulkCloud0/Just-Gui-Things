@@ -176,11 +176,11 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         return next;
     }
 
-    private FluidRoutingTargetRule getTargetRule(Direction direction) {
+    public FluidRoutingTargetRule getTargetRule(Direction direction) {
         return new FluidRoutingTargetRule(getMutableTargetRule(direction));
     }
 
-    private FluidRoutingSourceRule getSourceRule(Direction direction) {
+    public FluidRoutingSourceRule getSourceRule(Direction direction) {
         return new FluidRoutingSourceRule(getMutableSourceRule(direction));
     }
 

@@ -2,6 +2,8 @@ package com.bulkcloud0.justguithings.world.block;
 
 import com.bulkcloud0.justguithings.item.RoutingControllerItem;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
+import com.bulkcloud0.justguithings.logistics.EnergyRoutingSourceRule;
+import com.bulkcloud0.justguithings.logistics.EnergyRoutingTargetRule;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerScope;
 import com.bulkcloud0.justguithings.logistics.RoutingPriority;
@@ -122,7 +124,9 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
             RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
             String face = direction.toString().toUpperCase(Locale.ROOT);
 
-            if (scope == RoutingControllerScope.SOURCE) {
+            if (player.isShiftKeyDown()) {
+                inspectRouting(cable, direction, player, scope, face);
+            } else if (scope == RoutingControllerScope.SOURCE) {
                 applySourceRoutingController(cable, direction, player, mode, face);
             } else {
                 applyTargetRoutingController(cable, direction, player, mode, face);
@@ -130,6 +134,33 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
         }
 
         return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
+    }
+
+    private void inspectRouting(BasicEnergyCableTileEntity cable,
+                                Direction direction,
+                                PlayerEntity player,
+                                RoutingControllerScope scope,
+                                String face) {
+        ITextComponent sideMode = getEnergySideModeName(cable.getSideMode(direction));
+
+        if (scope == RoutingControllerScope.SOURCE) {
+            EnergyRoutingSourceRule rule = cable.getSourceRule(direction);
+            player.displayClientMessage(
+                    new TranslationTextComponent(
+                            "message.justguithings.routing_controller.inspect_energy_source",
+                            face, sideMode, rule.getRedstoneMode().getDisplayName()),
+                    false);
+            return;
+        }
+
+        EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
+        player.displayClientMessage(
+                new TranslationTextComponent(
+                        "message.justguithings.routing_controller.inspect_energy_target",
+                        face, sideMode,
+                        rule.getPriority().getDisplayName(),
+                        rule.getRedstoneMode().getDisplayName()),
+                false);
     }
 
     private void applyTargetRoutingController(BasicEnergyCableTileEntity cable,

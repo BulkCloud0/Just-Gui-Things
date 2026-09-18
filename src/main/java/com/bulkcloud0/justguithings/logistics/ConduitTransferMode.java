@@ -1,5 +1,8 @@
 package com.bulkcloud0.justguithings.logistics;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+
 public enum ConduitTransferMode {
     BOTH(true, true),
     PULL(true, false),
@@ -25,6 +28,11 @@ public enum ConduitTransferMode {
     public ConduitTransferMode next() {
         ConduitTransferMode[] values = values();
         return values[(ordinal() + 1) % values.length];
+    }
+
+    public ITextComponent getDisplayName() {
+        return new TranslationTextComponent(
+                "routing.justguithings.conduit_mode." + name().toLowerCase(java.util.Locale.ROOT));
     }
 
     public static ConduitTransferMode fromOrdinal(int ordinal) {

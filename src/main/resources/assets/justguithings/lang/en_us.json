@@ -75,7 +75,7 @@
   "message.justguithings.routing_controller.priority": "%s target priority: %s",
   "message.justguithings.routing_controller.filter_cleared": "%s whitelist cleared.",
   "tooltip.justguithings.routing_controller.mode": "Right-click in the air to cycle modes valid for the current scope.",
-  "tooltip.justguithings.routing_controller.use": "Right-click a supported item/fluid/energy endpoint face to apply the selected rule.",
+  "tooltip.justguithings.routing_controller.use": "Right-click a supported endpoint face to edit it. Shift-right-click a face to inspect its current routing rules.",
   "tooltip.justguithings.routing_controller.current_mode": "Mode: %s",
   "routing.justguithings.controller_mode.priority": "Target Priority",
   "routing.justguithings.controller_mode.filter_sample": "Filter Sample",
@@ -140,5 +140,17 @@
   "message.justguithings.routing_controller.energy_output_required": "%s must be an energy Output or Input + Output face before consumer routing can apply.",
   "message.justguithings.routing_controller.energy_input_required": "%s must be an energy Input or Input + Output face before source routing can apply.",
   "message.justguithings.routing_controller.energy_source_redstone": "%s energy source redstone condition: %s",
-  "message.justguithings.routing_controller.energy_source_mode_unsupported": "Routing mode %s does not apply to energy sources."
+  "message.justguithings.routing_controller.energy_source_mode_unsupported": "Routing mode %s does not apply to energy sources.",
+  "routing.justguithings.conduit_mode.both": "Pull + Push",
+  "routing.justguithings.conduit_mode.pull": "Pull",
+  "routing.justguithings.conduit_mode.push": "Push",
+  "routing.justguithings.conduit_mode.disabled": "Disabled",
+  "routing.justguithings.nbt_mode.exact": "Exact",
+  "routing.justguithings.nbt_mode.ignored": "Ignored",
+  "message.justguithings.routing_controller.inspect_item_target": "%s Item Target | I/O: %s | Priority: %s | Filter: %s %s/%s | NBT: %s | Redstone: %s",
+  "message.justguithings.routing_controller.inspect_item_source": "%s Item Source | I/O: %s | Filter: %s %s/%s | NBT: %s | Redstone: %s | Minimum stock: %s",
+  "message.justguithings.routing_controller.inspect_fluid_target": "%s Fluid Target | I/O: %s | Priority: %s | Filter: %s %s/%s | NBT: %s | Redstone: %s",
+  "message.justguithings.routing_controller.inspect_fluid_source": "%s Fluid Source | I/O: %s | Filter: %s %s/%s | NBT: %s | Redstone: %s | Minimum reserve: %s mB",
+  "message.justguithings.routing_controller.inspect_energy_target": "%s Energy Target | I/O: %s | Priority: %s | Redstone: %s",
+  "message.justguithings.routing_controller.inspect_energy_source": "%s Energy Source | I/O: %s | Redstone: %s"
 }
