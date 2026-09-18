@@ -249,7 +249,7 @@ public class QuenchChamberTileEntity extends BaseProcessingMachineTileEntity<Que
             return false;
         }
         for (QuenchingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.QUENCHING_TYPE)) {
-            if (recipe.getFluid() == stack.getFluid()) {
+            if (recipe.matchesFluid(stack)) {
                 return true;
             }
         }

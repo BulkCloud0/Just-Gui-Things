@@ -21,6 +21,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public final class QuenchingRecipeCategory implements IRecipeCategory<QuenchingRecipe> {
     public static final ResourceLocation UID = new ResourceLocation(JustGuiThings.MOD_ID, "quenching");
@@ -67,7 +68,7 @@ public final class QuenchingRecipeCategory implements IRecipeCategory<QuenchingR
     @Override
     public void setIngredients(QuenchingRecipe recipe, IIngredients ingredients) {
         ingredients.setInputIngredients(Collections.singletonList(recipe.getInput()));
-        ingredients.setInput(VanillaTypes.FLUID, new FluidStack(recipe.getFluid(), recipe.getFluidAmount()));
+        ingredients.setInputs(VanillaTypes.FLUID, recipe.getFluidIngredient().getMatchingStacks(recipe.getFluidAmount()));
         ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem().copy());
     }
 
@@ -81,7 +82,8 @@ public final class QuenchingRecipeCategory implements IRecipeCategory<QuenchingR
 
         IGuiFluidStackGroup fluidStacks = recipeLayout.getFluidStacks();
         fluidStacks.init(0, true, 35, 10, 16, 32, Math.max(1000, recipe.getFluidAmount()), true, null);
-        fluidStacks.set(0, new FluidStack(recipe.getFluid(), recipe.getFluidAmount()));
+        List<FluidStack> matchingFluids = recipe.getFluidIngredient().getMatchingStacks(recipe.getFluidAmount());
+        fluidStacks.set(0, matchingFluids);
     }
 
     @Override
