@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
+import com.bulkcloud0.justguithings.world.block.BasicItemPipeBlock;
 import com.bulkcloud0.justguithings.world.block.CoalGeneratorBlock;
 import com.bulkcloud0.justguithings.world.block.CrusherBlock;
 import com.bulkcloud0.justguithings.world.block.EnergyCellBlock;
@@ -46,6 +47,10 @@ public final class ModBlocks {
 
     public static final RegistryObject<Block> BASIC_ENERGY_CABLE = BLOCKS.register("basic_energy_cable",
             () -> new BasicEnergyCableBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(1.5F).harvestTool(ToolType.PICKAXE).harvestLevel(0)));
+
+    public static final RegistryObject<Block> BASIC_ITEM_PIPE = BLOCKS.register("basic_item_pipe",
+            () -> new BasicItemPipeBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(1.5F).harvestTool(ToolType.PICKAXE).harvestLevel(0)));
 
     private ModBlocks() {}

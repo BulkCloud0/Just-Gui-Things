@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
+import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CoalGeneratorTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
 import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
@@ -30,6 +31,8 @@ public final class ModTileEntities {
             "energy_cell", () -> TileEntityType.Builder.of(EnergyCellTileEntity::new, ModBlocks.ENERGY_CELL.get()).build(null));
     public static final RegistryObject<TileEntityType<BasicEnergyCableTileEntity>> BASIC_ENERGY_CABLE = TILE_ENTITIES.register(
             "basic_energy_cable", () -> TileEntityType.Builder.of(BasicEnergyCableTileEntity::new, ModBlocks.BASIC_ENERGY_CABLE.get()).build(null));
+    public static final RegistryObject<TileEntityType<BasicItemPipeTileEntity>> BASIC_ITEM_PIPE = TILE_ENTITIES.register(
+            "basic_item_pipe", () -> TileEntityType.Builder.of(BasicItemPipeTileEntity::new, ModBlocks.BASIC_ITEM_PIPE.get()).build(null));
 
     private ModTileEntities() {}
 }
