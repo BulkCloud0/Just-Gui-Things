@@ -2,7 +2,7 @@ package com.bulkcloud0.justguithings.world.block;
 
 import com.bulkcloud0.justguithings.item.RoutingControllerItem;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
-import com.bulkcloud0.justguithings.logistics.ItemFilterMode;
+import com.bulkcloud0.justguithings.logistics.RoutingFilterMode;
 import com.bulkcloud0.justguithings.logistics.ItemFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
@@ -136,7 +136,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 break;
 
             case FILTER_MODE:
-                ItemFilterMode filterMode = pipe.cycleTargetFilterMode(direction);
+                RoutingFilterMode filterMode = pipe.cycleTargetFilterMode(direction);
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.routing_controller.filter_mode",
@@ -187,7 +187,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 break;
 
             case FILTER_MODE:
-                ItemFilterMode filterMode = pipe.cycleSourceFilterMode(direction);
+                RoutingFilterMode filterMode = pipe.cycleSourceFilterMode(direction);
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.routing_controller.source_filter_mode",

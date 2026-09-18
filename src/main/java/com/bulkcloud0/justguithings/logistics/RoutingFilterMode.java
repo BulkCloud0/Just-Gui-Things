@@ -3,11 +3,11 @@ package com.bulkcloud0.justguithings.logistics;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public enum ItemFilterMode {
+public enum RoutingFilterMode {
     WHITELIST,
     BLACKLIST;
 
-    public ItemFilterMode next() {
+    public RoutingFilterMode next() {
         return this == WHITELIST ? BLACKLIST : WHITELIST;
     }
 
@@ -16,8 +16,8 @@ public enum ItemFilterMode {
                 "routing.justguithings.filter_mode." + name().toLowerCase(java.util.Locale.ROOT));
     }
 
-    public static ItemFilterMode fromOrdinal(int ordinal) {
-        ItemFilterMode[] values = values();
+    public static RoutingFilterMode fromOrdinal(int ordinal) {
+        RoutingFilterMode[] values = values();
         if (ordinal < 0 || ordinal >= values.length) {
             return WHITELIST;
         }

@@ -36,7 +36,7 @@ public final class ItemRoutingSourceRule {
         filter.clearSamples();
     }
 
-    public ItemFilterMode cycleFilterMode() {
+    public RoutingFilterMode cycleFilterMode() {
         return filter.cycleMode();
     }
 
