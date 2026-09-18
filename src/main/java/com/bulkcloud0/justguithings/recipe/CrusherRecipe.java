@@ -9,7 +9,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
@@ -22,11 +21,11 @@ import javax.annotation.Nullable;
 public class CrusherRecipe implements IRecipe<IInventory> {
     private final ResourceLocation id;
     private final Ingredient input;
-    private final ItemStack result;
+    private final RecipeOutput result;
     private final int processingTime;
     private final int energyPerTick;
 
-    public CrusherRecipe(ResourceLocation id, Ingredient input, ItemStack result, int processingTime, int energyPerTick) {
+    public CrusherRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
         this.id = id;
         this.input = input;
         this.result = result;
@@ -41,7 +40,7 @@ public class CrusherRecipe implements IRecipe<IInventory> {
 
     @Override
     public ItemStack assemble(IInventory inventory) {
-        return result.copy();
+        return result.resolve(inventory.getItem(0));
     }
 
     @Override
@@ -51,7 +50,7 @@ public class CrusherRecipe implements IRecipe<IInventory> {
 
     @Override
     public ItemStack getResultItem() {
-        return result;
+        return result.resolve();
     }
 
     @Override
@@ -96,15 +95,12 @@ public class CrusherRecipe implements IRecipe<IInventory> {
             }
 
             Ingredient input = Ingredient.fromJson(json.get("ingredient"));
-            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
+            RecipeOutput result = RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "result"));
             int processingTime = JSONUtils.getAsInt(json, "processing_time", 100);
             int energyPerTick = JSONUtils.getAsInt(json, "energy_per_tick", 20);
 
             if (input.isEmpty()) {
                 throw new JsonSyntaxException("Crusher recipe " + recipeId + " has an empty ingredient");
-            }
-            if (result.isEmpty()) {
-                throw new JsonSyntaxException("Crusher recipe " + recipeId + " has an empty result");
             }
             if (processingTime <= 0) {
                 throw new JsonSyntaxException("processing_time must be greater than zero in " + recipeId);
@@ -120,7 +116,7 @@ public class CrusherRecipe implements IRecipe<IInventory> {
         @Override
         public CrusherRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
-            ItemStack result = buffer.readItem();
+            RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
             return new CrusherRecipe(recipeId, input, result, processingTime, energyPerTick);
@@ -129,7 +125,7 @@ public class CrusherRecipe implements IRecipe<IInventory> {
         @Override
         public void toNetwork(PacketBuffer buffer, CrusherRecipe recipe) {
             recipe.input.toNetwork(buffer);
-            buffer.writeItem(recipe.result);
+            recipe.result.toNetwork(buffer);
             buffer.writeVarInt(recipe.processingTime);
             buffer.writeVarInt(recipe.energyPerTick);
         }
