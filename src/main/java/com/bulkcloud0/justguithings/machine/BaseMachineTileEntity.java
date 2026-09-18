@@ -84,6 +84,15 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
                 }
                 return received;
             }
+
+            @Override
+            public int extractEnergy(int maxExtract, boolean simulate) {
+                int extracted = super.extractEnergy(maxExtract, simulate);
+                if (!simulate && extracted > 0) {
+                    setChanged();
+                }
+                return extracted;
+            }
         };
 
         this.inventory = new ItemStackHandler(inventorySize) {
