@@ -7,7 +7,6 @@ import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
 import com.bulkcloud0.justguithings.world.container.FluidReservoirContainer;
 import com.bulkcloud0.justguithings.world.container.FluidPumpContainer;
-import com.bulkcloud0.justguithings.world.container.QuenchChamberContainer;
 import com.bulkcloud0.justguithings.world.container.ResistiveFurnaceContainer;
 import com.bulkcloud0.justguithings.world.container.PrecisionExtruderContainer;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
@@ -30,8 +29,6 @@ public final class ModContainers {
             CONTAINERS.register("stamping_press", () -> IForgeContainerType.create(StampingPressContainer::new));
     public static final RegistryObject<ContainerType<IndustrialMixerContainer>> INDUSTRIAL_MIXER =
             CONTAINERS.register("industrial_mixer", () -> IForgeContainerType.create(IndustrialMixerContainer::new));
-    public static final RegistryObject<ContainerType<QuenchChamberContainer>> QUENCH_CHAMBER =
-            CONTAINERS.register("quench_chamber", () -> IForgeContainerType.create(QuenchChamberContainer::new));
     public static final RegistryObject<ContainerType<EnergyCellContainer>> ENERGY_CELL =
             CONTAINERS.register("energy_cell", () -> IForgeContainerType.create(EnergyCellContainer::new));
 

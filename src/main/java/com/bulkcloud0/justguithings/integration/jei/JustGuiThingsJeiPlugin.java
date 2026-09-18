@@ -3,7 +3,6 @@ package com.bulkcloud0.justguithings.integration.jei;
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
-import com.bulkcloud0.justguithings.client.screen.QuenchChamberScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
 import com.bulkcloud0.justguithings.client.screen.ResistiveFurnaceScreen;
 import com.bulkcloud0.justguithings.client.screen.PrecisionExtruderScreen;
@@ -36,7 +35,6 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
                 new CrusherRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new PressingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new MixingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
-                new QuenchingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new HeatingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new ExtrudingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new WireDrawingRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
@@ -49,7 +47,6 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.CRUSHING_TYPE), CrusherRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.PRESSING_TYPE), PressingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.MIXING_TYPE), MixingRecipeCategory.UID);
-            registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.QUENCHING_TYPE), QuenchingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.HEATING_TYPE), HeatingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.EXTRUDING_TYPE), ExtrudingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.WIRE_DRAWING_TYPE), WireDrawingRecipeCategory.UID);
@@ -61,7 +58,6 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModItems.CRUSHER.get()), CrusherRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.STAMPING_PRESS.get()), PressingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.INDUSTRIAL_MIXER.get()), MixingRecipeCategory.UID);
-        registration.addRecipeCatalyst(new ItemStack(ModItems.QUENCH_CHAMBER.get()), QuenchingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.RESISTIVE_FURNACE.get()), HeatingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.PRECISION_EXTRUDER.get()), ExtrudingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.WIRE_MILL.get()), WireDrawingRecipeCategory.UID);
@@ -72,7 +68,6 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(CrusherScreen.class, 69, 38, 36, 12, CrusherRecipeCategory.UID);
         registration.addRecipeClickArea(StampingPressScreen.class, 69, 38, 36, 12, PressingRecipeCategory.UID);
         registration.addRecipeClickArea(IndustrialMixerScreen.class, 75, 38, 30, 12, MixingRecipeCategory.UID);
-        registration.addRecipeClickArea(QuenchChamberScreen.class, 69, 38, 36, 12, QuenchingRecipeCategory.UID);
         registration.addRecipeClickArea(ResistiveFurnaceScreen.class, 69, 38, 36, 12, HeatingRecipeCategory.UID);
         registration.addRecipeClickArea(PrecisionExtruderScreen.class, 69, 38, 36, 12, ExtrudingRecipeCategory.UID);
         registration.addRecipeClickArea(WireMillScreen.class, 69, 38, 36, 12, WireDrawingRecipeCategory.UID);

@@ -24,8 +24,6 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.STAMPING_PRESS.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> INDUSTRIAL_MIXER = ITEMS.register("industrial_mixer",
             () -> new BlockItem(ModBlocks.INDUSTRIAL_MIXER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
-    public static final RegistryObject<Item> QUENCH_CHAMBER = ITEMS.register("quench_chamber",
-            () -> new BlockItem(ModBlocks.QUENCH_CHAMBER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
             () -> new EnergyCellBlockItem(ModBlocks.ENERGY_CELL.get(),
                     new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
@@ -90,23 +88,17 @@ public final class ModItems {
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> STEEL_INGOT = ITEMS.register("steel_ingot",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
-    public static final RegistryObject<Item> TEMPERED_STEEL_INGOT = ITEMS.register("tempered_steel_ingot",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> IRON_ROD = ITEMS.register("iron_rod",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> GOLD_ROD = ITEMS.register("gold_rod",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> STEEL_ROD = ITEMS.register("steel_rod",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
-    public static final RegistryObject<Item> TEMPERED_STEEL_ROD = ITEMS.register("tempered_steel_rod",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> IRON_WIRE = ITEMS.register("iron_wire",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> GOLD_WIRE = ITEMS.register("gold_wire",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> STEEL_WIRE = ITEMS.register("steel_wire",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
-    public static final RegistryObject<Item> TEMPERED_STEEL_WIRE = ITEMS.register("tempered_steel_wire",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> TENSIONING_SPINDLE = ITEMS.register("tensioning_spindle",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_MATERIALS).stacksTo(16),

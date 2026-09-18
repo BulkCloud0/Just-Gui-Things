@@ -10,7 +10,6 @@ import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
 import com.bulkcloud0.justguithings.world.tile.IndustrialMixerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidReservoirTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidPumpTileEntity;
-import com.bulkcloud0.justguithings.world.tile.QuenchChamberTileEntity;
 import com.bulkcloud0.justguithings.world.tile.ResistiveFurnaceTileEntity;
 import com.bulkcloud0.justguithings.world.tile.PrecisionExtruderTileEntity;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
@@ -31,8 +30,6 @@ public final class ModTileEntities {
             "stamping_press", () -> TileEntityType.Builder.of(StampingPressTileEntity::new, ModBlocks.STAMPING_PRESS.get()).build(null));
     public static final RegistryObject<TileEntityType<IndustrialMixerTileEntity>> INDUSTRIAL_MIXER = TILE_ENTITIES.register(
             "industrial_mixer", () -> TileEntityType.Builder.of(IndustrialMixerTileEntity::new, ModBlocks.INDUSTRIAL_MIXER.get()).build(null));
-    public static final RegistryObject<TileEntityType<QuenchChamberTileEntity>> QUENCH_CHAMBER = TILE_ENTITIES.register(
-            "quench_chamber", () -> TileEntityType.Builder.of(QuenchChamberTileEntity::new, ModBlocks.QUENCH_CHAMBER.get()).build(null));
     public static final RegistryObject<TileEntityType<EnergyCellTileEntity>> ENERGY_CELL = TILE_ENTITIES.register(
             "energy_cell", () -> TileEntityType.Builder.of(EnergyCellTileEntity::new, ModBlocks.ENERGY_CELL.get()).build(null));
     public static final RegistryObject<TileEntityType<BasicEnergyCableTileEntity>> BASIC_ENERGY_CABLE = TILE_ENTITIES.register(

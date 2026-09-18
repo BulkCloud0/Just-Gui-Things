@@ -10,7 +10,6 @@ import com.bulkcloud0.justguithings.world.block.EnergyCellBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialMixerBlock;
 import com.bulkcloud0.justguithings.world.block.FluidReservoirBlock;
 import com.bulkcloud0.justguithings.world.block.FluidPumpBlock;
-import com.bulkcloud0.justguithings.world.block.QuenchChamberBlock;
 import com.bulkcloud0.justguithings.world.block.ResistiveFurnaceBlock;
 import com.bulkcloud0.justguithings.world.block.PrecisionExtruderBlock;
 import com.bulkcloud0.justguithings.world.block.StampingPressBlock;
@@ -41,10 +40,6 @@ public final class ModBlocks {
     public static final RegistryObject<Block> INDUSTRIAL_MIXER = BLOCKS.register("industrial_mixer",
             () -> new IndustrialMixerBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
-
-    public static final RegistryObject<Block> QUENCH_CHAMBER = BLOCKS.register("quench_chamber",
-            () -> new QuenchChamberBlock(AbstractBlock.Properties.of(Material.METAL)
-                    .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
 
 
     public static final RegistryObject<Block> ENERGY_CELL = BLOCKS.register("energy_cell",

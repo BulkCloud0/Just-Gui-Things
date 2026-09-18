@@ -6,7 +6,7 @@
     "TGT"
   ],
   "key": {
-    "T": { "tag": "forge:ingots/tempered_steel" },
+    "T": { "tag": "forge:ingots/steel" },
     "G": { "tag": "forge:plates/gold" },
     "D": { "item": "minecraft:diamond" }
   },

@@ -8,8 +8,8 @@
   "key": {
     "G": { "tag": "forge:wires/gold" },
     "R": { "item": "minecraft:redstone" },
-    "W": { "tag": "forge:wires/tempered_steel" },
-    "T": { "tag": "forge:rods/tempered_steel" }
+    "W": { "tag": "forge:wires/steel" },
+    "T": { "tag": "forge:rods/steel" }
   },
   "result": {
     "item": "justguithings:induction_coil_module"
