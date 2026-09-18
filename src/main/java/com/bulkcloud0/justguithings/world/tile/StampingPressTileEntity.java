@@ -1,7 +1,6 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
-import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -18,10 +17,7 @@ import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -65,8 +61,6 @@ public class StampingPressTileEntity extends BaseMachineTileEntity {
         }
     };
 
-    private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
-    private LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
 
     private int progress;
     private int currentProcessTicks = DEFAULT_PROCESS_TICKS;

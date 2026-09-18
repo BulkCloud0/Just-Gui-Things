@@ -28,6 +28,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.Optional;
 
 public class QuenchChamberTileEntity extends BaseMachineTileEntity {
