@@ -160,5 +160,11 @@
   "message.justguithings.routing_controller.rule_copied": "Copied %s routing from %s.",
   "message.justguithings.routing_controller.rule_pasted": "Applied copied %s routing to %s.",
   "message.justguithings.routing_controller.rule_clipboard_empty": "No copied %s routing rule is stored; %s was not changed.",
-  "message.justguithings.routing_controller.rule_clipboard_resource_mismatch": "The copied %s rule belongs to a different conduit resource; %s was not changed."
+  "message.justguithings.routing_controller.rule_clipboard_resource_mismatch": "The copied %s rule belongs to a different conduit resource; %s was not changed.",
+  "tooltip.justguithings.routing_controller.clipboard": "%s clipboard: %s",
+  "routing.justguithings.clipboard_resource.empty": "Empty",
+  "routing.justguithings.clipboard_resource.item": "Item",
+  "routing.justguithings.clipboard_resource.fluid": "Fluid",
+  "routing.justguithings.clipboard_resource.energy": "Energy",
+  "routing.justguithings.clipboard_resource.unknown": "Unknown"
 }

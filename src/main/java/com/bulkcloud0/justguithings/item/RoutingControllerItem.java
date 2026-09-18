@@ -462,6 +462,26 @@ public class RoutingControllerItem extends TooltipItem {
         return new TranslationTextComponent(key);
     }
 
+    private ITextComponent getClipboardResourceName(ItemStack stack, RoutingControllerScope scope) {
+        CompoundNBT clipboard = getClipboard(stack, scope);
+        if (clipboard == null || !clipboard.contains(CLIPBOARD_RULE_KEY, 10)) {
+            return new TranslationTextComponent("routing.justguithings.clipboard_resource.empty");
+        }
+
+        String resource = clipboard.getString(CLIPBOARD_RESOURCE_KEY);
+        String key;
+        if (RESOURCE_ITEM.equals(resource)) {
+            key = "routing.justguithings.clipboard_resource.item";
+        } else if (RESOURCE_FLUID.equals(resource)) {
+            key = "routing.justguithings.clipboard_resource.fluid";
+        } else if (RESOURCE_ENERGY.equals(resource)) {
+            key = "routing.justguithings.clipboard_resource.energy";
+        } else {
+            key = "routing.justguithings.clipboard_resource.unknown";
+        }
+        return new TranslationTextComponent(key);
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world,
                                 List<ITextComponent> tooltip, ITooltipFlag flag) {
@@ -473,5 +493,15 @@ public class RoutingControllerItem extends TooltipItem {
         tooltip.add(new TranslationTextComponent(
                 "tooltip.justguithings.routing_controller.current_mode",
                 getMode(stack, scope).getDisplayName()).withStyle(TextFormatting.AQUA));
+        tooltip.add(new TranslationTextComponent(
+                "tooltip.justguithings.routing_controller.clipboard",
+                RoutingControllerScope.TARGET.getDisplayName(),
+                getClipboardResourceName(stack, RoutingControllerScope.TARGET))
+                .withStyle(TextFormatting.GRAY));
+        tooltip.add(new TranslationTextComponent(
+                "tooltip.justguithings.routing_controller.clipboard",
+                RoutingControllerScope.SOURCE.getDisplayName(),
+                getClipboardResourceName(stack, RoutingControllerScope.SOURCE))
+                .withStyle(TextFormatting.GRAY));
     }
 }
