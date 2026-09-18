@@ -67,5 +67,14 @@
   "jei.justguithings.rod_forming": "Rod Forming",
   "item.justguithings.power_coil_module": "Power Coil Module",
   "tooltip.justguithings.power_coil_module.effect": "2x processing speed, 2.5x FE/t (~25% more FE per operation).",
-  "tooltip.justguithings.power_coil_module.compatibility": "Compatible: Resistive Furnace"
+  "tooltip.justguithings.power_coil_module.compatibility": "Compatible: Resistive Furnace",
+  "item.justguithings.routing_controller": "Routing Controller",
+  "tooltip.justguithings.routing_controller.priority": "Right-click an item-pipe face to cycle target priority.",
+  "tooltip.justguithings.routing_controller.filter": "Shift-right-click: use the item in the other hand as an exact whitelist; empty hand clears it.",
+  "routing.justguithings.priority.normal": "Normal",
+  "routing.justguithings.priority.high": "High",
+  "routing.justguithings.priority.low": "Low",
+  "message.justguithings.routing_controller.priority": "%s target priority: %s",
+  "message.justguithings.routing_controller.filter_set": "%s whitelist: %s",
+  "message.justguithings.routing_controller.filter_cleared": "%s whitelist cleared."
 }
