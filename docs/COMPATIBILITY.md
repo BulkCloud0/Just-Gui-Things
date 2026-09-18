@@ -57,6 +57,8 @@ The built-in components are `Precision Roller Assembly` and `Tensioning Spindle`
 
 Each machine exposes only the side modes it supports. Side-configuration NBT remains versioned. The Configurator presents localized player-facing names for those modes: Item Input/Output, Fluid Input/Output, Energy Input/Output/Input + Output, and Disabled. Enum values and persisted ordinals remain internal implementation details.
 
+Normal Configurator right-click continues to cycle the supported mode for the clicked face. Shift-right-click is read-only inspection: on machines, item pipes, fluid pipes and energy cables it reports the current localized I/O mode in chat without changing side configuration. Disabled conduit faces remain inspectable for diagnostics.
+
 ## Optional-mod recipes
 
 Recipes for optional material families use Forge tags and conditions so absent materials do not create invalid recipes. Direct references to another mod's items must remain guarded by appropriate Forge recipe conditions.

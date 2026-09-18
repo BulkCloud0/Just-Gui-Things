@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.item.ConfiguratorItem;
 import com.bulkcloud0.justguithings.item.EnergyCellBlockItem;
 import com.bulkcloud0.justguithings.item.FluidReservoirBlockItem;
 import com.bulkcloud0.justguithings.item.MachineModuleItem;
@@ -47,8 +48,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.WIRE_MILL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
-            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
-                    "tooltip.justguithings.configurator.use"));
+            () -> new ConfiguratorItem(
+                    new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
     public static final RegistryObject<Item> ROUTING_CONTROLLER = ITEMS.register("routing_controller",
             () -> new RoutingControllerItem(
                     new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));

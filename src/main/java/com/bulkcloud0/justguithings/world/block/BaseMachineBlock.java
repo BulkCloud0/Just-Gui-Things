@@ -70,6 +70,9 @@ public abstract class BaseMachineBlock<T extends BaseMachineTileEntity> extends 
 
         ItemStack held = player.getItemInHand(hand);
         if (held.getItem() == ModItems.CONFIGURATOR.get()) {
+            if (player.isShiftKeyDown()) {
+                return ActionResultType.PASS;
+            }
             if (!world.isClientSide) {
                 MachineSideMode mode = tile.cycleSideMode(hit.getDirection());
                 String face = hit.getDirection().toString().toUpperCase(Locale.ROOT);

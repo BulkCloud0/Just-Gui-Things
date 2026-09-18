@@ -177,5 +177,10 @@
   "machine_side_mode.justguithings.energy_output": "Saída de Energia",
   "machine_side_mode.justguithings.energy_both": "Entrada + Saída de Energia",
   "machine_side_mode.justguithings.fluid_output": "Saída de Fluido",
-  "message.justguithings.machine.side_mode": "Modo da face %s da máquina: %s"
+  "message.justguithings.machine.side_mode": "Modo da face %s da máquina: %s",
+  "tooltip.justguithings.configurator.inspect": "Shift+clique com o botão direito em faces configuráveis para inspecionar o modo de E/S atual.",
+  "message.justguithings.configurator.inspect_item_pipe": "%s Tubo de Itens | E/S: %s",
+  "message.justguithings.configurator.inspect_fluid_pipe": "%s Tubo de Fluidos | E/S: %s",
+  "message.justguithings.configurator.inspect_energy_cable": "%s Cabo de Energia | E/S: %s",
+  "message.justguithings.configurator.inspect_machine": "%s Máquina | E/S: %s"
 }
