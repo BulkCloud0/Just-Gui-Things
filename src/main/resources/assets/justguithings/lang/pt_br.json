@@ -206,5 +206,7 @@
   "side_config.justguithings.mode.fluid_input": "EF",
   "side_config.justguithings.mode.fluid_output": "SF",
   "side_config.justguithings.mode.energy_output": "SE",
-  "side_config.justguithings.mode.energy_both": "ES"
+  "side_config.justguithings.mode.energy_both": "ES",
+  "machine_side_mode.justguithings.item_input_energy_output": "Entrada de Itens + Saída de Energia",
+  "side_config.justguithings.mode.item_input_energy_output": "ESE"
 }

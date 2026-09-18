@@ -30,7 +30,8 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
             MachineSideMode.INPUT,
-            MachineSideMode.ENERGY_OUTPUT
+            MachineSideMode.ENERGY_OUTPUT,
+            MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT
     };
 
     private final IIntArray dataAccess = new IIntArray() {
@@ -77,12 +78,12 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
         super(ModTileEntities.COAL_GENERATOR.get(), CAPACITY, 0, MAX_OUTPUT_PER_TICK,
                 1, 0, 1, 1, 0);
 
-        setSideMode(Direction.UP, MachineSideMode.ENERGY_OUTPUT);
-        setSideMode(Direction.DOWN, MachineSideMode.ENERGY_OUTPUT);
-        setSideMode(Direction.NORTH, MachineSideMode.ENERGY_OUTPUT);
-        setSideMode(Direction.SOUTH, MachineSideMode.ENERGY_OUTPUT);
-        setSideMode(Direction.WEST, MachineSideMode.ENERGY_OUTPUT);
-        setSideMode(Direction.EAST, MachineSideMode.ENERGY_OUTPUT);
+        setSideMode(Direction.UP, MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT);
+        setSideMode(Direction.DOWN, MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT);
+        setSideMode(Direction.NORTH, MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT);
+        setSideMode(Direction.SOUTH, MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT);
+        setSideMode(Direction.WEST, MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT);
+        setSideMode(Direction.EAST, MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT);
     }
 
     @Override
@@ -97,10 +98,18 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
 
     @Override
     protected MachineSideMode getItemSideMode(Direction side, MachineSideMode mode) {
-        if (mode == MachineSideMode.ENERGY_OUTPUT) {
+        if (mode == MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT) {
             return MachineSideMode.INPUT;
         }
         return mode;
+    }
+
+    @Override
+    protected MachineSideMode normalizeLoadedSideMode(Direction side, MachineSideMode mode, int configVersion) {
+        if (configVersion < 5 && mode == MachineSideMode.ENERGY_OUTPUT) {
+            return MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT;
+        }
+        return super.normalizeLoadedSideMode(side, mode, configVersion);
     }
 
     @Override
@@ -110,7 +119,8 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
 
     @Override
     protected boolean canExtractEnergyFrom(Direction side, MachineSideMode mode) {
-        return mode == MachineSideMode.ENERGY_OUTPUT;
+        return mode == MachineSideMode.ENERGY_OUTPUT
+                || mode == MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT;
     }
 
     @Override
