@@ -7,9 +7,8 @@ import com.bulkcloud0.justguithings.client.screen.EnergyCellScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
 import com.bulkcloud0.justguithings.client.screen.FluidReservoirScreen;
 import com.bulkcloud0.justguithings.client.screen.FluidPumpScreen;
-import com.bulkcloud0.justguithings.client.screen.QuenchChamberScreen;
 import com.bulkcloud0.justguithings.client.screen.ResistiveFurnaceScreen;
-import com.bulkcloud0.justguithings.client.screen.PrecisionExtruderScreen;
+import com.bulkcloud0.justguithings.client.screen.RodMillScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
 import com.bulkcloud0.justguithings.client.screen.WireMillScreen;
 import com.bulkcloud0.justguithings.registry.ModContainers;
@@ -30,12 +29,11 @@ public final class ClientSetup {
             ScreenManager.register(ModContainers.CRUSHER.get(), CrusherScreen::new);
             ScreenManager.register(ModContainers.STAMPING_PRESS.get(), StampingPressScreen::new);
             ScreenManager.register(ModContainers.INDUSTRIAL_MIXER.get(), IndustrialMixerScreen::new);
-            ScreenManager.register(ModContainers.QUENCH_CHAMBER.get(), QuenchChamberScreen::new);
             ScreenManager.register(ModContainers.ENERGY_CELL.get(), EnergyCellScreen::new);
             ScreenManager.register(ModContainers.FLUID_RESERVOIR.get(), FluidReservoirScreen::new);
             ScreenManager.register(ModContainers.FLUID_PUMP.get(), FluidPumpScreen::new);
             ScreenManager.register(ModContainers.RESISTIVE_FURNACE.get(), ResistiveFurnaceScreen::new);
-            ScreenManager.register(ModContainers.PRECISION_EXTRUDER.get(), PrecisionExtruderScreen::new);
+            ScreenManager.register(ModContainers.ROD_MILL.get(), RodMillScreen::new);
             ScreenManager.register(ModContainers.WIRE_MILL.get(), WireMillScreen::new);
         });
     }

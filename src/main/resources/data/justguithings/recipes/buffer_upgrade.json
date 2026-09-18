@@ -7,7 +7,7 @@
   ],
   "key": {
     "R": { "item": "minecraft:redstone" },
-    "T": { "tag": "forge:ingots/tempered_steel" },
+    "T": { "tag": "forge:ingots/steel" },
     "B": { "item": "minecraft:redstone_block" }
   },
   "result": {

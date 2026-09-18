@@ -6,7 +6,7 @@
     "RGR"
   ],
   "key": {
-    "R": { "tag": "forge:rods/tempered_steel" },
+    "R": { "tag": "forge:rods/steel" },
     "G": { "tag": "forge:plates/gold" },
     "Q": { "item": "minecraft:quartz" }
   },

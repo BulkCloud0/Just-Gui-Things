@@ -8,7 +8,7 @@ public final class MachineModuleTypes {
     public static final ResourceLocation EFFICIENCY = id("efficiency");
     public static final ResourceLocation BUFFER = id("buffer");
     public static final ResourceLocation BATCH = id("batch");
-    public static final ResourceLocation INDUCTION_COIL = id("induction_coil");
+    public static final ResourceLocation POWER_COIL = id("power_coil");
 
     private MachineModuleTypes() {}
 

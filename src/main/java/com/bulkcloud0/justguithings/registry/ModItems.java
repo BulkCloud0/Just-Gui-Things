@@ -24,8 +24,6 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.STAMPING_PRESS.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> INDUSTRIAL_MIXER = ITEMS.register("industrial_mixer",
             () -> new BlockItem(ModBlocks.INDUSTRIAL_MIXER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
-    public static final RegistryObject<Item> QUENCH_CHAMBER = ITEMS.register("quench_chamber",
-            () -> new BlockItem(ModBlocks.QUENCH_CHAMBER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
             () -> new EnergyCellBlockItem(ModBlocks.ENERGY_CELL.get(),
                     new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
@@ -35,19 +33,15 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.BASIC_ITEM_PIPE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> BASIC_FLUID_PIPE = ITEMS.register("basic_fluid_pipe",
             () -> new BlockItem(ModBlocks.BASIC_FLUID_PIPE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
-
     public static final RegistryObject<Item> FLUID_RESERVOIR = ITEMS.register("fluid_reservoir",
-            () -> new FluidReservoirBlockItem(ModBlocks.FLUID_RESERVOIR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
-
+            () -> new FluidReservoirBlockItem(ModBlocks.FLUID_RESERVOIR.get(),
+                    new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
     public static final RegistryObject<Item> FLUID_PUMP = ITEMS.register("fluid_pump",
             () -> new BlockItem(ModBlocks.FLUID_PUMP.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
-
     public static final RegistryObject<Item> RESISTIVE_FURNACE = ITEMS.register("resistive_furnace",
             () -> new BlockItem(ModBlocks.RESISTIVE_FURNACE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
-
-    public static final RegistryObject<Item> PRECISION_EXTRUDER = ITEMS.register("precision_extruder",
-            () -> new BlockItem(ModBlocks.PRECISION_EXTRUDER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
-
+    public static final RegistryObject<Item> ROD_MILL = ITEMS.register("rod_mill",
+            () -> new BlockItem(ModBlocks.ROD_MILL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> WIRE_MILL = ITEMS.register("wire_mill",
             () -> new BlockItem(ModBlocks.WIRE_MILL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
@@ -56,25 +50,21 @@ public final class ModItems {
                     "tooltip.justguithings.configurator.use"));
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
             () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.SPEED,
-                    "tooltip.justguithings.speed_module.effect",
-                    "tooltip.justguithings.speed_module.compatibility"));
+                    "tooltip.justguithings.speed_module.effect", "tooltip.justguithings.speed_module.compatibility"));
     public static final RegistryObject<Item> EFFICIENCY_UPGRADE = ITEMS.register("efficiency_upgrade",
             () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.EFFICIENCY,
-                    "tooltip.justguithings.efficiency_module.effect",
-                    "tooltip.justguithings.efficiency_module.compatibility"));
+                    "tooltip.justguithings.efficiency_module.effect", "tooltip.justguithings.efficiency_module.compatibility"));
     public static final RegistryObject<Item> BUFFER_UPGRADE = ITEMS.register("buffer_upgrade",
             () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.BUFFER,
-                    "tooltip.justguithings.buffer_module.effect",
-                    "tooltip.justguithings.buffer_module.compatibility"));
+                    "tooltip.justguithings.buffer_module.effect", "tooltip.justguithings.buffer_module.compatibility"));
     public static final RegistryObject<Item> BATCH_UPGRADE = ITEMS.register("batch_upgrade",
             () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.BATCH,
-                    "tooltip.justguithings.batch_module.effect",
-                    "tooltip.justguithings.batch_module.compatibility"));
-    public static final RegistryObject<Item> INDUCTION_COIL_MODULE = ITEMS.register("induction_coil_module",
+                    "tooltip.justguithings.batch_module.effect", "tooltip.justguithings.batch_module.compatibility"));
+    public static final RegistryObject<Item> POWER_COIL_MODULE = ITEMS.register("power_coil_module",
             () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
-                    MachineModuleTypes.INDUCTION_COIL,
-                    "tooltip.justguithings.induction_coil_module.effect",
-                    "tooltip.justguithings.induction_coil_module.compatibility"));
+                    MachineModuleTypes.POWER_COIL,
+                    "tooltip.justguithings.power_coil_module.effect",
+                    "tooltip.justguithings.power_coil_module.compatibility"));
 
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
@@ -90,15 +80,11 @@ public final class ModItems {
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> STEEL_INGOT = ITEMS.register("steel_ingot",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
-    public static final RegistryObject<Item> TEMPERED_STEEL_INGOT = ITEMS.register("tempered_steel_ingot",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> IRON_ROD = ITEMS.register("iron_rod",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> GOLD_ROD = ITEMS.register("gold_rod",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> STEEL_ROD = ITEMS.register("steel_rod",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
-    public static final RegistryObject<Item> TEMPERED_STEEL_ROD = ITEMS.register("tempered_steel_rod",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> IRON_WIRE = ITEMS.register("iron_wire",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
@@ -106,14 +92,12 @@ public final class ModItems {
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> STEEL_WIRE = ITEMS.register("steel_wire",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
-    public static final RegistryObject<Item> TEMPERED_STEEL_WIRE = ITEMS.register("tempered_steel_wire",
-            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> TENSIONING_SPINDLE = ITEMS.register("tensioning_spindle",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_MATERIALS).stacksTo(16),
                     "tooltip.justguithings.tensioning_spindle"));
-    public static final RegistryObject<Item> HARDENED_EXTRUSION_DIE = ITEMS.register("hardened_extrusion_die",
+    public static final RegistryObject<Item> PRECISION_ROLLER_ASSEMBLY = ITEMS.register("precision_roller_assembly",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_MATERIALS).stacksTo(16),
-                    "tooltip.justguithings.hardened_extrusion_die"));
+                    "tooltip.justguithings.precision_roller_assembly"));
 
     private ModItems() {}
 }

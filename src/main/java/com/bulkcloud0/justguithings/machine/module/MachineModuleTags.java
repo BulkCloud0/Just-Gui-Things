@@ -14,7 +14,7 @@ public final class MachineModuleTags {
     public static final Tags.IOptionalNamedTag<Item> EFFICIENCY = tag("efficiency");
     public static final Tags.IOptionalNamedTag<Item> BUFFER = tag("buffer");
     public static final Tags.IOptionalNamedTag<Item> BATCH = tag("batch");
-    public static final Tags.IOptionalNamedTag<Item> INDUCTION_COIL = tag("induction_coil");
+    public static final Tags.IOptionalNamedTag<Item> POWER_COIL = tag("power_coil");
 
     private MachineModuleTags() {}
 
@@ -44,8 +44,8 @@ public final class MachineModuleTags {
             match = MachineModuleTypes.BATCH;
             matchCount++;
         }
-        if (INDUCTION_COIL.contains(item)) {
-            match = MachineModuleTypes.INDUCTION_COIL;
+        if (POWER_COIL.contains(item)) {
+            match = MachineModuleTypes.POWER_COIL;
             matchCount++;
         }
 

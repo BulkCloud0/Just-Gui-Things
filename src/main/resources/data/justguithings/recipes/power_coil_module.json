@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GRG",
+    "WSW",
+    "GRG"
+  ],
+  "key": {
+    "G": {
+      "tag": "forge:wires/gold"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "W": {
+      "tag": "forge:wires/steel"
+    },
+    "S": {
+      "tag": "forge:rods/steel"
+    }
+  },
+  "result": {
+    "item": "justguithings:power_coil_module"
+  }
+}

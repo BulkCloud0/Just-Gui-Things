@@ -10,9 +10,8 @@ import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
 import com.bulkcloud0.justguithings.world.tile.IndustrialMixerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidReservoirTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidPumpTileEntity;
-import com.bulkcloud0.justguithings.world.tile.QuenchChamberTileEntity;
 import com.bulkcloud0.justguithings.world.tile.ResistiveFurnaceTileEntity;
-import com.bulkcloud0.justguithings.world.tile.PrecisionExtruderTileEntity;
+import com.bulkcloud0.justguithings.world.tile.RodMillTileEntity;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
 import com.bulkcloud0.justguithings.world.tile.WireMillTileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -21,7 +20,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public final class ModTileEntities {
-    public static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, JustGuiThings.MOD_ID);
+    public static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES =
+            DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, JustGuiThings.MOD_ID);
 
     public static final RegistryObject<TileEntityType<CoalGeneratorTileEntity>> COAL_GENERATOR = TILE_ENTITIES.register(
             "coal_generator", () -> TileEntityType.Builder.of(CoalGeneratorTileEntity::new, ModBlocks.COAL_GENERATOR.get()).build(null));
@@ -31,8 +31,6 @@ public final class ModTileEntities {
             "stamping_press", () -> TileEntityType.Builder.of(StampingPressTileEntity::new, ModBlocks.STAMPING_PRESS.get()).build(null));
     public static final RegistryObject<TileEntityType<IndustrialMixerTileEntity>> INDUSTRIAL_MIXER = TILE_ENTITIES.register(
             "industrial_mixer", () -> TileEntityType.Builder.of(IndustrialMixerTileEntity::new, ModBlocks.INDUSTRIAL_MIXER.get()).build(null));
-    public static final RegistryObject<TileEntityType<QuenchChamberTileEntity>> QUENCH_CHAMBER = TILE_ENTITIES.register(
-            "quench_chamber", () -> TileEntityType.Builder.of(QuenchChamberTileEntity::new, ModBlocks.QUENCH_CHAMBER.get()).build(null));
     public static final RegistryObject<TileEntityType<EnergyCellTileEntity>> ENERGY_CELL = TILE_ENTITIES.register(
             "energy_cell", () -> TileEntityType.Builder.of(EnergyCellTileEntity::new, ModBlocks.ENERGY_CELL.get()).build(null));
     public static final RegistryObject<TileEntityType<BasicEnergyCableTileEntity>> BASIC_ENERGY_CABLE = TILE_ENTITIES.register(
@@ -41,19 +39,14 @@ public final class ModTileEntities {
             "basic_item_pipe", () -> TileEntityType.Builder.of(BasicItemPipeTileEntity::new, ModBlocks.BASIC_ITEM_PIPE.get()).build(null));
     public static final RegistryObject<TileEntityType<BasicFluidPipeTileEntity>> BASIC_FLUID_PIPE = TILE_ENTITIES.register(
             "basic_fluid_pipe", () -> TileEntityType.Builder.of(BasicFluidPipeTileEntity::new, ModBlocks.BASIC_FLUID_PIPE.get()).build(null));
-
     public static final RegistryObject<TileEntityType<FluidReservoirTileEntity>> FLUID_RESERVOIR = TILE_ENTITIES.register(
             "fluid_reservoir", () -> TileEntityType.Builder.of(FluidReservoirTileEntity::new, ModBlocks.FLUID_RESERVOIR.get()).build(null));
-
     public static final RegistryObject<TileEntityType<FluidPumpTileEntity>> FLUID_PUMP = TILE_ENTITIES.register(
             "fluid_pump", () -> TileEntityType.Builder.of(FluidPumpTileEntity::new, ModBlocks.FLUID_PUMP.get()).build(null));
-
     public static final RegistryObject<TileEntityType<ResistiveFurnaceTileEntity>> RESISTIVE_FURNACE = TILE_ENTITIES.register(
             "resistive_furnace", () -> TileEntityType.Builder.of(ResistiveFurnaceTileEntity::new, ModBlocks.RESISTIVE_FURNACE.get()).build(null));
-
-    public static final RegistryObject<TileEntityType<PrecisionExtruderTileEntity>> PRECISION_EXTRUDER = TILE_ENTITIES.register(
-            "precision_extruder", () -> TileEntityType.Builder.of(PrecisionExtruderTileEntity::new, ModBlocks.PRECISION_EXTRUDER.get()).build(null));
-
+    public static final RegistryObject<TileEntityType<RodMillTileEntity>> ROD_MILL = TILE_ENTITIES.register(
+            "rod_mill", () -> TileEntityType.Builder.of(RodMillTileEntity::new, ModBlocks.ROD_MILL.get()).build(null));
     public static final RegistryObject<TileEntityType<WireMillTileEntity>> WIRE_MILL = TILE_ENTITIES.register(
             "wire_mill", () -> TileEntityType.Builder.of(WireMillTileEntity::new, ModBlocks.WIRE_MILL.get()).build(null));
 

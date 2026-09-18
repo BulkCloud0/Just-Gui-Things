@@ -6,11 +6,8 @@ Just Gui Things treats compatibility as part of the core architecture. Integrati
 
 Use the least coupled mechanism that solves the integration:
 
-1. Forge capabilities for runtime I/O:
-   - `IEnergyStorage`
-   - `IItemHandler`
-   - `IFluidHandler`
-2. Forge or Minecraft tags for shared materials and compatible item/fluid groups.
+1. Forge capabilities for runtime I/O: `IEnergyStorage`, `IItemHandler`, and `IFluidHandler`.
+2. Forge or Minecraft tags for shared materials and compatible groups.
 3. Data-driven JGT recipe serializers for processing support.
 4. Small JGT Java contracts only when tags and capabilities are not expressive enough.
 5. Dedicated `integration/<modid>` code only for behavior that truly requires another mod's API.
@@ -19,118 +16,49 @@ Core machine classes must not directly depend on Thermal, Mekanism, AllTheOres o
 
 ## Machine modules
 
-Built-in module types are identified by namespaced IDs:
+Built-in module types:
 
 - `justguithings:speed`
 - `justguithings:efficiency`
 - `justguithings:buffer`
 - `justguithings:batch`
-- `justguithings:induction_coil`
+- `justguithings:power_coil`
 
-A compatible item can participate in either of two ways:
+Supported module tags mirror those IDs under `justguithings:machine_modules/<type>`. A compatible item can implement `IMachineModule` or join exactly one module tag. Machines still decide which module types they support.
 
-- implement `IMachineModule` and return the desired module type; or
-- be added to one of the datapack tags below.
-
-Supported module tags:
-
-- `justguithings:machine_modules/speed`
-- `justguithings:machine_modules/efficiency`
-- `justguithings:machine_modules/buffer`
-- `justguithings:machine_modules/batch`
-- `justguithings:machine_modules/induction_coil`
-
-The tag route is preferred for simple compatibility because it does not require a compile-time dependency on JGT.
-
-An item must resolve to exactly one module tag. Items placed in multiple JGT module tags are treated as ambiguous and are not accepted as tagged modules.
-
-Machines still decide which module types they support. Supplying a valid module item does not make an unsupported module slot appear on a machine. The Resistive Furnace supports one `induction_coil` module, trading higher instantaneous FE demand and slightly higher total FE cost for double processing speed.
+The Resistive Furnace supports one `power_coil` module. It doubles processing speed while increasing FE/t to 2.5x, making it a throughput-versus-energy tradeoff rather than a tier.
 
 ## Materials and processing recipes
 
-JGT registers its common materials in Forge tags where a shared convention exists, including:
+JGT uses shared Forge tags where conventions exist, including dusts, plates, steel ingots, rods, and wires. Current built-in families include:
 
-- `forge:dusts/iron`
-- `forge:dusts/gold`
-- `forge:dusts/coal`
-- `forge:plates/iron`
-- `forge:plates/gold`
+- `forge:dusts/iron`, `forge:dusts/gold`, `forge:dusts/coal`
+- `forge:plates/iron`, `forge:plates/gold`
 - `forge:ingots/steel`
-- `forge:ingots/tempered_steel`
-- `forge:rods/iron`
-- `forge:rods/gold`
-- `forge:rods/steel`
-- `forge:rods/tempered_steel`
-- `forge:wires/iron`
-- `forge:wires/gold`
-- `forge:wires/steel`
-- `forge:wires/tempered_steel`
+- `forge:rods/iron`, `forge:rods/gold`, `forge:rods/steel`
+- `forge:wires/iron`, `forge:wires/gold`, `forge:wires/steel`
 
-Processing recipe inputs use Minecraft `Ingredient`, so item tags can be used directly in Crusher, Stamping Press, Resistive Furnace and Precision Extruder recipes. Tag-based outputs use `RecipeOutput`, allowing compatible output families such as `forge:ingots/<metal>` and `forge:rods/<metal>`.
+Processing recipe inputs use Minecraft `Ingredient`. Tag-based outputs use `RecipeOutput`, allowing compatible families such as `forge:ingots/<metal>`, `forge:rods/<metal>`, and `forge:wires/<metal>`.
 
 ## Machine-specific components
 
-Machine-specific components may expose a JGT tag when simple datapack substitution is useful. The Precision Extruder accepts:
+Machine-specific components can be replaced through datapack tags without a Java dependency:
 
-- `justguithings:machine_components/extrusion_dies`
-- `justguithings:machine_components/tensioning_spindles`
+- Rod Mill: `justguithings:machine_components/roller_assemblies`
+- Wire Mill: `justguithings:machine_components/tensioning_spindles`
 
-The built-in `Hardened Extrusion Die` and `Tensioning Spindle` are included in their respective tags. Other mods or datapacks may add equivalent components without a Java dependency on JGT.
-
-Quenching recipes support either an exact fluid ID or a fluid tag.
-
-Exact fluid:
-
-```json
-{
-  "fluid": "minecraft:water"
-}
-```
-
-Fluid tag:
-
-```json
-{
-  "fluid_tag": "minecraft:water"
-}
-```
-
-Define exactly one of `fluid` or `fluid_tag`. Fluid tags are preferred when multiple equivalent fluids should be accepted.
+The built-in components are `Precision Roller Assembly` and `Tensioning Spindle`.
 
 ## Side capabilities
 
-Side configuration is capability-specific:
-
 - `INPUT` and `OUTPUT` expose item handlers.
-- `FLUID_INPUT` exposes fluid input.
-- `FLUID_OUTPUT` exposes fluid output.
-- `ENERGY` exposes energy input.
-- `ENERGY_OUTPUT` exposes energy output.
-- `ENERGY_BOTH` exposes bidirectional energy.
+- `FLUID_INPUT` and `FLUID_OUTPUT` expose directional fluid handlers.
+- `ENERGY`, `ENERGY_OUTPUT`, and `ENERGY_BOTH` expose energy according to direction.
 
-Each machine provides only the side modes it actually supports. Side configuration NBT is versioned so old saves can be migrated when semantics change.
+Each machine exposes only the side modes it supports. Side-configuration NBT remains versioned.
 
 ## Optional-mod recipes
 
-Recipes that reference items owned by another mod must be soft dependencies. Use Forge recipe conditions such as:
+Recipes for optional material families use Forge tags and conditions so absent materials do not create invalid recipes. Direct references to another mod's items must remain guarded by appropriate Forge recipe conditions.
 
-```json
-"conditions": [
-  {
-    "type": "forge:mod_loaded",
-    "modid": "examplemod"
-  },
-  {
-    "type": "forge:item_exists",
-    "item": "examplemod:example_item"
-  }
-]
-```
-
-Do not add an unconditional recipe whose output or required ingredient belongs to an optional mod.
-
-The existing AllTheOres recipes follow this pattern: shared Forge tags are used for inputs, while external outputs are protected by mod/item existence conditions.
-
-## Compatibility rule
-
-A missing optional mod must never prevent JGT from loading. Compatibility should add behavior when another mod is present, not change the validity of the JGT core when it is absent.
+A missing optional mod must never prevent JGT from loading.
