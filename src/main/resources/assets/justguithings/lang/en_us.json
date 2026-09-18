@@ -45,5 +45,9 @@
   "block.justguithings.fluid_reservoir": "Fluid Reservoir",
   "container.justguithings.fluid_reservoir": "Fluid Reservoir",
   "tooltip.justguithings.fluid_reservoir.amount": "Stored Fluid: %s / %s mB",
-  "tooltip.justguithings.fluid_reservoir.portable": "Retains stored fluid when broken."
+  "tooltip.justguithings.fluid_reservoir.portable": "Retains stored fluid when broken.",
+  "block.justguithings.fluid_pump": "Fluid Pump",
+  "container.justguithings.fluid_pump": "Fluid Pump",
+  "screen.justguithings.fluid_pump.source_ok": "Water source: OK",
+  "screen.justguithings.fluid_pump.source_missing": "Water source: missing"
 }

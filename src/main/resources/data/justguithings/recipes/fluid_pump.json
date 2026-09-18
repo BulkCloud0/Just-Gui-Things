@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PFP",
+    "RBR",
+    "PIP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "F": { "item": "justguithings:basic_fluid_pipe" },
+    "R": { "item": "minecraft:redstone" },
+    "B": { "item": "minecraft:bucket" },
+    "I": { "tag": "forge:ingots/iron" }
+  },
+  "result": {
+    "item": "justguithings:fluid_pump"
+  }
+}

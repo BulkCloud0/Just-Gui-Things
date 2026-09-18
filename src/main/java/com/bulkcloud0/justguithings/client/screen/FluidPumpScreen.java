@@ -5,6 +5,7 @@ import com.bulkcloud0.justguithings.world.tile.FluidPumpTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
 
@@ -71,7 +72,9 @@ public class FluidPumpScreen extends ContainerScreen<FluidPumpContainer> {
                 "FE: " + menu.getEnergyStored() + " / " + FluidPumpTileEntity.ENERGY_CAPACITY,
                 82.0F, 6.0F, TEXT);
         font.draw(matrixStack,
-                menu.hasWaterSource() ? "Water source: OK" : "Water source: missing",
+                I18n.get(menu.hasWaterSource()
+                        ? "screen.justguithings.fluid_pump.source_ok"
+                        : "screen.justguithings.fluid_pump.source_missing"),
                 52.0F, 58.0F, menu.hasWaterSource() ? OK : BAD);
     }
 }
