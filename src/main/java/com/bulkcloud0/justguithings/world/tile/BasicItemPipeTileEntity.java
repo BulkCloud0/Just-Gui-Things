@@ -270,7 +270,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                 continue;
             }
 
-            TileEntity neighbor = level.getBlockEntity(endpoint.getNeighborPos());
+            TileEntity neighbor = getLoadedBlockEntity(endpoint.getNeighborPos());
             if (neighbor == null) {
                 continue;
             }
