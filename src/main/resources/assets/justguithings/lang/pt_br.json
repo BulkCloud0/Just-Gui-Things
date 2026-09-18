@@ -27,7 +27,7 @@
   "item.justguithings.tempered_steel_ingot": "Lingote de Aço Temperado",
   "tooltip.justguithings.energy_cell.energy": "Energia armazenada: %s / %s FE",
   "tooltip.justguithings.energy_cell.portable": "Mantém FE armazenado e configuração das faces ao ser quebrada.",
-  "tooltip.justguithings.configurator.use": "Clique com o botão direito em uma face para alternar Entrada / Saída / Energia / Desativado.",
+  "tooltip.justguithings.configurator.use": "Clique com o botão direito em faces configuráveis para alternar os modos de E/S suportados.",
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
   "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem",
   "tooltip.justguithings.efficiency_module.effect": "-20% no custo de FE de processamento por módulo, até 20% do valor base.",
@@ -39,5 +39,6 @@
   "jei.justguithings.crushing": "Trituração",
   "jei.justguithings.pressing": "Estampagem",
   "jei.justguithings.mixing": "Mistura Industrial",
-  "jei.justguithings.quenching": "Têmpera"
+  "jei.justguithings.quenching": "Têmpera",
+  "block.justguithings.basic_item_pipe": "Tubo de Itens Básico"
 }
