@@ -8,6 +8,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -281,6 +283,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         if (allowed.length == 0) {
             sideModes.put(side, MachineSideMode.DISABLED);
             setChanged();
+            syncToClient();
             return MachineSideMode.DISABLED;
         }
 
@@ -296,6 +299,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         MachineSideMode next = allowed[(currentIndex + 1) % allowed.length];
         sideModes.put(side, next);
         setChanged();
+        syncToClient();
         return next;
     }
 
@@ -466,6 +470,33 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         }
         nbt.put("SideConfig", config);
         return nbt;
+    }
+
+    @Override
+    public CompoundNBT getUpdateTag() {
+        return save(new CompoundNBT());
+    }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(worldPosition, 0, getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager networkManager, SUpdateTileEntityPacket packet) {
+        CompoundNBT tag = packet.getTag();
+        if (tag != null) {
+            handleUpdateTag(getBlockState(), tag);
+        }
+    }
+
+    protected final void syncToClient() {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        BlockState state = level.getBlockState(worldPosition);
+        level.sendBlockUpdated(worldPosition, state, state, 2);
     }
 
     @Nonnull

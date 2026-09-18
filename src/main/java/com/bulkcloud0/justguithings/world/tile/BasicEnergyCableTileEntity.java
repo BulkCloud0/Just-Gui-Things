@@ -115,6 +115,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         ConduitTransferMode next = getSideMode(direction).next();
         sideModes.put(direction, next);
         setChanged();
+        syncToClient();
         return next;
     }
 

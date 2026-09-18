@@ -1,6 +1,10 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.world.block.AbstractConduitBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -37,6 +41,33 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
     }
 
     protected abstract Class<T> getNetworkNodeClass();
+
+    @Override
+    public CompoundNBT getUpdateTag() {
+        return save(new CompoundNBT());
+    }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(worldPosition, 0, getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager networkManager, SUpdateTileEntityPacket packet) {
+        CompoundNBT tag = packet.getTag();
+        if (tag != null) {
+            handleUpdateTag(getBlockState(), tag);
+        }
+    }
+
+    protected final void syncToClient() {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        BlockState state = level.getBlockState(worldPosition);
+        level.sendBlockUpdated(worldPosition, state, state, 2);
+    }
 
     protected final void tickNetworkMaintenance(int visualRefreshInterval) {
         if (level == null || level.isClientSide) {
