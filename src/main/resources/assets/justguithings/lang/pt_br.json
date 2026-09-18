@@ -168,5 +168,14 @@
   "routing.justguithings.clipboard_resource.energy": "Energia",
   "routing.justguithings.clipboard_resource.unknown": "Desconhecida",
   "message.justguithings.item_pipe.side_mode": "Modo do tubo de itens %s: %s",
-  "message.justguithings.fluid_pipe.side_mode": "Modo do tubo de fluidos %s: %s"
+  "message.justguithings.fluid_pipe.side_mode": "Modo do tubo de fluidos %s: %s",
+  "machine_side_mode.justguithings.disabled": "Desativado",
+  "machine_side_mode.justguithings.input": "Entrada de Itens",
+  "machine_side_mode.justguithings.output": "Saída de Itens",
+  "machine_side_mode.justguithings.energy": "Entrada de Energia",
+  "machine_side_mode.justguithings.fluid_input": "Entrada de Fluido",
+  "machine_side_mode.justguithings.energy_output": "Saída de Energia",
+  "machine_side_mode.justguithings.energy_both": "Entrada + Saída de Energia",
+  "machine_side_mode.justguithings.fluid_output": "Saída de Fluido",
+  "message.justguithings.machine.side_mode": "Modo da face %s da máquina: %s"
 }

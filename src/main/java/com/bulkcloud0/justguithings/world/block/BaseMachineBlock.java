@@ -14,7 +14,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -73,7 +73,11 @@ public abstract class BaseMachineBlock<T extends BaseMachineTileEntity> extends 
             if (!world.isClientSide) {
                 MachineSideMode mode = tile.cycleSideMode(hit.getDirection());
                 String face = hit.getDirection().toString().toUpperCase(Locale.ROOT);
-                player.displayClientMessage(new StringTextComponent(face + ": " + mode.name()), true);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.machine.side_mode",
+                                face, mode.getDisplayName()),
+                        true);
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
         }
