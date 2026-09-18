@@ -128,5 +128,9 @@
   "message.justguithings.routing_controller.fluid_source_nbt_ignored": "%s fluid source filter now ignores NBT.",
   "message.justguithings.routing_controller.fluid_source_redstone": "%s fluid source redstone condition: %s",
   "message.justguithings.routing_controller.fluid_min_stock": "%s fluid source minimum reserve: %s mB",
-  "message.justguithings.routing_controller.fluid_sample_missing": "No fluid sample found in %s."
+  "message.justguithings.routing_controller.fluid_sample_missing": "No fluid sample found in %s.",
+  "message.justguithings.routing_controller.energy_priority": "%s energy consumer priority: %s",
+  "message.justguithings.routing_controller.energy_redstone": "%s energy consumer redstone condition: %s",
+  "message.justguithings.routing_controller.energy_target_only": "%s energy cable uses TARGET scope for consumer routing.",
+  "message.justguithings.routing_controller.energy_mode_unsupported": "Routing mode %s does not apply to energy consumers."
 }

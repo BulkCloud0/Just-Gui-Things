@@ -133,3 +133,21 @@ Minimum reserve is counted across all exposed tanks for the candidate fluid iden
 The pipe's recovery buffer obeys destination filter and priority rules when retrying a partial transfer. This prevents buffered fluid from bypassing endpoint routing policy.
 
 External blocks remain integrated only through Forge `IFluidHandler`.
+
+
+## Energy-cable routing
+
+Basic Energy Cables keep Forge `IEnergyStorage` as the only external energy integration contract.
+
+Energy routing intentionally models only consumer endpoints in v1. Producers already inject FE into cable buffers through the cable's exposed `IEnergyStorage`, so source filters/reserves would not match the current network flow.
+
+Each cable face can store one `EnergyRoutingTargetRule` with:
+
+- priority: `HIGH`, `NORMAL`, or `LOW`;
+- redstone condition: `ALWAYS`, `REQUIRE_SIGNAL`, or `REQUIRE_NO_SIGNAL`.
+
+The Routing Controller configures energy consumers only in `TARGET` scope. `PRIORITY` and `REDSTONE` are the supported edit modes; filter/NBT/source modes report that they do not apply instead of silently changing semantics.
+
+Consumer discovery is keyed by block position plus exposed side, preserving compatibility with sided `IEnergyStorage` implementations. Distribution checks HIGH consumers before NORMAL and LOW consumers, while the round-robin cursor preserves fairness within active endpoints.
+
+Existing cables load with NORMAL priority and ALWAYS-active redstone behavior on every face, preserving previous networks until configured.
