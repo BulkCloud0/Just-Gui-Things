@@ -45,6 +45,9 @@ public final class ModItems {
     public static final RegistryObject<Item> RESISTIVE_FURNACE = ITEMS.register("resistive_furnace",
             () -> new BlockItem(ModBlocks.RESISTIVE_FURNACE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> PRECISION_EXTRUDER = ITEMS.register("precision_extruder",
+            () -> new BlockItem(ModBlocks.PRECISION_EXTRUDER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
                     "tooltip.justguithings.configurator.use"));
@@ -81,6 +84,11 @@ public final class ModItems {
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> TEMPERED_STEEL_INGOT = ITEMS.register("tempered_steel_ingot",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> TEMPERED_STEEL_ROD = ITEMS.register("tempered_steel_rod",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> HARDENED_EXTRUSION_DIE = ITEMS.register("hardened_extrusion_die",
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_MATERIALS).stacksTo(16),
+                    "tooltip.justguithings.hardened_extrusion_die"));
 
     private ModItems() {}
 }
