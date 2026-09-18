@@ -38,6 +38,10 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     private final int inputCount;
     private final int outputStart;
     private final int outputCount;
+    private final int maxEnergyExtractPerTick;
+
+    private long energyExtractBudgetTick = Long.MIN_VALUE;
+    private int energyExtractedThisTick;
 
     protected final ModEnergyStorage energyStorage;
     protected final ItemStackHandler inventory;
@@ -76,6 +80,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         this.inputCount = inputCount;
         this.outputStart = outputStart;
         this.outputCount = outputCount;
+        this.maxEnergyExtractPerTick = Math.max(0, maxExtract);
 
         this.energyStorage = new ModEnergyStorage(energyCapacity, maxReceive, maxExtract) {
             @Override
@@ -89,11 +94,22 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
             @Override
             public int extractEnergy(int maxExtract, boolean simulate) {
-                int extracted = super.extractEnergy(maxExtract, simulate);
+                int allowed = getEnergyExtractAllowance(maxExtract);
+                if (allowed <= 0) {
+                    return 0;
+                }
+
+                int extracted = super.extractEnergy(allowed, simulate);
                 if (!simulate && extracted > 0) {
+                    recordEnergyExtracted(extracted);
                     setChanged();
                 }
                 return extracted;
+            }
+
+            @Override
+            public boolean canExtract() {
+                return super.canExtract() && getEnergyExtractAllowance(Integer.MAX_VALUE) > 0;
             }
         };
 
@@ -293,6 +309,42 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
     public int getEnergyCapacity() {
         return baseEnergyCapacity;
+    }
+
+    private int getEnergyExtractAllowance(int requested) {
+        if (requested <= 0 || maxEnergyExtractPerTick <= 0) {
+            return 0;
+        }
+        if (level == null) {
+            return Math.min(requested, maxEnergyExtractPerTick);
+        }
+
+        refreshEnergyExtractBudget();
+        return Math.min(requested, Math.max(0, maxEnergyExtractPerTick - energyExtractedThisTick));
+    }
+
+    private void recordEnergyExtracted(int amount) {
+        if (amount <= 0 || level == null) {
+            return;
+        }
+        refreshEnergyExtractBudget();
+        energyExtractedThisTick = Math.min(maxEnergyExtractPerTick, energyExtractedThisTick + amount);
+    }
+
+    protected final void refundEnergyExtractBudget(int amount) {
+        if (amount <= 0 || level == null) {
+            return;
+        }
+        refreshEnergyExtractBudget();
+        energyExtractedThisTick = Math.max(0, energyExtractedThisTick - amount);
+    }
+
+    private void refreshEnergyExtractBudget() {
+        long gameTime = level.getGameTime();
+        if (energyExtractBudgetTick != gameTime) {
+            energyExtractBudgetTick = gameTime;
+            energyExtractedThisTick = 0;
+        }
     }
 
     @Override
