@@ -1,9 +1,7 @@
 package com.bulkcloud0.justguithings.world.tile;
 
-import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
-import com.bulkcloud0.justguithings.machine.MachineSidedItemHandler;
-import com.bulkcloud0.justguithings.machine.SidedEnergyInputHandler;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -14,87 +12,26 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumMap;
 import java.util.Optional;
 
-public class CrusherTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class CrusherTileEntity extends BaseMachineTileEntity {
     public static final int CAPACITY = 100_000;
     public static final int BUFFER_CAPACITY_PER_MODULE = 100_000;
     public static final int MAX_RECEIVE = 1_000;
     public static final int DEFAULT_ENERGY_PER_TICK = 20;
     public static final int DEFAULT_PROCESS_TICKS = 100;
     public static final int MAX_MODULES_PER_TYPE = 4;
-
-    private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
-        @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            int received = super.receiveEnergy(maxReceive, simulate);
-            if (!simulate && received > 0) {
-                setChanged();
-            }
-            return received;
-        }
-    };
-
-    private final ItemStackHandler inventory = new ItemStackHandler(6) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            switch (slot) {
-                case 0:
-                    return canAcceptInput(stack);
-                case 2:
-                    return stack.getItem() == ModItems.SPEED_UPGRADE.get();
-                case 3:
-                    return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
-                case 4:
-                    return stack.getItem() == ModItems.BUFFER_UPGRADE.get();
-                case 5:
-                    return stack.getItem() == ModItems.BATCH_UPGRADE.get();
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            if (slot >= 2 && slot <= 5) {
-                return MAX_MODULES_PER_TYPE;
-            }
-            return super.getSlotLimit(slot);
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            if (slot == 4) {
-                energyStorage.setCapacity(getEnergyCapacity());
-            }
-            setChanged();
-        }
-    };
-
-    private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
 
     private final IIntArray dataAccess = new IIntArray() {
         @Override
@@ -161,27 +98,36 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     private ResourceLocation activeRecipeId;
 
     public CrusherTileEntity() {
-        super(ModTileEntities.CRUSHER.get());
-        initializeDefaultSides();
-        initializeSidedCapabilities();
+        super(ModTileEntities.CRUSHER.get(), CAPACITY, MAX_RECEIVE, 6, 0, 1, 1, 1);
     }
 
-    private void initializeDefaultSides() {
-        sideModes.put(Direction.UP, MachineSideMode.INPUT);
-        sideModes.put(Direction.DOWN, MachineSideMode.OUTPUT);
-        sideModes.put(Direction.NORTH, MachineSideMode.ENERGY);
-        sideModes.put(Direction.SOUTH, MachineSideMode.ENERGY);
-        sideModes.put(Direction.WEST, MachineSideMode.ENERGY);
-        sideModes.put(Direction.EAST, MachineSideMode.ENERGY);
+    @Override
+    protected boolean isItemValidForSlot(int slot, ItemStack stack) {
+        switch (slot) {
+            case 0:
+                return canAcceptInput(stack);
+            case 2:
+                return stack.getItem() == ModItems.SPEED_UPGRADE.get();
+            case 3:
+                return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
+            case 4:
+                return stack.getItem() == ModItems.BUFFER_UPGRADE.get();
+            case 5:
+                return stack.getItem() == ModItems.BATCH_UPGRADE.get();
+            default:
+                return false;
+        }
     }
 
-    private void initializeSidedCapabilities() {
-        for (Direction direction : Direction.values()) {
-            final Direction side = direction;
-            sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
-                    inventory, 0, 1, 1, 1, () -> getSideMode(side))));
-            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new SidedEnergyInputHandler(
-                    energyStorage, () -> getSideMode(side) == MachineSideMode.ENERGY)));
+    @Override
+    protected int getMachineSlotLimit(int slot) {
+        return slot >= 2 && slot <= 5 ? MAX_MODULES_PER_TYPE : super.getMachineSlotLimit(slot);
+    }
+
+    @Override
+    protected void onInventoryChanged(int slot) {
+        if (slot == 4) {
+            energyStorage.setCapacity(getEnergyCapacity());
         }
     }
 
@@ -345,23 +291,8 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         return CAPACITY + BUFFER_CAPACITY_PER_MODULE * getBufferUpgradeCount();
     }
 
-    public MachineSideMode getSideMode(Direction side) {
-        return sideModes.getOrDefault(side, MachineSideMode.DISABLED);
-    }
-
-    public MachineSideMode cycleSideMode(Direction side) {
-        MachineSideMode mode = getSideMode(side).next();
-        sideModes.put(side, mode);
-        setChanged();
-        return mode;
-    }
-
     public boolean canAcceptInput(ItemStack stack) {
         return findRecipe(stack).isPresent();
-    }
-
-    public ItemStackHandler getInventory() {
-        return inventory;
     }
 
     public IIntArray getDataAccess() {
@@ -382,9 +313,6 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
-        inventory.deserializeNBT(nbt.getCompound("Inventory"));
-        energyStorage.setCapacity(getEnergyCapacity());
-        energyStorage.setEnergy(nbt.getInt("Energy"));
         progress = Math.max(0, nbt.getInt("Progress"));
         activeRecipeId = null;
         activeBatchSize = 1;
@@ -406,73 +334,18 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
             activeBatchSize = 1;
         }
 
-        if (nbt.contains("SideConfig")) {
-            CompoundNBT sideConfig = nbt.getCompound("SideConfig");
-            for (Direction direction : Direction.values()) {
-                String key = "Side" + direction.ordinal();
-                if (sideConfig.contains(key)) {
-                    sideModes.put(direction, MachineSideMode.fromOrdinal(sideConfig.getInt(key)));
-                }
-            }
-        }
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         super.save(nbt);
-        nbt.put("Inventory", inventory.serializeNBT());
-        nbt.putInt("Energy", energyStorage.getEnergyStored());
         nbt.putInt("Progress", progress);
         if (activeRecipeId != null && progress > 0) {
             nbt.putString("ActiveRecipe", activeRecipeId.toString());
             nbt.putInt("ActiveBatchSize", Math.max(1, activeBatchSize));
         }
 
-        CompoundNBT sideConfig = new CompoundNBT();
-        for (Direction direction : Direction.values()) {
-            sideConfig.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
-        }
-        nbt.put("SideConfig", sideConfig);
         return nbt;
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY) {
-            if (side == null) {
-                return energyCapability.cast();
-            }
-            if (getSideMode(side) == MachineSideMode.ENERGY) {
-                LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
-                return sided == null ? LazyOptional.empty() : sided.cast();
-            }
-            return LazyOptional.empty();
-        }
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (side == null) {
-                return itemCapability.cast();
-            }
-            MachineSideMode mode = getSideMode(side);
-            if (mode == MachineSideMode.INPUT || mode == MachineSideMode.OUTPUT) {
-                LazyOptional<IItemHandler> sided = sidedItemCapabilities.get(side);
-                return sided == null ? LazyOptional.empty() : sided.cast();
-            }
-            return LazyOptional.empty();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        energyCapability.invalidate();
-        itemCapability.invalidate();
-        for (LazyOptional<IItemHandler> capability : sidedItemCapabilities.values()) {
-            capability.invalidate();
-        }
-        for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
-            capability.invalidate();
-        }
-    }
 }

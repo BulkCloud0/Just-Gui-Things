@@ -1,9 +1,7 @@
 package com.bulkcloud0.justguithings.world.tile;
 
-import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
-import com.bulkcloud0.justguithings.machine.MachineSidedItemHandler;
-import com.bulkcloud0.justguithings.machine.SidedEnergyInputHandler;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -14,79 +12,25 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumMap;
 import java.util.Optional;
 
-public class StampingPressTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class StampingPressTileEntity extends BaseMachineTileEntity {
     public static final int CAPACITY = 100_000;
     public static final int MAX_RECEIVE = 1_000;
     public static final int DEFAULT_PROCESS_TICKS = 120;
     public static final int DEFAULT_ENERGY_PER_TICK = 30;
     public static final int MAX_MODULES_PER_TYPE = 4;
-
-    private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
-        @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            int received = super.receiveEnergy(maxReceive, simulate);
-            if (!simulate && received > 0) {
-                setChanged();
-            }
-            return received;
-        }
-    };
-
-    private final ItemStackHandler inventory = new ItemStackHandler(4) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            switch (slot) {
-                case 0:
-                    return canAcceptInput(stack);
-                case 2:
-                    return stack.getItem() == ModItems.SPEED_UPGRADE.get();
-                case 3:
-                    return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            if (slot == 2 || slot == 3) {
-                return MAX_MODULES_PER_TYPE;
-            }
-            return super.getSlotLimit(slot);
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            setChanged();
-        }
-    };
-
-    private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
 
     private final IIntArray dataAccess = new IIntArray() {
         @Override
@@ -130,24 +74,26 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
     private ResourceLocation activeRecipeId;
 
     public StampingPressTileEntity() {
-        super(ModTileEntities.STAMPING_PRESS.get());
-        sideModes.put(Direction.UP, MachineSideMode.INPUT);
-        sideModes.put(Direction.DOWN, MachineSideMode.OUTPUT);
-        sideModes.put(Direction.NORTH, MachineSideMode.ENERGY);
-        sideModes.put(Direction.SOUTH, MachineSideMode.ENERGY);
-        sideModes.put(Direction.WEST, MachineSideMode.ENERGY);
-        sideModes.put(Direction.EAST, MachineSideMode.ENERGY);
-        initializeSidedCapabilities();
+        super(ModTileEntities.STAMPING_PRESS.get(), CAPACITY, MAX_RECEIVE, 4, 0, 1, 1, 1);
     }
 
-    private void initializeSidedCapabilities() {
-        for (Direction direction : Direction.values()) {
-            final Direction side = direction;
-            sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
-                    inventory, 0, 1, 1, 1, () -> getSideMode(side))));
-            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new SidedEnergyInputHandler(
-                    energyStorage, () -> getSideMode(side) == MachineSideMode.ENERGY)));
+    @Override
+    protected boolean isItemValidForSlot(int slot, ItemStack stack) {
+        switch (slot) {
+            case 0:
+                return canAcceptInput(stack);
+            case 2:
+                return stack.getItem() == ModItems.SPEED_UPGRADE.get();
+            case 3:
+                return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
+            default:
+                return false;
         }
+    }
+
+    @Override
+    protected int getMachineSlotLimit(int slot) {
+        return slot == 2 || slot == 3 ? MAX_MODULES_PER_TYPE : super.getMachineSlotLimit(slot);
     }
 
     @Override
@@ -262,23 +208,8 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
         return findRecipe(stack).isPresent();
     }
 
-    public ItemStackHandler getInventory() {
-        return inventory;
-    }
-
     public IIntArray getDataAccess() {
         return dataAccess;
-    }
-
-    public MachineSideMode getSideMode(Direction side) {
-        return sideModes.getOrDefault(side, MachineSideMode.DISABLED);
-    }
-
-    public MachineSideMode cycleSideMode(Direction side) {
-        MachineSideMode mode = getSideMode(side).next();
-        sideModes.put(side, mode);
-        setChanged();
-        return mode;
     }
 
     @Override
@@ -295,10 +226,6 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
-        CompoundNBT inventoryNbt = nbt.getCompound("Inventory").copy();
-        inventoryNbt.putInt("Size", 4);
-        inventory.deserializeNBT(inventoryNbt);
-        energyStorage.setEnergy(nbt.getInt("Energy"));
         progress = Math.max(0, nbt.getInt("Progress"));
         activeRecipeId = null;
 
@@ -315,71 +242,16 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
             progress = 0;
         }
 
-        if (nbt.contains("SideConfig")) {
-            CompoundNBT config = nbt.getCompound("SideConfig");
-            for (Direction direction : Direction.values()) {
-                String key = "Side" + direction.ordinal();
-                if (config.contains(key)) {
-                    sideModes.put(direction, MachineSideMode.fromOrdinal(config.getInt(key)));
-                }
-            }
-        }
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         super.save(nbt);
-        nbt.put("Inventory", inventory.serializeNBT());
-        nbt.putInt("Energy", energyStorage.getEnergyStored());
         nbt.putInt("Progress", progress);
         if (activeRecipeId != null && progress > 0) {
             nbt.putString("ActiveRecipe", activeRecipeId.toString());
         }
-        CompoundNBT config = new CompoundNBT();
-        for (Direction direction : Direction.values()) {
-            config.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
-        }
-        nbt.put("SideConfig", config);
         return nbt;
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY) {
-            if (side == null) {
-                return energyCapability.cast();
-            }
-            if (getSideMode(side) == MachineSideMode.ENERGY) {
-                LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
-                return sided == null ? LazyOptional.empty() : sided.cast();
-            }
-            return LazyOptional.empty();
-        }
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (side == null) {
-                return itemCapability.cast();
-            }
-            MachineSideMode mode = getSideMode(side);
-            if (mode == MachineSideMode.INPUT || mode == MachineSideMode.OUTPUT) {
-                LazyOptional<IItemHandler> sided = sidedItemCapabilities.get(side);
-                return sided == null ? LazyOptional.empty() : sided.cast();
-            }
-            return LazyOptional.empty();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        energyCapability.invalidate();
-        itemCapability.invalidate();
-        for (LazyOptional<IItemHandler> capability : sidedItemCapabilities.values()) {
-            capability.invalidate();
-        }
-        for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
-            capability.invalidate();
-        }
-    }
 }

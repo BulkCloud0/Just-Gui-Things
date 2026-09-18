@@ -1,0 +1,221 @@
+package com.bulkcloud0.justguithings.machine;
+
+import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import net.minecraft.block.BlockState;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.EnumMap;
+
+public abstract class BaseMachineTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+    private final int baseEnergyCapacity;
+    private final int inputStart;
+    private final int inputCount;
+    private final int outputStart;
+    private final int outputCount;
+
+    protected final ModEnergyStorage energyStorage;
+    protected final ItemStackHandler inventory;
+
+    private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
+
+    private LazyOptional<IEnergyStorage> energyCapability;
+    private LazyOptional<IItemHandler> itemCapability;
+
+    protected BaseMachineTileEntity(TileEntityType<?> tileEntityType,
+                                    int energyCapacity,
+                                    int maxReceive,
+                                    int inventorySize,
+                                    int inputStart,
+                                    int inputCount,
+                                    int outputStart,
+                                    int outputCount) {
+        super(tileEntityType);
+        this.baseEnergyCapacity = energyCapacity;
+        this.inputStart = inputStart;
+        this.inputCount = inputCount;
+        this.outputStart = outputStart;
+        this.outputCount = outputCount;
+
+        this.energyStorage = new ModEnergyStorage(energyCapacity, maxReceive, 0) {
+            @Override
+            public int receiveEnergy(int maxReceive, boolean simulate) {
+                int received = super.receiveEnergy(maxReceive, simulate);
+                if (!simulate && received > 0) {
+                    setChanged();
+                }
+                return received;
+            }
+        };
+
+        this.inventory = new ItemStackHandler(inventorySize) {
+            @Override
+            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                return isItemValidForSlot(slot, stack);
+            }
+
+            @Override
+            public int getSlotLimit(int slot) {
+                return getMachineSlotLimit(slot);
+            }
+
+            @Override
+            protected void onContentsChanged(int slot) {
+                onInventoryChanged(slot);
+                setChanged();
+            }
+        };
+
+        initializeDefaultSides();
+        initializeCapabilities();
+    }
+
+    protected abstract boolean isItemValidForSlot(int slot, ItemStack stack);
+
+    protected int getMachineSlotLimit(int slot) {
+        return 64;
+    }
+
+    protected void onInventoryChanged(int slot) {
+    }
+
+    private void initializeDefaultSides() {
+        sideModes.put(Direction.UP, MachineSideMode.INPUT);
+        sideModes.put(Direction.DOWN, MachineSideMode.OUTPUT);
+        sideModes.put(Direction.NORTH, MachineSideMode.ENERGY);
+        sideModes.put(Direction.SOUTH, MachineSideMode.ENERGY);
+        sideModes.put(Direction.WEST, MachineSideMode.ENERGY);
+        sideModes.put(Direction.EAST, MachineSideMode.ENERGY);
+    }
+
+    private void initializeCapabilities() {
+        energyCapability = LazyOptional.of(() -> energyStorage);
+        itemCapability = LazyOptional.of(() -> inventory);
+
+        for (Direction direction : Direction.values()) {
+            final Direction side = direction;
+            sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
+                    inventory, inputStart, inputCount, outputStart, outputCount, () -> getSideMode(side))));
+            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new SidedEnergyInputHandler(
+                    energyStorage, () -> getSideMode(side) == MachineSideMode.ENERGY)));
+        }
+    }
+
+    protected final void setSideMode(Direction side, MachineSideMode mode) {
+        sideModes.put(side, mode);
+    }
+
+    public MachineSideMode getSideMode(Direction side) {
+        return sideModes.getOrDefault(side, MachineSideMode.DISABLED);
+    }
+
+    public MachineSideMode cycleSideMode(Direction side) {
+        MachineSideMode mode = getSideMode(side).next();
+        sideModes.put(side, mode);
+        setChanged();
+        return mode;
+    }
+
+    public ItemStackHandler getInventory() {
+        return inventory;
+    }
+
+    public int getEnergyCapacity() {
+        return baseEnergyCapacity;
+    }
+
+    @Override
+    public void load(BlockState state, CompoundNBT nbt) {
+        super.load(state, nbt);
+
+        CompoundNBT inventoryNbt = nbt.getCompound("Inventory").copy();
+        inventoryNbt.putInt("Size", inventory.getSlots());
+        inventory.deserializeNBT(inventoryNbt);
+
+        energyStorage.setCapacity(getEnergyCapacity());
+        energyStorage.setEnergy(nbt.getInt("Energy"));
+
+        if (nbt.contains("SideConfig")) {
+            CompoundNBT config = nbt.getCompound("SideConfig");
+            for (Direction direction : Direction.values()) {
+                String key = "Side" + direction.ordinal();
+                if (config.contains(key)) {
+                    sideModes.put(direction, MachineSideMode.fromOrdinal(config.getInt(key)));
+                }
+            }
+        }
+    }
+
+    @Override
+    public CompoundNBT save(CompoundNBT nbt) {
+        super.save(nbt);
+        nbt.put("Inventory", inventory.serializeNBT());
+        nbt.putInt("Energy", energyStorage.getEnergyStored());
+
+        CompoundNBT config = new CompoundNBT();
+        for (Direction direction : Direction.values()) {
+            config.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
+        }
+        nbt.put("SideConfig", config);
+        return nbt;
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityEnergy.ENERGY) {
+            if (side == null) {
+                return energyCapability.cast();
+            }
+            if (getSideMode(side) == MachineSideMode.ENERGY) {
+                LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
+                return sided == null ? LazyOptional.empty() : sided.cast();
+            }
+            return LazyOptional.empty();
+        }
+
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            if (side == null) {
+                return itemCapability.cast();
+            }
+            MachineSideMode mode = getSideMode(side);
+            if (mode == MachineSideMode.INPUT || mode == MachineSideMode.OUTPUT) {
+                LazyOptional<IItemHandler> sided = sidedItemCapabilities.get(side);
+                return sided == null ? LazyOptional.empty() : sided.cast();
+            }
+            return LazyOptional.empty();
+        }
+
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        energyCapability.invalidate();
+        itemCapability.invalidate();
+
+        for (LazyOptional<IItemHandler> capability : sidedItemCapabilities.values()) {
+            capability.invalidate();
+        }
+        for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
+            capability.invalidate();
+        }
+    }
+}
