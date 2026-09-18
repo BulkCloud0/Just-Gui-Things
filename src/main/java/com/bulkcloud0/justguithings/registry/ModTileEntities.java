@@ -11,6 +11,7 @@ import com.bulkcloud0.justguithings.world.tile.IndustrialMixerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidReservoirTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidPumpTileEntity;
 import com.bulkcloud0.justguithings.world.tile.QuenchChamberTileEntity;
+import com.bulkcloud0.justguithings.world.tile.ResistiveFurnaceTileEntity;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
@@ -44,6 +45,9 @@ public final class ModTileEntities {
 
     public static final RegistryObject<TileEntityType<FluidPumpTileEntity>> FLUID_PUMP = TILE_ENTITIES.register(
             "fluid_pump", () -> TileEntityType.Builder.of(FluidPumpTileEntity::new, ModBlocks.FLUID_PUMP.get()).build(null));
+
+    public static final RegistryObject<TileEntityType<ResistiveFurnaceTileEntity>> RESISTIVE_FURNACE = TILE_ENTITIES.register(
+            "resistive_furnace", () -> TileEntityType.Builder.of(ResistiveFurnaceTileEntity::new, ModBlocks.RESISTIVE_FURNACE.get()).build(null));
 
     private ModTileEntities() {}
 }
