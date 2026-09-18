@@ -1,6 +1,8 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.energy.SidedEnergyConduitHandler;
+import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.logistics.EnergyRoutingTargetRule;
 import com.bulkcloud0.justguithings.logistics.FairShareAllocator;
 import com.bulkcloud0.justguithings.logistics.RoutingPriority;
@@ -55,14 +57,26 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         }
     };
 
+    private final EnumMap<Direction, ConduitTransferMode> sideModes = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, EnergyRoutingTargetRule> targetRules = new EnumMap<>(Direction.class);
-    private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
+    private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities =
+            new EnumMap<>(Direction.class);
+
+    private LazyOptional<IEnergyStorage> unsidedEnergyCapability = LazyOptional.of(() -> energyStorage);
     private int distributionCursor;
 
     public BasicEnergyCableTileEntity() {
         super(ModTileEntities.BASIC_ENERGY_CABLE.get(), NETWORK_CACHE_TTL);
         for (Direction direction : Direction.values()) {
+            sideModes.put(direction, ConduitTransferMode.BOTH);
             targetRules.put(direction, new EnergyRoutingTargetRule());
+
+            final Direction side = direction;
+            sidedEnergyCapabilities.put(side, LazyOptional.of(() ->
+                    new SidedEnergyConduitHandler(
+                            energyStorage,
+                            () -> getSideMode(side).canPull(),
+                            () -> getSideMode(side).canPush())));
         }
     }
 
@@ -88,6 +102,17 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         }
 
         distributeEnergy(getCachedNetwork());
+    }
+
+    public ConduitTransferMode getSideMode(Direction direction) {
+        return sideModes.getOrDefault(direction, ConduitTransferMode.BOTH);
+    }
+
+    public ConduitTransferMode cycleSideMode(Direction direction) {
+        ConduitTransferMode next = getSideMode(direction).next();
+        sideModes.put(direction, next);
+        setChanged();
+        return next;
     }
 
     public RoutingPriority cycleTargetPriority(Direction direction) {
@@ -235,6 +260,10 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
             boolean cablePowered = level.hasNeighborSignal(cable.getBlockPos());
 
             for (Direction direction : Direction.values()) {
+                if (!cable.getSideMode(direction).canPush()) {
+                    continue;
+                }
+
                 BlockPos neighborPos = cable.getBlockPos().relative(direction);
                 if (cablePositions.contains(neighborPos)) {
                     continue;
@@ -336,7 +365,19 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         energyStorage.setEnergy(nbt.getInt("Energy"));
 
         for (Direction direction : Direction.values()) {
+            sideModes.put(direction, ConduitTransferMode.BOTH);
             targetRules.put(direction, new EnergyRoutingTargetRule());
+        }
+
+        if (nbt.contains("SideConfig")) {
+            CompoundNBT config = nbt.getCompound("SideConfig");
+            for (Direction direction : Direction.values()) {
+                String key = "Side" + direction.ordinal();
+                if (config.contains(key)) {
+                    sideModes.put(direction,
+                            ConduitTransferMode.fromOrdinal(config.getInt(key)));
+                }
+            }
         }
 
         if (nbt.contains("RoutingConfig")) {
@@ -358,6 +399,12 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         super.save(nbt);
         nbt.putInt("Energy", energyStorage.getEnergyStored());
 
+        CompoundNBT config = new CompoundNBT();
+        for (Direction direction : Direction.values()) {
+            config.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
+        }
+        nbt.put("SideConfig", config);
+
         CompoundNBT routing = new CompoundNBT();
         for (Direction direction : Direction.values()) {
             routing.put("TargetRule" + direction.ordinal(), getMutableTargetRule(direction).save());
@@ -371,7 +418,17 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            return energyCapability.cast();
+            if (side == null) {
+                return unsidedEnergyCapability.cast();
+            }
+
+            ConduitTransferMode mode = getSideMode(side);
+            if (mode == ConduitTransferMode.DISABLED) {
+                return LazyOptional.empty();
+            }
+
+            LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
+            return sided == null ? LazyOptional.empty() : sided.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -379,7 +436,10 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     @Override
     public void setRemoved() {
         super.setRemoved();
-        energyCapability.invalidate();
+        unsidedEnergyCapability.invalidate();
+        for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
+            capability.invalidate();
+        }
     }
 
     private static final class EnergyTargetEndpoint {

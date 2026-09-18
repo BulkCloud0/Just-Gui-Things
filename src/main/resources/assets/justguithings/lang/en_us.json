@@ -132,5 +132,11 @@
   "message.justguithings.routing_controller.energy_priority": "%s energy consumer priority: %s",
   "message.justguithings.routing_controller.energy_redstone": "%s energy consumer redstone condition: %s",
   "message.justguithings.routing_controller.energy_target_only": "%s energy cable uses TARGET scope for consumer routing.",
-  "message.justguithings.routing_controller.energy_mode_unsupported": "Routing mode %s does not apply to energy consumers."
+  "message.justguithings.routing_controller.energy_mode_unsupported": "Routing mode %s does not apply to energy consumers.",
+  "routing.justguithings.energy_side_mode.both": "Input + Output",
+  "routing.justguithings.energy_side_mode.input": "Input",
+  "routing.justguithings.energy_side_mode.output": "Output",
+  "routing.justguithings.energy_side_mode.disabled": "Disabled",
+  "message.justguithings.energy_cable.side_mode": "%s energy cable mode: %s",
+  "message.justguithings.routing_controller.energy_output_required": "%s must be an energy Output or Input + Output face before consumer routing can apply."
 }
