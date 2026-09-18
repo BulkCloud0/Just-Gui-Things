@@ -73,7 +73,6 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
             sideModes.put(direction, ConduitTransferMode.BOTH);
             targetRules.put(direction, new EnergyRoutingTargetRule());
             sourceRules.put(direction, new EnergyRoutingSourceRule());
-            sourceRules.put(direction, new EnergyRoutingSourceRule());
 
             final Direction side = direction;
             sidedEnergyCapabilities.put(side, LazyOptional.of(() ->
@@ -174,12 +173,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
             return;
         }
 
-        Set<BlockPos> cablePositions = new HashSet<>();
-        for (BasicEnergyCableTileEntity cable : network) {
-            cablePositions.add(cable.getBlockPos());
-        }
-
-        List<EnergyTargetEndpoint> receivers = collectReceivers(network, cablePositions);
+        List<EnergyTargetEndpoint> receivers = collectReceivers();
         if (receivers.isEmpty()) {
             return;
         }
@@ -279,48 +273,41 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         return inserted;
     }
 
-    private List<EnergyTargetEndpoint> collectReceivers(List<BasicEnergyCableTileEntity> network,
-                                                        Set<BlockPos> cablePositions) {
+    private List<EnergyTargetEndpoint> collectReceivers() {
         List<EnergyTargetEndpoint> receivers = new ArrayList<>();
         Set<EndpointKey> visitedConsumers = new HashSet<>();
 
-        for (BasicEnergyCableTileEntity cable : network) {
-            boolean cablePowered = level.hasNeighborSignal(cable.getBlockPos());
-
-            for (Direction direction : Direction.values()) {
-                if (!cable.getSideMode(direction).canPush()) {
-                    continue;
-                }
-
-                BlockPos neighborPos = cable.getBlockPos().relative(direction);
-                if (cablePositions.contains(neighborPos)) {
-                    continue;
-                }
-
-                EndpointKey key = new EndpointKey(neighborPos, direction.getOpposite());
-                if (!visitedConsumers.add(key)) {
-                    continue;
-                }
-
-                TileEntity neighbor = level.getBlockEntity(neighborPos);
-                if (neighbor == null) {
-                    continue;
-                }
-
-                IEnergyStorage receiver = neighbor
-                        .getCapability(CapabilityEnergy.ENERGY, direction.getOpposite())
-                        .orElse(null);
-                if (receiver == null || !receiver.canReceive()) {
-                    continue;
-                }
-
-                EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
-                if (!rule.allowsRedstone(cablePowered)) {
-                    continue;
-                }
-
-                receivers.add(new EnergyTargetEndpoint(receiver, rule));
+        for (ExternalEndpoint<BasicEnergyCableTileEntity> endpoint : getCachedExternalEndpoints()) {
+            BasicEnergyCableTileEntity cable = endpoint.getConduit();
+            Direction direction = endpoint.getConduitSide();
+            if (!cable.getSideMode(direction).canPush()) {
+                continue;
             }
+
+            EndpointKey key = new EndpointKey(endpoint.getNeighborPos(), endpoint.getNeighborSide());
+            if (!visitedConsumers.add(key)) {
+                continue;
+            }
+
+            TileEntity neighbor = level.getBlockEntity(endpoint.getNeighborPos());
+            if (neighbor == null) {
+                continue;
+            }
+
+            IEnergyStorage receiver = neighbor
+                    .getCapability(CapabilityEnergy.ENERGY, endpoint.getNeighborSide())
+                    .orElse(null);
+            if (receiver == null || !receiver.canReceive()) {
+                continue;
+            }
+
+            boolean cablePowered = level.hasNeighborSignal(cable.getBlockPos());
+            EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
+            if (!rule.allowsRedstone(cablePowered)) {
+                continue;
+            }
+
+            receivers.add(new EnergyTargetEndpoint(receiver, rule));
         }
 
         return receivers;
@@ -395,6 +382,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         for (Direction direction : Direction.values()) {
             sideModes.put(direction, ConduitTransferMode.BOTH);
             targetRules.put(direction, new EnergyRoutingTargetRule());
+            sourceRules.put(direction, new EnergyRoutingSourceRule());
         }
 
         if (nbt.contains("SideConfig")) {

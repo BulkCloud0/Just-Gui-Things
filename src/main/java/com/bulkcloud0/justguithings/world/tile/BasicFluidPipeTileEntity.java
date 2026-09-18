@@ -203,18 +203,9 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
     }
 
     private void transferFluids(List<BasicFluidPipeTileEntity> network) {
-        Set<BlockPos> pipePositions = new HashSet<>();
-        for (BasicFluidPipeTileEntity pipe : network) {
-            if (pipe.isRemoved()) {
-                invalidateNetworkCache();
-                return;
-            }
-            pipePositions.add(pipe.getBlockPos());
-        }
-
         List<SourceEndpoint> sources = new ArrayList<>();
         List<TargetEndpoint> targets = new ArrayList<>();
-        collectEndpoints(network, pipePositions, sources, targets);
+        collectEndpoints(sources, targets);
 
         if (targets.isEmpty()) {
             return;
@@ -275,53 +266,45 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         return 0;
     }
 
-    private void collectEndpoints(List<BasicFluidPipeTileEntity> network,
-                                  Set<BlockPos> pipePositions,
-                                  List<SourceEndpoint> sources,
+    private void collectEndpoints(List<SourceEndpoint> sources,
                                   List<TargetEndpoint> targets) {
         Set<EndpointKey> sourceKeys = new HashSet<>();
         Set<EndpointKey> targetKeys = new HashSet<>();
 
-        for (BasicFluidPipeTileEntity pipe : network) {
+        for (ExternalEndpoint<BasicFluidPipeTileEntity> endpoint : getCachedExternalEndpoints()) {
+            BasicFluidPipeTileEntity pipe = endpoint.getConduit();
+            Direction direction = endpoint.getConduitSide();
+            ConduitTransferMode mode = pipe.getSideMode(direction);
+            if (mode == ConduitTransferMode.DISABLED) {
+                continue;
+            }
+
+            TileEntity neighbor = level.getBlockEntity(endpoint.getNeighborPos());
+            if (neighbor == null) {
+                continue;
+            }
+
+            IFluidHandler handler = neighbor
+                    .getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, endpoint.getNeighborSide())
+                    .orElse(null);
+            if (handler == null) {
+                continue;
+            }
+
             boolean pipePowered = level.hasNeighborSignal(pipe.getBlockPos());
+            EndpointKey key = new EndpointKey(endpoint.getNeighborPos(), endpoint.getNeighborSide());
 
-            for (Direction direction : Direction.values()) {
-                ConduitTransferMode mode = pipe.getSideMode(direction);
-                if (mode == ConduitTransferMode.DISABLED) {
-                    continue;
+            if (mode.canPull() && sourceKeys.add(key)) {
+                FluidRoutingSourceRule sourceRule = pipe.getSourceRule(direction);
+                if (sourceRule.allowsRedstone(pipePowered)) {
+                    sources.add(new SourceEndpoint(endpoint.getNeighborPos(), handler, sourceRule));
                 }
+            }
 
-                BlockPos neighborPos = pipe.getBlockPos().relative(direction);
-                if (pipePositions.contains(neighborPos)) {
-                    continue;
-                }
-
-                TileEntity neighbor = level.getBlockEntity(neighborPos);
-                if (neighbor == null) {
-                    continue;
-                }
-
-                IFluidHandler handler = neighbor
-                        .getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite())
-                        .orElse(null);
-                if (handler == null) {
-                    continue;
-                }
-
-                EndpointKey key = new EndpointKey(neighborPos, direction.getOpposite());
-
-                if (mode.canPull() && sourceKeys.add(key)) {
-                    FluidRoutingSourceRule rule = pipe.getSourceRule(direction);
-                    if (rule.allowsRedstone(pipePowered)) {
-                        sources.add(new SourceEndpoint(neighborPos, handler, rule));
-                    }
-                }
-
-                if (mode.canPush() && targetKeys.add(key)) {
-                    FluidRoutingTargetRule rule = pipe.getTargetRule(direction);
-                    if (rule.allowsRedstone(pipePowered)) {
-                        targets.add(new TargetEndpoint(neighborPos, handler, rule));
-                    }
+            if (mode.canPush() && targetKeys.add(key)) {
+                FluidRoutingTargetRule targetRule = pipe.getTargetRule(direction);
+                if (targetRule.allowsRedstone(pipePowered)) {
+                    targets.add(new TargetEndpoint(endpoint.getNeighborPos(), handler, targetRule));
                 }
             }
         }

@@ -17,11 +17,16 @@ import java.util.Set;
 
 public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduitNetworkTileEntity<T>>
         extends TileEntity implements ITickableTileEntity {
+    private static final int EXTERNAL_ENDPOINT_CACHE_TTL = 20;
+
     private final int networkCacheTtl;
 
     private List<T> cachedNetwork = Collections.emptyList();
     private BlockPos cachedController;
     private long cacheValidUntil;
+
+    private List<ExternalEndpoint<T>> cachedExternalEndpoints = Collections.emptyList();
+    private long externalEndpointsValidUntil;
 
     protected AbstractConduitNetworkTileEntity(TileEntityType<?> tileEntityType, int networkCacheTtl) {
         super(tileEntityType);
@@ -49,6 +54,20 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
 
     protected final List<T> getCachedNetwork() {
         return cachedNetwork;
+    }
+
+    protected final List<ExternalEndpoint<T>> getCachedExternalEndpoints() {
+        if (level == null || cachedNetwork.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        long gameTime = level.getGameTime();
+        if (gameTime < externalEndpointsValidUntil) {
+            return cachedExternalEndpoints;
+        }
+
+        rebuildExternalEndpointCache(gameTime);
+        return cachedExternalEndpoints;
     }
 
     public final void invalidateNetworkCache() {
@@ -101,6 +120,7 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
             base.cachedNetwork = sharedNetwork;
             base.cachedController = controller;
             base.cacheValidUntil = validUntil;
+            base.clearExternalEndpointCacheLocal();
         }
     }
 
@@ -139,16 +159,92 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
         return nodes;
     }
 
+    private void rebuildExternalEndpointCache(long gameTime) {
+        if (level == null || cachedNetwork.isEmpty()) {
+            clearExternalEndpointCacheLocal();
+            return;
+        }
+
+        Set<BlockPos> networkPositions = new HashSet<>();
+        for (T node : cachedNetwork) {
+            if (node.isRemoved()) {
+                invalidateNetworkCache();
+                return;
+            }
+            networkPositions.add(node.getBlockPos());
+        }
+
+        List<ExternalEndpoint<T>> endpoints = new ArrayList<>();
+        for (T node : cachedNetwork) {
+            for (Direction direction : Direction.values()) {
+                BlockPos neighborPos = node.getBlockPos().relative(direction);
+                if (networkPositions.contains(neighborPos)) {
+                    continue;
+                }
+
+                if (level.getBlockEntity(neighborPos) == null) {
+                    continue;
+                }
+
+                endpoints.add(new ExternalEndpoint<>(
+                        node,
+                        direction,
+                        neighborPos.immutable(),
+                        direction.getOpposite()));
+            }
+        }
+
+        cachedExternalEndpoints = Collections.unmodifiableList(endpoints);
+        externalEndpointsValidUntil = gameTime + EXTERNAL_ENDPOINT_CACHE_TTL;
+    }
+
     private void clearNetworkCacheLocal() {
         cachedNetwork = Collections.emptyList();
         cachedController = null;
         cacheValidUntil = 0L;
+        clearExternalEndpointCacheLocal();
         onNetworkCacheCleared();
+    }
+
+    private void clearExternalEndpointCacheLocal() {
+        cachedExternalEndpoints = Collections.emptyList();
+        externalEndpointsValidUntil = 0L;
     }
 
     @Override
     public void setRemoved() {
         invalidateNetworkCache();
         super.setRemoved();
+    }
+
+    protected static final class ExternalEndpoint<N extends AbstractConduitNetworkTileEntity<N>> {
+        private final N conduit;
+        private final Direction conduitSide;
+        private final BlockPos neighborPos;
+        private final Direction neighborSide;
+
+        private ExternalEndpoint(N conduit, Direction conduitSide,
+                                 BlockPos neighborPos, Direction neighborSide) {
+            this.conduit = conduit;
+            this.conduitSide = conduitSide;
+            this.neighborPos = neighborPos;
+            this.neighborSide = neighborSide;
+        }
+
+        public N getConduit() {
+            return conduit;
+        }
+
+        public Direction getConduitSide() {
+            return conduitSide;
+        }
+
+        public BlockPos getNeighborPos() {
+            return neighborPos;
+        }
+
+        public Direction getNeighborSide() {
+            return neighborSide;
+        }
     }
 }
