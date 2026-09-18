@@ -3,6 +3,8 @@ package com.bulkcloud0.justguithings.world.block;
 import com.bulkcloud0.justguithings.item.RoutingControllerItem;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.logistics.ItemFilterMode;
+import com.bulkcloud0.justguithings.logistics.ItemFilterSampleChange;
+import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
@@ -131,12 +133,33 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                                     "message.justguithings.routing_controller.filter_cleared", face),
                             true);
                 } else {
-                    pipe.setTargetFilterSample(direction, sample);
-                    player.displayClientMessage(
-                            new TranslationTextComponent(
-                                    "message.justguithings.routing_controller.filter_set",
-                                    face, sample.getHoverName()),
-                            true);
+                    ItemFilterSampleChange change = pipe.toggleTargetFilterSample(direction, sample);
+                    int count = pipe.getTargetFilterSampleCount(direction);
+
+                    switch (change) {
+                        case ADDED:
+                            player.displayClientMessage(
+                                    new TranslationTextComponent(
+                                            "message.justguithings.routing_controller.filter_added",
+                                            face, sample.getHoverName(), count, ItemRouteFilter.MAX_SAMPLES),
+                                    true);
+                            break;
+                        case REMOVED:
+                            player.displayClientMessage(
+                                    new TranslationTextComponent(
+                                            "message.justguithings.routing_controller.filter_removed",
+                                            face, sample.getHoverName(), count, ItemRouteFilter.MAX_SAMPLES),
+                                    true);
+                            break;
+                        case FULL:
+                        default:
+                            player.displayClientMessage(
+                                    new TranslationTextComponent(
+                                            "message.justguithings.routing_controller.filter_full",
+                                            face, ItemRouteFilter.MAX_SAMPLES),
+                                    true);
+                            break;
+                    }
                 }
                 break;
 
