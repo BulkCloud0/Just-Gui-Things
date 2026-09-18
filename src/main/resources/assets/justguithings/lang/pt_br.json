@@ -89,5 +89,10 @@
   "message.justguithings.routing_controller.nbt_ignored": "O filtro %s agora ignora NBT.",
   "message.justguithings.routing_controller.filter_added": "Filtro %s adicionado: %s (%s/%s)",
   "message.justguithings.routing_controller.filter_removed": "Filtro %s removido: %s (%s/%s)",
-  "message.justguithings.routing_controller.filter_full": "O filtro %s está cheio (%s amostras)."
+  "message.justguithings.routing_controller.filter_full": "O filtro %s está cheio (%s amostras).",
+  "routing.justguithings.controller_mode.redstone": "Condição de Redstone",
+  "routing.justguithings.redstone_mode.always": "Sempre Ativo",
+  "routing.justguithings.redstone_mode.require_signal": "Exigir Sinal",
+  "routing.justguithings.redstone_mode.require_no_signal": "Exigir Ausência de Sinal",
+  "message.justguithings.routing_controller.redstone": "Condição de redstone %s: %s"
 }

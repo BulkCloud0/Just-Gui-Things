@@ -7,7 +7,8 @@ public enum RoutingControllerMode {
     PRIORITY,
     FILTER_SAMPLE,
     FILTER_MODE,
-    NBT_MATCH;
+    NBT_MATCH,
+    REDSTONE;
 
     public RoutingControllerMode next() {
         RoutingControllerMode[] values = values();
