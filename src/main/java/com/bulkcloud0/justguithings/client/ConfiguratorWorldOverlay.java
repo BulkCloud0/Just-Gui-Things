@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.client;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.item.ConfiguratorTargetDescription;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
@@ -20,7 +21,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -39,17 +43,11 @@ public final class ConfiguratorWorldOverlay {
     @SubscribeEvent
     public static void onRenderWorldLast(RenderWorldLastEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
-        ClientPlayerEntity player = minecraft.player;
-        if (player == null || minecraft.level == null || minecraft.screen != null || !isConfiguratorHeld(player)) {
+        BlockRayTraceResult blockHit = getConfiguratorTarget(minecraft);
+        if (blockHit == null) {
             return;
         }
 
-        RayTraceResult hit = minecraft.hitResult;
-        if (!(hit instanceof BlockRayTraceResult) || hit.getType() != RayTraceResult.Type.BLOCK) {
-            return;
-        }
-
-        BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
         TileEntity tile = minecraft.level.getBlockEntity(blockHit.getBlockPos());
         Integer color = getModeColor(tile, blockHit.getDirection());
         if (color == null) {
@@ -57,6 +55,44 @@ public final class ConfiguratorWorldOverlay {
         }
 
         renderFaceOutline(event, minecraft, blockHit.getBlockPos(), blockHit.getDirection(), color);
+    }
+
+    @SubscribeEvent
+    public static void onRenderHudText(RenderGameOverlayEvent.Text event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        BlockRayTraceResult blockHit = getConfiguratorTarget(minecraft);
+        if (blockHit == null) {
+            return;
+        }
+
+        TileEntity tile = minecraft.level.getBlockEntity(blockHit.getBlockPos());
+        ITextComponent description = ConfiguratorTargetDescription.getDescription(
+                tile,
+                minecraft.level.getBlockState(blockHit.getBlockPos()),
+                blockHit.getDirection());
+        if (description != null) {
+            event.getLeft().add(
+                    new TranslationTextComponent(
+                            "hud.justguithings.configurator.target",
+                            description).getString());
+        }
+    }
+
+    @Nullable
+    private static BlockRayTraceResult getConfiguratorTarget(Minecraft minecraft) {
+        ClientPlayerEntity player = minecraft.player;
+        if (player == null || minecraft.level == null || minecraft.screen != null || !isConfiguratorHeld(player)) {
+            return null;
+        }
+
+        RayTraceResult hit = minecraft.hitResult;
+        if (!(hit instanceof BlockRayTraceResult) || hit.getType() != RayTraceResult.Type.BLOCK) {
+            return null;
+        }
+
+        BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
+        TileEntity tile = minecraft.level.getBlockEntity(blockHit.getBlockPos());
+        return ConfiguratorTargetDescription.isSupported(tile) ? blockHit : null;
     }
 
     private static boolean isConfiguratorHeld(ClientPlayerEntity player) {
