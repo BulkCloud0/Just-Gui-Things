@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "justguithings:item/tempered_steel_ingot"
+  }
+}

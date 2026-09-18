@@ -5,6 +5,7 @@ import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.recipe.HeatingRecipe;
 import com.bulkcloud0.justguithings.recipe.ExtrudingRecipe;
+import com.bulkcloud0.justguithings.recipe.WireDrawingRecipe;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
 import com.bulkcloud0.justguithings.recipe.QuenchingRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -29,6 +30,8 @@ public final class ModRecipes {
             IRecipeType.register(JustGuiThings.MOD_ID + ":heating");
     public static final IRecipeType<ExtrudingRecipe> EXTRUDING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":extruding");
+    public static final IRecipeType<WireDrawingRecipe> WIRE_DRAWING_TYPE =
+            IRecipeType.register(JustGuiThings.MOD_ID + ":wire_drawing");
 
     public static final RegistryObject<IRecipeSerializer<CrusherRecipe>> CRUSHING_SERIALIZER =
             RECIPE_SERIALIZERS.register("crushing", CrusherRecipe.Serializer::new);
@@ -42,6 +45,8 @@ public final class ModRecipes {
             RECIPE_SERIALIZERS.register("heating", HeatingRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<ExtrudingRecipe>> EXTRUDING_SERIALIZER =
             RECIPE_SERIALIZERS.register("extruding", ExtrudingRecipe.Serializer::new);
+    public static final RegistryObject<IRecipeSerializer<WireDrawingRecipe>> WIRE_DRAWING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("wire_drawing", WireDrawingRecipe.Serializer::new);
 
     private ModRecipes() {}
 }

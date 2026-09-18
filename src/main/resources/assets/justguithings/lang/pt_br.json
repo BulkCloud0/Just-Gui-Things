@@ -58,5 +58,17 @@
   "item.justguithings.hardened_extrusion_die": "Matriz de Extrusão Endurecida",
   "item.justguithings.tempered_steel_rod": "Haste de Aço Temperado",
   "tooltip.justguithings.hardened_extrusion_die": "Matriz específica para extrusão de precisão sob alta pressão.",
-  "jei.justguithings.extruding": "Extrusão de Precisão"
+  "jei.justguithings.extruding": "Extrusão de Precisão",
+  "block.justguithings.wire_mill": "Trefiladora",
+  "container.justguithings.wire_mill": "Trefiladora",
+  "item.justguithings.iron_rod": "Haste de Ferro",
+  "item.justguithings.gold_rod": "Haste de Ouro",
+  "item.justguithings.steel_rod": "Haste de Aço",
+  "item.justguithings.iron_wire": "Fio de Ferro",
+  "item.justguithings.gold_wire": "Fio de Ouro",
+  "item.justguithings.steel_wire": "Fio de Aço",
+  "item.justguithings.tempered_steel_wire": "Fio de Aço Temperado",
+  "item.justguithings.tensioning_spindle": "Fuso de Tensionamento",
+  "tooltip.justguithings.tensioning_spindle": "Fuso específico para trefilação controlada sob alta tensão.",
+  "jei.justguithings.wire_drawing": "Trefilação"
 }

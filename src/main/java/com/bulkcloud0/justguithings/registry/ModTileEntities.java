@@ -14,6 +14,7 @@ import com.bulkcloud0.justguithings.world.tile.QuenchChamberTileEntity;
 import com.bulkcloud0.justguithings.world.tile.ResistiveFurnaceTileEntity;
 import com.bulkcloud0.justguithings.world.tile.PrecisionExtruderTileEntity;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
+import com.bulkcloud0.justguithings.world.tile.WireMillTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -52,6 +53,9 @@ public final class ModTileEntities {
 
     public static final RegistryObject<TileEntityType<PrecisionExtruderTileEntity>> PRECISION_EXTRUDER = TILE_ENTITIES.register(
             "precision_extruder", () -> TileEntityType.Builder.of(PrecisionExtruderTileEntity::new, ModBlocks.PRECISION_EXTRUDER.get()).build(null));
+
+    public static final RegistryObject<TileEntityType<WireMillTileEntity>> WIRE_MILL = TILE_ENTITIES.register(
+            "wire_mill", () -> TileEntityType.Builder.of(WireMillTileEntity::new, ModBlocks.WIRE_MILL.get()).build(null));
 
     private ModTileEntities() {}
 }

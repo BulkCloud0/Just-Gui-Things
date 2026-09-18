@@ -58,5 +58,17 @@
   "item.justguithings.hardened_extrusion_die": "Hardened Extrusion Die",
   "item.justguithings.tempered_steel_rod": "Tempered Steel Rod",
   "tooltip.justguithings.hardened_extrusion_die": "Machine-specific die for high-pressure precision extrusion.",
-  "jei.justguithings.extruding": "Precision Extrusion"
+  "jei.justguithings.extruding": "Precision Extrusion",
+  "block.justguithings.wire_mill": "Wire Mill",
+  "container.justguithings.wire_mill": "Wire Mill",
+  "item.justguithings.iron_rod": "Iron Rod",
+  "item.justguithings.gold_rod": "Gold Rod",
+  "item.justguithings.steel_rod": "Steel Rod",
+  "item.justguithings.iron_wire": "Iron Wire",
+  "item.justguithings.gold_wire": "Gold Wire",
+  "item.justguithings.steel_wire": "Steel Wire",
+  "item.justguithings.tempered_steel_wire": "Tempered Steel Wire",
+  "item.justguithings.tensioning_spindle": "Tensioning Spindle",
+  "tooltip.justguithings.tensioning_spindle": "Machine-specific spindle for controlled high-tension wire drawing.",
+  "jei.justguithings.wire_drawing": "Wire Drawing"
 }
