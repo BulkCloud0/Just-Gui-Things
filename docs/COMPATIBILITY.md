@@ -151,3 +151,19 @@ The Routing Controller configures energy consumers only in `TARGET` scope. `PRIO
 Consumer discovery is keyed by block position plus exposed side, preserving compatibility with sided `IEnergyStorage` implementations. Distribution checks HIGH consumers before NORMAL and LOW consumers, while the round-robin cursor preserves fairness within active endpoints.
 
 Existing cables load with NORMAL priority and ALWAYS-active redstone behavior on every face, preserving previous networks until configured.
+
+
+### Energy fairness and transfer safety
+
+Consumers at the same routing priority use max-min fair allocation within the 500 FE/t network budget. Small demands are satisfied first up to their requested amount, then remaining FE is redistributed evenly among consumers that still have demand. The round-robin cursor rotates ordering so integer rounding does not permanently favor the same endpoint.
+
+Priority remains strict: HIGH consumes its fair allocation before leftover FE is offered to NORMAL, then LOW.
+
+Energy delivery uses a reserve/commit/refund sequence:
+
+1. simulate the consumer's acceptance;
+2. drain that amount from cable network buffers;
+3. execute the consumer insertion;
+4. return any execution-time difference to cable buffers.
+
+This prevents non-stable `IEnergyStorage` implementations from creating FE when simulation and execution disagree. Redistribution retries are bounded.
