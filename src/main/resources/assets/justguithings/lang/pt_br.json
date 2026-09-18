@@ -75,7 +75,7 @@
   "message.justguithings.routing_controller.priority": "Prioridade do destino %s: %s",
   "message.justguithings.routing_controller.filter_cleared": "Whitelist %s removida.",
   "tooltip.justguithings.routing_controller.mode": "Clique com o botão direito no ar para alternar os modos válidos do escopo atual.",
-  "tooltip.justguithings.routing_controller.use": "Clique com o botão direito em uma face de endpoint compatível de tubo de itens/fluidos para aplicar a regra selecionada.",
+  "tooltip.justguithings.routing_controller.use": "Clique com o botão direito em uma face de endpoint compatível de itens/fluidos/energia para aplicar a regra selecionada.",
   "tooltip.justguithings.routing_controller.current_mode": "Modo: %s",
   "routing.justguithings.controller_mode.priority": "Prioridade do Destino",
   "routing.justguithings.controller_mode.filter_sample": "Amostra do Filtro",
@@ -131,12 +131,14 @@
   "message.justguithings.routing_controller.fluid_sample_missing": "Nenhuma amostra de fluido encontrada em %s.",
   "message.justguithings.routing_controller.energy_priority": "Prioridade do consumidor de energia %s: %s",
   "message.justguithings.routing_controller.energy_redstone": "Condição de redstone do consumidor de energia %s: %s",
-  "message.justguithings.routing_controller.energy_target_only": "O cabo de energia %s usa o escopo DESTINO para roteamento de consumidores.",
   "message.justguithings.routing_controller.energy_mode_unsupported": "O modo de roteamento %s não se aplica a consumidores de energia.",
   "routing.justguithings.energy_side_mode.both": "Entrada + Saída",
   "routing.justguithings.energy_side_mode.input": "Entrada",
   "routing.justguithings.energy_side_mode.output": "Saída",
   "routing.justguithings.energy_side_mode.disabled": "Desativado",
   "message.justguithings.energy_cable.side_mode": "Modo do cabo de energia %s: %s",
-  "message.justguithings.routing_controller.energy_output_required": "A face %s precisa ser Saída ou Entrada + Saída antes de aplicar roteamento de consumidor."
+  "message.justguithings.routing_controller.energy_output_required": "A face %s precisa ser Saída ou Entrada + Saída antes de aplicar roteamento de consumidor.",
+  "message.justguithings.routing_controller.energy_input_required": "A face %s precisa ser Entrada ou Entrada + Saída antes de aplicar roteamento de fonte.",
+  "message.justguithings.routing_controller.energy_source_redstone": "Condição de redstone da fonte de energia %s: %s",
+  "message.justguithings.routing_controller.energy_source_mode_unsupported": "O modo de roteamento %s não se aplica a fontes de energia."
 }

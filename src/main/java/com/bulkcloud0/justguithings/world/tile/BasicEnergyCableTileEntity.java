@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.world.tile;
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.energy.SidedEnergyConduitHandler;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
+import com.bulkcloud0.justguithings.logistics.EnergyRoutingSourceRule;
 import com.bulkcloud0.justguithings.logistics.EnergyRoutingTargetRule;
 import com.bulkcloud0.justguithings.logistics.FairShareAllocator;
 import com.bulkcloud0.justguithings.logistics.RoutingPriority;
@@ -59,6 +60,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
 
     private final EnumMap<Direction, ConduitTransferMode> sideModes = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, EnergyRoutingTargetRule> targetRules = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, EnergyRoutingSourceRule> sourceRules = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities =
             new EnumMap<>(Direction.class);
 
@@ -70,12 +72,14 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         for (Direction direction : Direction.values()) {
             sideModes.put(direction, ConduitTransferMode.BOTH);
             targetRules.put(direction, new EnergyRoutingTargetRule());
+            sourceRules.put(direction, new EnergyRoutingSourceRule());
+            sourceRules.put(direction, new EnergyRoutingSourceRule());
 
             final Direction side = direction;
             sidedEnergyCapabilities.put(side, LazyOptional.of(() ->
                     new SidedEnergyConduitHandler(
                             energyStorage,
-                            () -> getSideMode(side).canPull(),
+                            () -> canReceiveFromExternal(side),
                             () -> getSideMode(side).canPush())));
         }
     }
@@ -127,6 +131,21 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         return next;
     }
 
+    public RoutingRedstoneMode cycleSourceRedstoneMode(Direction direction) {
+        RoutingRedstoneMode next = getMutableSourceRule(direction).cycleRedstoneMode();
+        setChanged();
+        return next;
+    }
+
+    private boolean canReceiveFromExternal(Direction direction) {
+        if (!getSideMode(direction).canPull()) {
+            return false;
+        }
+
+        boolean powered = level != null && level.hasNeighborSignal(worldPosition);
+        return getMutableSourceRule(direction).allowsRedstone(powered);
+    }
+
     private EnergyRoutingTargetRule getTargetRule(Direction direction) {
         return new EnergyRoutingTargetRule(getMutableTargetRule(direction));
     }
@@ -136,6 +155,15 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         if (rule == null) {
             rule = new EnergyRoutingTargetRule();
             targetRules.put(direction, rule);
+        }
+        return rule;
+    }
+
+    private EnergyRoutingSourceRule getMutableSourceRule(Direction direction) {
+        EnergyRoutingSourceRule rule = sourceRules.get(direction);
+        if (rule == null) {
+            rule = new EnergyRoutingSourceRule();
+            sourceRules.put(direction, rule);
         }
         return rule;
     }
@@ -383,10 +411,16 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         if (nbt.contains("RoutingConfig")) {
             CompoundNBT routing = nbt.getCompound("RoutingConfig");
             for (Direction direction : Direction.values()) {
-                String key = "TargetRule" + direction.ordinal();
-                if (routing.contains(key)) {
+                String targetKey = "TargetRule" + direction.ordinal();
+                String sourceKey = "SourceRule" + direction.ordinal();
+
+                if (routing.contains(targetKey)) {
                     targetRules.put(direction,
-                            EnergyRoutingTargetRule.load(routing.getCompound(key)));
+                            EnergyRoutingTargetRule.load(routing.getCompound(targetKey)));
+                }
+                if (routing.contains(sourceKey)) {
+                    sourceRules.put(direction,
+                            EnergyRoutingSourceRule.load(routing.getCompound(sourceKey)));
                 }
             }
         }
@@ -408,6 +442,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         CompoundNBT routing = new CompoundNBT();
         for (Direction direction : Direction.values()) {
             routing.put("TargetRule" + direction.ordinal(), getMutableTargetRule(direction).save());
+            routing.put("SourceRule" + direction.ordinal(), getMutableSourceRule(direction).save());
         }
         nbt.put("RoutingConfig", routing);
 

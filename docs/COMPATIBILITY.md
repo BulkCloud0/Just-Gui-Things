@@ -139,7 +139,7 @@ External blocks remain integrated only through Forge `IFluidHandler`.
 
 Basic Energy Cables keep Forge `IEnergyStorage` as the only external energy integration contract.
 
-Energy routing intentionally models only consumer endpoints in v1. Producers already inject FE into cable buffers through the cable's exposed `IEnergyStorage`, so source filters/reserves would not match the current network flow.
+Energy routing models consumer targets and source-side ingress separately. Producers inject FE through the cable's exposed `IEnergyStorage`, so source routing gates whether a sided cable endpoint accepts that injection. JGT intentionally does not implement an energy source reserve: a passive Forge Energy receiver cannot safely guarantee how much FE remains inside an arbitrary remote producer.
 
 Each cable face also stores a conduit transfer mode. The Configurator cycles:
 
@@ -155,11 +155,11 @@ Each cable face can store one `EnergyRoutingTargetRule` with:
 - priority: `HIGH`, `NORMAL`, or `LOW`;
 - redstone condition: `ALWAYS`, `REQUIRE_SIGNAL`, or `REQUIRE_NO_SIGNAL`.
 
-The Routing Controller configures energy consumers only in `TARGET` scope. `PRIORITY` and `REDSTONE` are the supported edit modes and require an OUTPUT-capable face; filter/NBT/source modes report that they do not apply instead of silently changing semantics.
+The Routing Controller supports two energy endpoint operations. In `TARGET` scope, `PRIORITY` and `REDSTONE` configure consumers and require an OUTPUT-capable face. In `SOURCE` scope, `REDSTONE` gates FE ingress and requires an INPUT-capable face. Filter/NBT/minimum-stock modes do not apply to energy and report that explicitly instead of silently changing semantics.
 
 Consumer discovery is keyed by block position plus exposed side, preserving compatibility with sided `IEnergyStorage` implementations. Distribution checks HIGH consumers before NORMAL and LOW consumers, while the round-robin cursor preserves fairness within active endpoints.
 
-Existing cables load with NORMAL priority and ALWAYS-active redstone behavior on every face, preserving previous networks until configured.
+Each input-capable face also stores an `EnergyRoutingSourceRule` containing `ALWAYS`, `REQUIRE_SIGNAL`, or `REQUIRE_NO_SIGNAL`. The sided `IEnergyStorage` evaluates this condition dynamically when producers query or inject FE. Existing cables load target and source redstone rules as ALWAYS, preserving previous networks until configured.
 
 
 ### Energy fairness and transfer safety

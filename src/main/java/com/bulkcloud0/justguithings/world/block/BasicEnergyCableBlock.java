@@ -118,42 +118,86 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
             RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
             String face = direction.toString().toUpperCase(Locale.ROOT);
 
-            if (!cable.getSideMode(direction).canPush()) {
-                player.displayClientMessage(
-                        new TranslationTextComponent(
-                                "message.justguithings.routing_controller.energy_output_required",
-                                face),
-                        true);
-            } else if (scope != RoutingControllerScope.TARGET) {
-                player.displayClientMessage(
-                        new TranslationTextComponent(
-                                "message.justguithings.routing_controller.energy_target_only",
-                                face),
-                        true);
-            } else if (mode == RoutingControllerMode.PRIORITY) {
-                RoutingPriority priority = cable.cycleTargetPriority(direction);
-                player.displayClientMessage(
-                        new TranslationTextComponent(
-                                "message.justguithings.routing_controller.energy_priority",
-                                face, priority.getDisplayName()),
-                        true);
-            } else if (mode == RoutingControllerMode.REDSTONE) {
-                RoutingRedstoneMode redstoneMode = cable.cycleTargetRedstoneMode(direction);
-                player.displayClientMessage(
-                        new TranslationTextComponent(
-                                "message.justguithings.routing_controller.energy_redstone",
-                                face, redstoneMode.getDisplayName()),
-                        true);
+            if (scope == RoutingControllerScope.SOURCE) {
+                applySourceRoutingController(cable, direction, player, mode, face);
             } else {
-                player.displayClientMessage(
-                        new TranslationTextComponent(
-                                "message.justguithings.routing_controller.energy_mode_unsupported",
-                                mode.getDisplayName()),
-                        true);
+                applyTargetRoutingController(cable, direction, player, mode, face);
             }
         }
 
         return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
+    }
+
+    private void applyTargetRoutingController(BasicEnergyCableTileEntity cable,
+                                              Direction direction,
+                                              PlayerEntity player,
+                                              RoutingControllerMode mode,
+                                              String face) {
+        if (!cable.getSideMode(direction).canPush()) {
+            player.displayClientMessage(
+                    new TranslationTextComponent(
+                            "message.justguithings.routing_controller.energy_output_required",
+                            face),
+                    true);
+            return;
+        }
+
+        if (mode == RoutingControllerMode.PRIORITY) {
+            RoutingPriority priority = cable.cycleTargetPriority(direction);
+            player.displayClientMessage(
+                    new TranslationTextComponent(
+                            "message.justguithings.routing_controller.energy_priority",
+                            face, priority.getDisplayName()),
+                    true);
+            return;
+        }
+
+        if (mode == RoutingControllerMode.REDSTONE) {
+            RoutingRedstoneMode redstoneMode = cable.cycleTargetRedstoneMode(direction);
+            player.displayClientMessage(
+                    new TranslationTextComponent(
+                            "message.justguithings.routing_controller.energy_redstone",
+                            face, redstoneMode.getDisplayName()),
+                    true);
+            return;
+        }
+
+        player.displayClientMessage(
+                new TranslationTextComponent(
+                        "message.justguithings.routing_controller.energy_mode_unsupported",
+                        mode.getDisplayName()),
+                true);
+    }
+
+    private void applySourceRoutingController(BasicEnergyCableTileEntity cable,
+                                              Direction direction,
+                                              PlayerEntity player,
+                                              RoutingControllerMode mode,
+                                              String face) {
+        if (!cable.getSideMode(direction).canPull()) {
+            player.displayClientMessage(
+                    new TranslationTextComponent(
+                            "message.justguithings.routing_controller.energy_input_required",
+                            face),
+                    true);
+            return;
+        }
+
+        if (mode == RoutingControllerMode.REDSTONE) {
+            RoutingRedstoneMode redstoneMode = cable.cycleSourceRedstoneMode(direction);
+            player.displayClientMessage(
+                    new TranslationTextComponent(
+                            "message.justguithings.routing_controller.energy_source_redstone",
+                            face, redstoneMode.getDisplayName()),
+                    true);
+            return;
+        }
+
+        player.displayClientMessage(
+                new TranslationTextComponent(
+                        "message.justguithings.routing_controller.energy_source_mode_unsupported",
+                        mode.getDisplayName()),
+                true);
     }
 
     private ITextComponent getEnergySideModeName(ConduitTransferMode mode) {

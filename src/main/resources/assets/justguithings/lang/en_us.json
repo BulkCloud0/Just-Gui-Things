@@ -75,7 +75,7 @@
   "message.justguithings.routing_controller.priority": "%s target priority: %s",
   "message.justguithings.routing_controller.filter_cleared": "%s whitelist cleared.",
   "tooltip.justguithings.routing_controller.mode": "Right-click in the air to cycle modes valid for the current scope.",
-  "tooltip.justguithings.routing_controller.use": "Right-click a supported item/fluid pipe endpoint face to apply the selected rule.",
+  "tooltip.justguithings.routing_controller.use": "Right-click a supported item/fluid/energy endpoint face to apply the selected rule.",
   "tooltip.justguithings.routing_controller.current_mode": "Mode: %s",
   "routing.justguithings.controller_mode.priority": "Target Priority",
   "routing.justguithings.controller_mode.filter_sample": "Filter Sample",
@@ -131,12 +131,14 @@
   "message.justguithings.routing_controller.fluid_sample_missing": "No fluid sample found in %s.",
   "message.justguithings.routing_controller.energy_priority": "%s energy consumer priority: %s",
   "message.justguithings.routing_controller.energy_redstone": "%s energy consumer redstone condition: %s",
-  "message.justguithings.routing_controller.energy_target_only": "%s energy cable uses TARGET scope for consumer routing.",
   "message.justguithings.routing_controller.energy_mode_unsupported": "Routing mode %s does not apply to energy consumers.",
   "routing.justguithings.energy_side_mode.both": "Input + Output",
   "routing.justguithings.energy_side_mode.input": "Input",
   "routing.justguithings.energy_side_mode.output": "Output",
   "routing.justguithings.energy_side_mode.disabled": "Disabled",
   "message.justguithings.energy_cable.side_mode": "%s energy cable mode: %s",
-  "message.justguithings.routing_controller.energy_output_required": "%s must be an energy Output or Input + Output face before consumer routing can apply."
+  "message.justguithings.routing_controller.energy_output_required": "%s must be an energy Output or Input + Output face before consumer routing can apply.",
+  "message.justguithings.routing_controller.energy_input_required": "%s must be an energy Input or Input + Output face before source routing can apply.",
+  "message.justguithings.routing_controller.energy_source_redstone": "%s energy source redstone condition: %s",
+  "message.justguithings.routing_controller.energy_source_mode_unsupported": "Routing mode %s does not apply to energy sources."
 }
