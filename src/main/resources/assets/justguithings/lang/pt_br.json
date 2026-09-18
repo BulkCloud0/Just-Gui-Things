@@ -190,5 +190,6 @@
   "direction.justguithings.west": "Oeste",
   "direction.justguithings.east": "Leste",
   "connection.justguithings.connected": "Conectado",
-  "connection.justguithings.disconnected": "Desconectado"
+  "connection.justguithings.disconnected": "Desconectado",
+  "tooltip.justguithings.configurator.overlay": "Enquanto estiver na mão, a face configurável mirada é destacada conforme o modo de E/S atual."
 }
