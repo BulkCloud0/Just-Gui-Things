@@ -2,8 +2,6 @@ package com.bulkcloud0.justguithings.world.block;
 
 import com.bulkcloud0.justguithings.item.RoutingControllerItem;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
-import com.bulkcloud0.justguithings.logistics.ItemRoutingSourceRule;
-import com.bulkcloud0.justguithings.logistics.ItemRoutingTargetRule;
 import com.bulkcloud0.justguithings.logistics.RoutingFilterMode;
 import com.bulkcloud0.justguithings.logistics.RoutingFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
@@ -119,9 +117,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 RoutingControllerScope scope = RoutingControllerItem.getScope(held);
                 RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
 
-                if (player.isShiftKeyDown()) {
-                    inspectRouting(pipe, faceDirection, player, scope);
-                } else if (scope == RoutingControllerScope.SOURCE) {
+                if (scope == RoutingControllerScope.SOURCE) {
                     applySourceRoutingController(pipe, faceDirection, player, hand, mode);
                 } else {
                     applyTargetRoutingController(pipe, faceDirection, player, hand, mode);
@@ -131,48 +127,6 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
         }
 
         return ActionResultType.PASS;
-    }
-
-    private void inspectRouting(BasicItemPipeTileEntity pipe, Direction direction,
-                                PlayerEntity player, RoutingControllerScope scope) {
-        String face = direction.toString().toUpperCase(Locale.ROOT);
-        ConduitTransferMode sideMode = pipe.getSideMode(direction);
-
-        if (scope == RoutingControllerScope.SOURCE) {
-            ItemRoutingSourceRule rule = pipe.getSourceRule(direction);
-            ItemRouteFilter filter = rule.getFilter();
-            player.displayClientMessage(
-                    new TranslationTextComponent(
-                            "message.justguithings.routing_controller.inspect_item_source",
-                            face, sideMode.getDisplayName(),
-                            filter.getMode().getDisplayName(),
-                            filter.getSampleCount(), ItemRouteFilter.MAX_SAMPLES,
-                            getNbtModeName(filter.isMatchNbt()),
-                            rule.getRedstoneMode().getDisplayName(),
-                            rule.getMinStock()),
-                    false);
-            return;
-        }
-
-        ItemRoutingTargetRule rule = pipe.getTargetRule(direction);
-        ItemRouteFilter filter = rule.getFilter();
-        player.displayClientMessage(
-                new TranslationTextComponent(
-                        "message.justguithings.routing_controller.inspect_item_target",
-                        face, sideMode.getDisplayName(),
-                        rule.getPriority().getDisplayName(),
-                        filter.getMode().getDisplayName(),
-                        filter.getSampleCount(), ItemRouteFilter.MAX_SAMPLES,
-                        getNbtModeName(filter.isMatchNbt()),
-                        rule.getRedstoneMode().getDisplayName()),
-                false);
-    }
-
-    private TranslationTextComponent getNbtModeName(boolean matchNbt) {
-        return new TranslationTextComponent(
-                matchNbt
-                        ? "routing.justguithings.nbt_mode.exact"
-                        : "routing.justguithings.nbt_mode.ignored");
     }
 
     private void applyTargetRoutingController(BasicItemPipeTileEntity pipe, Direction direction,

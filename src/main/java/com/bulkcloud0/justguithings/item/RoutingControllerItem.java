@@ -1,12 +1,28 @@
 package com.bulkcloud0.justguithings.item;
 
+import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
+import com.bulkcloud0.justguithings.logistics.EnergyRoutingSourceRule;
+import com.bulkcloud0.justguithings.logistics.EnergyRoutingTargetRule;
+import com.bulkcloud0.justguithings.logistics.FluidRouteFilter;
+import com.bulkcloud0.justguithings.logistics.FluidRoutingSourceRule;
+import com.bulkcloud0.justguithings.logistics.FluidRoutingTargetRule;
+import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
+import com.bulkcloud0.justguithings.logistics.ItemRoutingSourceRule;
+import com.bulkcloud0.justguithings.logistics.ItemRoutingTargetRule;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerScope;
+import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
+import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
+import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -96,6 +112,152 @@ public class RoutingControllerItem extends TooltipItem {
         }
 
         return ActionResult.sidedSuccess(stack, world.isClientSide);
+    }
+
+    @Override
+    public ActionResultType useOn(ItemUseContext context) {
+        PlayerEntity player = context.getPlayer();
+        if (player == null || !player.isShiftKeyDown()) {
+            return ActionResultType.PASS;
+        }
+
+        TileEntity tile = context.getLevel().getBlockEntity(context.getClickedPos());
+        if (!(tile instanceof BasicItemPipeTileEntity)
+                && !(tile instanceof BasicFluidPipeTileEntity)
+                && !(tile instanceof BasicEnergyCableTileEntity)) {
+            return ActionResultType.PASS;
+        }
+
+        if (!context.getLevel().isClientSide) {
+            RoutingControllerScope scope = getScope(context.getItemInHand());
+            Direction direction = context.getClickedFace();
+            ITextComponent inspection = getInspectionText(tile, direction, scope);
+            if (inspection != null) {
+                player.displayClientMessage(inspection, false);
+            }
+        }
+
+        return context.getLevel().isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
+    }
+
+    @Nullable
+    private ITextComponent getInspectionText(TileEntity tile, Direction direction,
+                                             RoutingControllerScope scope) {
+        if (tile instanceof BasicItemPipeTileEntity) {
+            return getItemInspection((BasicItemPipeTileEntity) tile, direction, scope);
+        }
+        if (tile instanceof BasicFluidPipeTileEntity) {
+            return getFluidInspection((BasicFluidPipeTileEntity) tile, direction, scope);
+        }
+        if (tile instanceof BasicEnergyCableTileEntity) {
+            return getEnergyInspection((BasicEnergyCableTileEntity) tile, direction, scope);
+        }
+        return null;
+    }
+
+    private ITextComponent getItemInspection(BasicItemPipeTileEntity pipe, Direction direction,
+                                             RoutingControllerScope scope) {
+        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+
+        if (scope == RoutingControllerScope.SOURCE) {
+            ItemRoutingSourceRule rule = pipe.getSourceRule(direction);
+            ItemRouteFilter filter = rule.getFilter();
+            return new TranslationTextComponent(
+                    "message.justguithings.routing_controller.inspect_item_source",
+                    face, pipe.getSideMode(direction).getDisplayName(),
+                    filter.getMode().getDisplayName(),
+                    filter.getSampleCount(), ItemRouteFilter.MAX_SAMPLES,
+                    getNbtModeName(filter.isMatchNbt()),
+                    rule.getRedstoneMode().getDisplayName(),
+                    rule.getMinStock());
+        }
+
+        ItemRoutingTargetRule rule = pipe.getTargetRule(direction);
+        ItemRouteFilter filter = rule.getFilter();
+        return new TranslationTextComponent(
+                "message.justguithings.routing_controller.inspect_item_target",
+                face, pipe.getSideMode(direction).getDisplayName(),
+                rule.getPriority().getDisplayName(),
+                filter.getMode().getDisplayName(),
+                filter.getSampleCount(), ItemRouteFilter.MAX_SAMPLES,
+                getNbtModeName(filter.isMatchNbt()),
+                rule.getRedstoneMode().getDisplayName());
+    }
+
+    private ITextComponent getFluidInspection(BasicFluidPipeTileEntity pipe, Direction direction,
+                                              RoutingControllerScope scope) {
+        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+
+        if (scope == RoutingControllerScope.SOURCE) {
+            FluidRoutingSourceRule rule = pipe.getSourceRule(direction);
+            FluidRouteFilter filter = rule.getFilter();
+            return new TranslationTextComponent(
+                    "message.justguithings.routing_controller.inspect_fluid_source",
+                    face, pipe.getSideMode(direction).getDisplayName(),
+                    filter.getMode().getDisplayName(),
+                    filter.getSampleCount(), FluidRouteFilter.MAX_SAMPLES,
+                    getNbtModeName(filter.isMatchNbt()),
+                    rule.getRedstoneMode().getDisplayName(),
+                    rule.getMinStock());
+        }
+
+        FluidRoutingTargetRule rule = pipe.getTargetRule(direction);
+        FluidRouteFilter filter = rule.getFilter();
+        return new TranslationTextComponent(
+                "message.justguithings.routing_controller.inspect_fluid_target",
+                face, pipe.getSideMode(direction).getDisplayName(),
+                rule.getPriority().getDisplayName(),
+                filter.getMode().getDisplayName(),
+                filter.getSampleCount(), FluidRouteFilter.MAX_SAMPLES,
+                getNbtModeName(filter.isMatchNbt()),
+                rule.getRedstoneMode().getDisplayName());
+    }
+
+    private ITextComponent getEnergyInspection(BasicEnergyCableTileEntity cable, Direction direction,
+                                               RoutingControllerScope scope) {
+        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+        ITextComponent sideMode = getEnergySideModeName(cable.getSideMode(direction));
+
+        if (scope == RoutingControllerScope.SOURCE) {
+            EnergyRoutingSourceRule rule = cable.getSourceRule(direction);
+            return new TranslationTextComponent(
+                    "message.justguithings.routing_controller.inspect_energy_source",
+                    face, sideMode, rule.getRedstoneMode().getDisplayName());
+        }
+
+        EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
+        return new TranslationTextComponent(
+                "message.justguithings.routing_controller.inspect_energy_target",
+                face, sideMode,
+                rule.getPriority().getDisplayName(),
+                rule.getRedstoneMode().getDisplayName());
+    }
+
+    private ITextComponent getNbtModeName(boolean matchNbt) {
+        return new TranslationTextComponent(
+                matchNbt
+                        ? "routing.justguithings.nbt_mode.exact"
+                        : "routing.justguithings.nbt_mode.ignored");
+    }
+
+    private ITextComponent getEnergySideModeName(ConduitTransferMode mode) {
+        String key;
+        switch (mode) {
+            case PULL:
+                key = "routing.justguithings.energy_side_mode.input";
+                break;
+            case PUSH:
+                key = "routing.justguithings.energy_side_mode.output";
+                break;
+            case DISABLED:
+                key = "routing.justguithings.energy_side_mode.disabled";
+                break;
+            case BOTH:
+            default:
+                key = "routing.justguithings.energy_side_mode.both";
+                break;
+        }
+        return new TranslationTextComponent(key);
     }
 
     @Override
