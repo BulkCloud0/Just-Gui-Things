@@ -14,6 +14,7 @@ import com.bulkcloud0.justguithings.world.block.QuenchChamberBlock;
 import com.bulkcloud0.justguithings.world.block.ResistiveFurnaceBlock;
 import com.bulkcloud0.justguithings.world.block.PrecisionExtruderBlock;
 import com.bulkcloud0.justguithings.world.block.StampingPressBlock;
+import com.bulkcloud0.justguithings.world.block.WireMillBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -76,6 +77,10 @@ public final class ModBlocks {
 
     public static final RegistryObject<Block> PRECISION_EXTRUDER = BLOCKS.register("precision_extruder",
             () -> new PrecisionExtruderBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+
+    public static final RegistryObject<Block> WIRE_MILL = BLOCKS.register("wire_mill",
+            () -> new WireMillBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
 
     private ModBlocks() {}

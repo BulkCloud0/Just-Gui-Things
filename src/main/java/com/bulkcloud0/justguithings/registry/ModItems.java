@@ -48,6 +48,9 @@ public final class ModItems {
     public static final RegistryObject<Item> PRECISION_EXTRUDER = ITEMS.register("precision_extruder",
             () -> new BlockItem(ModBlocks.PRECISION_EXTRUDER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> WIRE_MILL = ITEMS.register("wire_mill",
+            () -> new BlockItem(ModBlocks.WIRE_MILL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
                     "tooltip.justguithings.configurator.use"));
@@ -84,8 +87,25 @@ public final class ModItems {
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> TEMPERED_STEEL_INGOT = ITEMS.register("tempered_steel_ingot",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> IRON_ROD = ITEMS.register("iron_rod",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> GOLD_ROD = ITEMS.register("gold_rod",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> STEEL_ROD = ITEMS.register("steel_rod",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
     public static final RegistryObject<Item> TEMPERED_STEEL_ROD = ITEMS.register("tempered_steel_rod",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> IRON_WIRE = ITEMS.register("iron_wire",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> GOLD_WIRE = ITEMS.register("gold_wire",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> STEEL_WIRE = ITEMS.register("steel_wire",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> TEMPERED_STEEL_WIRE = ITEMS.register("tempered_steel_wire",
+            () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> TENSIONING_SPINDLE = ITEMS.register("tensioning_spindle",
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_MATERIALS).stacksTo(16),
+                    "tooltip.justguithings.tensioning_spindle"));
     public static final RegistryObject<Item> HARDENED_EXTRUSION_DIE = ITEMS.register("hardened_extrusion_die",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_MATERIALS).stacksTo(16),
                     "tooltip.justguithings.hardened_extrusion_die"));

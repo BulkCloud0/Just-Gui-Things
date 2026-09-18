@@ -11,6 +11,7 @@ import com.bulkcloud0.justguithings.world.container.QuenchChamberContainer;
 import com.bulkcloud0.justguithings.world.container.ResistiveFurnaceContainer;
 import com.bulkcloud0.justguithings.world.container.PrecisionExtruderContainer;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
+import com.bulkcloud0.justguithings.world.container.WireMillContainer;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.fml.RegistryObject;
@@ -45,6 +46,9 @@ public final class ModContainers {
 
     public static final RegistryObject<ContainerType<PrecisionExtruderContainer>> PRECISION_EXTRUDER =
             CONTAINERS.register("precision_extruder", () -> IForgeContainerType.create(PrecisionExtruderContainer::new));
+
+    public static final RegistryObject<ContainerType<WireMillContainer>> WIRE_MILL =
+            CONTAINERS.register("wire_mill", () -> IForgeContainerType.create(WireMillContainer::new));
 
     private ModContainers() {}
 }

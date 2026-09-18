@@ -7,6 +7,7 @@ import com.bulkcloud0.justguithings.client.screen.QuenchChamberScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
 import com.bulkcloud0.justguithings.client.screen.ResistiveFurnaceScreen;
 import com.bulkcloud0.justguithings.client.screen.PrecisionExtruderScreen;
+import com.bulkcloud0.justguithings.client.screen.WireMillScreen;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import mezz.jei.api.IModPlugin;
@@ -37,7 +38,8 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
                 new MixingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new QuenchingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new HeatingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
-                new ExtrudingRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
+                new ExtrudingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
+                new WireDrawingRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -50,6 +52,7 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.QUENCHING_TYPE), QuenchingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.HEATING_TYPE), HeatingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.EXTRUDING_TYPE), ExtrudingRecipeCategory.UID);
+            registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.WIRE_DRAWING_TYPE), WireDrawingRecipeCategory.UID);
         }
     }
 
@@ -61,6 +64,7 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModItems.QUENCH_CHAMBER.get()), QuenchingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.RESISTIVE_FURNACE.get()), HeatingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.PRECISION_EXTRUDER.get()), ExtrudingRecipeCategory.UID);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.WIRE_MILL.get()), WireDrawingRecipeCategory.UID);
     }
 
     @Override
@@ -71,5 +75,6 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(QuenchChamberScreen.class, 69, 38, 36, 12, QuenchingRecipeCategory.UID);
         registration.addRecipeClickArea(ResistiveFurnaceScreen.class, 69, 38, 36, 12, HeatingRecipeCategory.UID);
         registration.addRecipeClickArea(PrecisionExtruderScreen.class, 69, 38, 36, 12, ExtrudingRecipeCategory.UID);
+        registration.addRecipeClickArea(WireMillScreen.class, 69, 38, 36, 12, WireDrawingRecipeCategory.UID);
     }
 }
