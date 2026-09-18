@@ -217,8 +217,11 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         }
 
         int sourceStart = Math.floorMod(sourceCursor, sources.size());
+        int lastContributingSource = -1;
+
         for (int sourceOffset = 0; sourceOffset < sources.size() && budget > 0; sourceOffset++) {
-            SourceEndpoint source = sources.get((sourceStart + sourceOffset) % sources.size());
+            int sourceIndex = (sourceStart + sourceOffset) % sources.size();
+            SourceEndpoint source = sources.get(sourceIndex);
             FluidStack simulatedDrain = source.rule.findDrainable(source.handler, budget);
             if (simulatedDrain.isEmpty()) {
                 continue;
@@ -227,6 +230,7 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
             int moved = routeToTarget(network, source, targets, simulatedDrain, budget);
             if (moved > 0) {
                 budget -= moved;
+                lastContributingSource = sourceIndex;
             }
 
             if (hasRecovery(network)) {
@@ -234,7 +238,8 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
             }
         }
 
-        sourceCursor = (sourceStart + 1) % sources.size();
+        int cursorBase = lastContributingSource >= 0 ? lastContributingSource : sourceStart;
+        sourceCursor = (cursorBase + 1) % sources.size();
     }
 
     private int routeToTarget(List<BasicFluidPipeTileEntity> network,
