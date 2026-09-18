@@ -37,6 +37,10 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
     @Override
     protected boolean canConnectTo(IBlockReader world, BlockPos pos, Direction direction) {
         BlockPos neighborPos = pos.relative(direction);
+        if (!isPositionLoaded(world, neighborPos)) {
+            return false;
+        }
+
         BlockState neighborState = world.getBlockState(neighborPos);
         if (neighborState.getBlock() instanceof BasicItemPipeBlock) {
             return true;
@@ -48,7 +52,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
             return false;
         }
 
-        TileEntity neighbor = world.getBlockEntity(neighborPos);
+        TileEntity neighbor = getLoadedBlockEntity(world, neighborPos);
         return neighbor != null
                 && neighbor.getCapability(
                         CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
@@ -62,7 +66,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
         }
 
         for (Direction direction : Direction.values()) {
-            TileEntity neighbor = world.getBlockEntity(pos.relative(direction));
+            TileEntity neighbor = getLoadedBlockEntity(world, pos.relative(direction));
             if (neighbor instanceof BasicItemPipeTileEntity) {
                 ((BasicItemPipeTileEntity) neighbor).invalidateNetworkCache();
             }
