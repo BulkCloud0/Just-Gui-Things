@@ -52,7 +52,7 @@ See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for extension points and soft
 
 - Add additional machine-specific specialization modules only where they create a distinct production tradeoff
 - Continue production chains only when they add a clear industrial role
-- Improve network caching/performance and connection visuals
+- Continue profiling large conduit networks and improve connection visuals
 - Improve machine/cable/pipe textures and models
 - Continue broad compatibility through tags, capabilities and optional adapters
 

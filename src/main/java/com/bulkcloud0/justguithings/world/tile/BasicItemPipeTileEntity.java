@@ -197,18 +197,9 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
     }
 
     private void transferItems(List<BasicItemPipeTileEntity> network) {
-        Set<BlockPos> pipePositions = new HashSet<>();
-        for (BasicItemPipeTileEntity pipe : network) {
-            if (pipe.isRemoved()) {
-                invalidateNetworkCache();
-                return;
-            }
-            pipePositions.add(pipe.getBlockPos());
-        }
-
         List<SourceEndpoint> sources = new ArrayList<>();
         List<TargetEndpoint> targets = new ArrayList<>();
-        collectEndpoints(network, pipePositions, sources, targets);
+        collectEndpoints(sources, targets);
 
         if (sources.isEmpty() || targets.isEmpty()) {
             return;
@@ -266,53 +257,45 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return 0;
     }
 
-    private void collectEndpoints(List<BasicItemPipeTileEntity> network,
-                                  Set<BlockPos> pipePositions,
-                                  List<SourceEndpoint> sources,
+    private void collectEndpoints(List<SourceEndpoint> sources,
                                   List<TargetEndpoint> targets) {
         Set<EndpointKey> sourceKeys = new HashSet<>();
         Set<EndpointKey> targetKeys = new HashSet<>();
 
-        for (BasicItemPipeTileEntity pipe : network) {
+        for (ExternalEndpoint<BasicItemPipeTileEntity> endpoint : getCachedExternalEndpoints()) {
+            BasicItemPipeTileEntity pipe = endpoint.getConduit();
+            Direction direction = endpoint.getConduitSide();
+            ConduitTransferMode mode = pipe.getSideMode(direction);
+            if (mode == ConduitTransferMode.DISABLED) {
+                continue;
+            }
+
+            TileEntity neighbor = level.getBlockEntity(endpoint.getNeighborPos());
+            if (neighbor == null) {
+                continue;
+            }
+
+            IItemHandler handler = neighbor
+                    .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, endpoint.getNeighborSide())
+                    .orElse(null);
+            if (handler == null) {
+                continue;
+            }
+
             boolean pipePowered = level.hasNeighborSignal(pipe.getBlockPos());
+            EndpointKey key = new EndpointKey(endpoint.getNeighborPos(), endpoint.getNeighborSide());
 
-            for (Direction direction : Direction.values()) {
-                ConduitTransferMode mode = pipe.getSideMode(direction);
-                if (mode == ConduitTransferMode.DISABLED) {
-                    continue;
+            if (mode.canPull() && sourceKeys.add(key)) {
+                ItemRoutingSourceRule sourceRule = pipe.getSourceRule(direction);
+                if (sourceRule.allowsRedstone(pipePowered)) {
+                    sources.add(new SourceEndpoint(endpoint.getNeighborPos(), handler, sourceRule));
                 }
+            }
 
-                BlockPos neighborPos = pipe.getBlockPos().relative(direction);
-                if (pipePositions.contains(neighborPos)) {
-                    continue;
-                }
-
-                TileEntity neighbor = level.getBlockEntity(neighborPos);
-                if (neighbor == null) {
-                    continue;
-                }
-
-                IItemHandler handler = neighbor
-                        .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite())
-                        .orElse(null);
-                if (handler == null) {
-                    continue;
-                }
-
-                EndpointKey key = new EndpointKey(neighborPos, direction.getOpposite());
-
-                if (mode.canPull() && sourceKeys.add(key)) {
-                    ItemRoutingSourceRule sourceRule = pipe.getSourceRule(direction);
-                    if (sourceRule.allowsRedstone(pipePowered)) {
-                        sources.add(new SourceEndpoint(neighborPos, handler, sourceRule));
-                    }
-                }
-
-                if (mode.canPush() && targetKeys.add(key)) {
-                    ItemRoutingTargetRule targetRule = pipe.getTargetRule(direction);
-                    if (targetRule.allowsRedstone(pipePowered)) {
-                        targets.add(new TargetEndpoint(neighborPos, handler, targetRule));
-                    }
+            if (mode.canPush() && targetKeys.add(key)) {
+                ItemRoutingTargetRule targetRule = pipe.getTargetRule(direction);
+                if (targetRule.allowsRedstone(pipePowered)) {
+                    targets.add(new TargetEndpoint(endpoint.getNeighborPos(), handler, targetRule));
                 }
             }
         }
