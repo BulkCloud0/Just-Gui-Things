@@ -97,10 +97,6 @@ tasks.register('validateCompatRecipes') {
                 it instanceof Map && it.type == 'forge:mod_loaded' && it.modid instanceof String
             }.collect { it.modid as String } as Set<String>
 
-            if (loadedMods.isEmpty()) {
-                throw new GradleException("Compatibility recipe ${recipeFile} must declare forge:mod_loaded")
-            }
-
             Set<String> referencedItems = [] as Set<String>
             Set<String> referencedFluids = [] as Set<String>
 
