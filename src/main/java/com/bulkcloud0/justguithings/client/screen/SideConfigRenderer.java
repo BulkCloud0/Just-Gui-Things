@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.client.screen;
 
+import com.bulkcloud0.justguithings.client.SideModeColors;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
@@ -18,13 +19,6 @@ public final class SideConfigRenderer {
     };
     private static final String[] LABELS = {"U", "D", "N", "S", "W", "E"};
 
-    private static final int DISABLED_COLOR = 0xFF7D8791;
-    private static final int INPUT_COLOR = 0xFF63C174;
-    private static final int OUTPUT_COLOR = 0xFFE29A4A;
-    private static final int ENERGY_COLOR = 0xFF45C7D9;
-    private static final int FLUID_INPUT_COLOR = 0xFF5B8DEF;
-    private static final int FLUID_OUTPUT_COLOR = 0xFF4EC6E6;
-
     private SideConfigRenderer() {
     }
 
@@ -34,7 +28,7 @@ public final class SideConfigRenderer {
         for (int index = 0; index < DIRECTIONS.length; index++) {
             MachineSideMode mode = modeGetter.apply(DIRECTIONS[index]);
             String token = LABELS[index] + ":" + code(mode);
-            font.draw(matrixStack, token, cursor, y, color(mode));
+            font.draw(matrixStack, token, cursor, y, SideModeColors.getMachineColor(mode));
             cursor += font.width(token) + 3.0F;
         }
     }
@@ -46,7 +40,7 @@ public final class SideConfigRenderer {
             int column = index % 3;
             MachineSideMode mode = modeGetter.apply(DIRECTIONS[index]);
             String token = LABELS[index] + ":" + code(mode);
-            font.draw(matrixStack, token, x + column * 21.0F, y + row * 10.0F, color(mode));
+            font.draw(matrixStack, token, x + column * 21.0F, y + row * 10.0F, SideModeColors.getMachineColor(mode));
         }
     }
 
@@ -72,24 +66,4 @@ public final class SideConfigRenderer {
         }
     }
 
-    private static int color(MachineSideMode mode) {
-        switch (mode) {
-            case INPUT:
-                return INPUT_COLOR;
-            case OUTPUT:
-                return OUTPUT_COLOR;
-            case ENERGY:
-                return ENERGY_COLOR;
-            case FLUID_INPUT:
-                return FLUID_INPUT_COLOR;
-            case FLUID_OUTPUT:
-                return FLUID_OUTPUT_COLOR;
-            case ENERGY_OUTPUT:
-            case ENERGY_BOTH:
-                return ENERGY_COLOR;
-            case DISABLED:
-            default:
-                return DISABLED_COLOR;
-        }
-    }
 }
