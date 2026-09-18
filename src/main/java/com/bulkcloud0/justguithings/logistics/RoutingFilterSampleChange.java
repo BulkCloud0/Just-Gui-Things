@@ -1,6 +1,6 @@
 package com.bulkcloud0.justguithings.logistics;
 
-public enum ItemFilterSampleChange {
+public enum RoutingFilterSampleChange {
     ADDED,
     REMOVED,
     FULL

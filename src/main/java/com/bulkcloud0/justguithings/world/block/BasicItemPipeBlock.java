@@ -3,10 +3,10 @@ package com.bulkcloud0.justguithings.world.block;
 import com.bulkcloud0.justguithings.item.RoutingControllerItem;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.logistics.RoutingFilterMode;
-import com.bulkcloud0.justguithings.logistics.ItemFilterSampleChange;
+import com.bulkcloud0.justguithings.logistics.RoutingFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
-import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
-import com.bulkcloud0.justguithings.logistics.ItemRoutingRedstoneMode;
+import com.bulkcloud0.justguithings.logistics.RoutingPriority;
+import com.bulkcloud0.justguithings.logistics.RoutingRedstoneMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerScope;
 import com.bulkcloud0.justguithings.registry.ModItems;
@@ -156,7 +156,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 break;
 
             case REDSTONE:
-                ItemRoutingRedstoneMode redstoneMode = pipe.cycleTargetRedstoneMode(direction);
+                RoutingRedstoneMode redstoneMode = pipe.cycleTargetRedstoneMode(direction);
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.routing_controller.redstone",
@@ -166,7 +166,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
 
             case PRIORITY:
             default:
-                ItemRoutingPriority priority = pipe.cycleTargetPriority(direction);
+                RoutingPriority priority = pipe.cycleTargetPriority(direction);
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.routing_controller.priority",
@@ -207,7 +207,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 break;
 
             case REDSTONE:
-                ItemRoutingRedstoneMode redstoneMode = pipe.cycleSourceRedstoneMode(direction);
+                RoutingRedstoneMode redstoneMode = pipe.cycleSourceRedstoneMode(direction);
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.routing_controller.source_redstone",
@@ -241,7 +241,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
             return;
         }
 
-        ItemFilterSampleChange change = pipe.toggleTargetFilterSample(direction, sample);
+        RoutingFilterSampleChange change = pipe.toggleTargetFilterSample(direction, sample);
         int count = pipe.getTargetFilterSampleCount(direction);
         displayFilterSampleChange(player, face, sample, count, change, false);
     }
@@ -260,13 +260,13 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
             return;
         }
 
-        ItemFilterSampleChange change = pipe.toggleSourceFilterSample(direction, sample);
+        RoutingFilterSampleChange change = pipe.toggleSourceFilterSample(direction, sample);
         int count = pipe.getSourceFilterSampleCount(direction);
         displayFilterSampleChange(player, face, sample, count, change, true);
     }
 
     private void displayFilterSampleChange(PlayerEntity player, String face, ItemStack sample,
-                                           int count, ItemFilterSampleChange change,
+                                           int count, RoutingFilterSampleChange change,
                                            boolean source) {
         String prefix = source
                 ? "message.justguithings.routing_controller.source_filter_"
