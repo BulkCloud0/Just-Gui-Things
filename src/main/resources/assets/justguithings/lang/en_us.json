@@ -40,5 +40,6 @@
   "jei.justguithings.pressing": "Pressing",
   "jei.justguithings.mixing": "Industrial Mixing",
   "jei.justguithings.quenching": "Quenching",
-  "block.justguithings.basic_item_pipe": "Basic Item Pipe"
+  "block.justguithings.basic_item_pipe": "Basic Item Pipe",
+  "block.justguithings.basic_fluid_pipe": "Basic Fluid Pipe"
 }

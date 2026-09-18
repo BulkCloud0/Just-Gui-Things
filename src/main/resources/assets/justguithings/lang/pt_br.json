@@ -40,5 +40,6 @@
   "jei.justguithings.pressing": "Estampagem",
   "jei.justguithings.mixing": "Mistura Industrial",
   "jei.justguithings.quenching": "Têmpera",
-  "block.justguithings.basic_item_pipe": "Tubo de Itens Básico"
+  "block.justguithings.basic_item_pipe": "Tubo de Itens Básico",
+  "block.justguithings.basic_fluid_pipe": "Tubo de Fluidos Básico"
 }

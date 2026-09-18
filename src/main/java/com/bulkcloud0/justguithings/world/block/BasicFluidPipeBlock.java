@@ -2,7 +2,7 @@ package com.bulkcloud0.justguithings.world.block;
 
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
-import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
+import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -15,13 +15,13 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public class BasicItemPipeBlock extends AbstractConduitBlock {
-    public BasicItemPipeBlock(Properties properties) {
+public class BasicFluidPipeBlock extends AbstractConduitBlock {
+    public BasicFluidPipeBlock(Properties properties) {
         super(properties);
     }
 
@@ -29,31 +29,31 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
     protected boolean canConnectTo(IBlockReader world, BlockPos pos, Direction direction) {
         BlockPos neighborPos = pos.relative(direction);
         BlockState neighborState = world.getBlockState(neighborPos);
-        if (neighborState.getBlock() instanceof BasicItemPipeBlock) {
+        if (neighborState.getBlock() instanceof BasicFluidPipeBlock) {
             return true;
         }
 
         TileEntity self = world.getBlockEntity(pos);
-        if (self instanceof BasicItemPipeTileEntity
-                && ((BasicItemPipeTileEntity) self).getSideMode(direction) == ConduitTransferMode.DISABLED) {
+        if (self instanceof BasicFluidPipeTileEntity
+                && ((BasicFluidPipeTileEntity) self).getSideMode(direction) == ConduitTransferMode.DISABLED) {
             return false;
         }
 
         TileEntity neighbor = world.getBlockEntity(neighborPos);
         return neighbor != null
-                && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
+                && neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
     }
 
     private void invalidateAdjacentPipeCaches(World world, BlockPos pos) {
         TileEntity self = world.getBlockEntity(pos);
-        if (self instanceof BasicItemPipeTileEntity) {
-            ((BasicItemPipeTileEntity) self).invalidateNetworkCache();
+        if (self instanceof BasicFluidPipeTileEntity) {
+            ((BasicFluidPipeTileEntity) self).invalidateNetworkCache();
         }
 
         for (Direction direction : Direction.values()) {
             TileEntity neighbor = world.getBlockEntity(pos.relative(direction));
-            if (neighbor instanceof BasicItemPipeTileEntity) {
-                ((BasicItemPipeTileEntity) neighbor).invalidateNetworkCache();
+            if (neighbor instanceof BasicFluidPipeTileEntity) {
+                ((BasicFluidPipeTileEntity) neighbor).invalidateNetworkCache();
             }
         }
     }
@@ -79,12 +79,12 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                                 Hand hand, BlockRayTraceResult hit) {
         ItemStack held = player.getItemInHand(hand);
         TileEntity tile = world.getBlockEntity(pos);
-        if (held.getItem() != ModItems.CONFIGURATOR.get() || !(tile instanceof BasicItemPipeTileEntity)) {
+        if (held.getItem() != ModItems.CONFIGURATOR.get() || !(tile instanceof BasicFluidPipeTileEntity)) {
             return ActionResultType.PASS;
         }
 
         if (!world.isClientSide) {
-            BasicItemPipeTileEntity pipe = (BasicItemPipeTileEntity) tile;
+            BasicFluidPipeTileEntity pipe = (BasicFluidPipeTileEntity) tile;
             ConduitTransferMode mode = pipe.cycleSideMode(hit.getDirection());
             AbstractConduitBlock.refreshConnections(world, pos);
 
@@ -103,6 +103,6 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new BasicItemPipeTileEntity();
+        return new BasicFluidPipeTileEntity();
     }
 }

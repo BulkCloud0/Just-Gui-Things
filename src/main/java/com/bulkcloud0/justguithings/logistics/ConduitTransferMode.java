@@ -1,6 +1,6 @@
 package com.bulkcloud0.justguithings.logistics;
 
-public enum ItemPipeSideMode {
+public enum ConduitTransferMode {
     BOTH(true, true),
     PULL(true, false),
     PUSH(false, true),
@@ -9,7 +9,7 @@ public enum ItemPipeSideMode {
     private final boolean pull;
     private final boolean push;
 
-    ItemPipeSideMode(boolean pull, boolean push) {
+    ConduitTransferMode(boolean pull, boolean push) {
         this.pull = pull;
         this.push = push;
     }
@@ -22,13 +22,13 @@ public enum ItemPipeSideMode {
         return push;
     }
 
-    public ItemPipeSideMode next() {
-        ItemPipeSideMode[] values = values();
+    public ConduitTransferMode next() {
+        ConduitTransferMode[] values = values();
         return values[(ordinal() + 1) % values.length];
     }
 
-    public static ItemPipeSideMode fromOrdinal(int ordinal) {
-        ItemPipeSideMode[] values = values();
+    public static ConduitTransferMode fromOrdinal(int ordinal) {
+        ConduitTransferMode[] values = values();
         if (ordinal < 0 || ordinal >= values.length) {
             return BOTH;
         }

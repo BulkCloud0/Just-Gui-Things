@@ -32,6 +32,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.BASIC_ENERGY_CABLE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> BASIC_ITEM_PIPE = ITEMS.register("basic_item_pipe",
             () -> new BlockItem(ModBlocks.BASIC_ITEM_PIPE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> BASIC_FLUID_PIPE = ITEMS.register("basic_fluid_pipe",
+            () -> new BlockItem(ModBlocks.BASIC_FLUID_PIPE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
