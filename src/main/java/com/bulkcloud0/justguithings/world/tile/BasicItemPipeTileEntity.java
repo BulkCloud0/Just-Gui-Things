@@ -1,6 +1,8 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
+import com.bulkcloud0.justguithings.logistics.ItemFilterMode;
+import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
 import com.bulkcloud0.justguithings.logistics.ItemTransferHelper;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -32,7 +34,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
     private final EnumMap<Direction, ConduitTransferMode> sideModes = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, ItemRoutingPriority> targetPriorities = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, ItemStack> targetFilters = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, ItemRouteFilter> targetFilters = new EnumMap<>(Direction.class);
 
     private int sourceCursor;
     private int targetCursor;
@@ -42,7 +44,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         for (Direction direction : Direction.values()) {
             sideModes.put(direction, ConduitTransferMode.BOTH);
             targetPriorities.put(direction, ItemRoutingPriority.NORMAL);
-            targetFilters.put(direction, ItemStack.EMPTY);
+            targetFilters.put(direction, new ItemRouteFilter());
         }
     }
 
@@ -93,20 +95,39 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return next;
     }
 
-    public ItemStack getTargetFilter(Direction direction) {
-        ItemStack stack = targetFilters.get(direction);
-        return stack == null || stack.isEmpty() ? ItemStack.EMPTY : stack.copy();
+    public ItemRouteFilter getTargetFilter(Direction direction) {
+        return new ItemRouteFilter(targetFilters.getOrDefault(direction, new ItemRouteFilter()));
     }
 
-    public void setTargetFilter(Direction direction, ItemStack filter) {
-        if (filter == null || filter.isEmpty()) {
-            targetFilters.put(direction, ItemStack.EMPTY);
-        } else {
-            ItemStack copy = filter.copy();
-            copy.setCount(1);
-            targetFilters.put(direction, copy);
-        }
+    public void setTargetFilterSample(Direction direction, ItemStack sample) {
+        getMutableFilter(direction).setSample(sample);
         setChanged();
+    }
+
+    public void clearTargetFilter(Direction direction) {
+        getMutableFilter(direction).clearSample();
+        setChanged();
+    }
+
+    public ItemFilterMode cycleTargetFilterMode(Direction direction) {
+        ItemFilterMode next = getMutableFilter(direction).cycleMode();
+        setChanged();
+        return next;
+    }
+
+    public boolean toggleTargetFilterNbt(Direction direction) {
+        boolean matchNbt = getMutableFilter(direction).toggleMatchNbt();
+        setChanged();
+        return matchNbt;
+    }
+
+    private ItemRouteFilter getMutableFilter(Direction direction) {
+        ItemRouteFilter filter = targetFilters.get(direction);
+        if (filter == null) {
+            filter = new ItemRouteFilter();
+            targetFilters.put(direction, filter);
+        }
+        return filter;
     }
 
     private void transferItems(List<BasicItemPipeTileEntity> network) {
@@ -220,7 +241,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
     private int moveItem(ItemEndpoint source, int sourceSlot, ItemEndpoint target, int maxAmount) {
         ItemStack simulatedExtract = source.handler.extractItem(sourceSlot, maxAmount, true);
-        if (simulatedExtract.isEmpty() || !target.accepts(simulatedExtract)) {
+        if (simulatedExtract.isEmpty() || !target.filter.accepts(simulatedExtract)) {
             return 0;
         }
 
@@ -268,25 +289,29 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
         for (Direction direction : Direction.values()) {
             targetPriorities.put(direction, ItemRoutingPriority.NORMAL);
-            targetFilters.put(direction, ItemStack.EMPTY);
+            targetFilters.put(direction, new ItemRouteFilter());
         }
 
         if (nbt.contains("RoutingConfig")) {
             CompoundNBT routing = nbt.getCompound("RoutingConfig");
             for (Direction direction : Direction.values()) {
                 String priorityKey = "Priority" + direction.ordinal();
-                String filterKey = "Filter" + direction.ordinal();
+                String ruleKey = "Rule" + direction.ordinal();
+                String legacyFilterKey = "Filter" + direction.ordinal();
 
                 if (routing.contains(priorityKey)) {
                     targetPriorities.put(direction,
                             ItemRoutingPriority.fromOrdinal(routing.getInt(priorityKey)));
                 }
-                if (routing.contains(filterKey)) {
-                    ItemStack filter = ItemStack.of(routing.getCompound(filterKey));
-                    if (!filter.isEmpty()) {
-                        filter.setCount(1);
-                        targetFilters.put(direction, filter);
-                    }
+
+                if (routing.contains(ruleKey)) {
+                    targetFilters.put(direction,
+                            ItemRouteFilter.load(routing.getCompound(ruleKey)));
+                } else if (routing.contains(legacyFilterKey)) {
+                    ItemStack legacySample = ItemStack.of(routing.getCompound(legacyFilterKey));
+                    ItemRouteFilter migrated = new ItemRouteFilter();
+                    migrated.setSample(legacySample);
+                    targetFilters.put(direction, migrated);
                 }
             }
         }
@@ -307,10 +332,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         CompoundNBT routing = new CompoundNBT();
         for (Direction direction : Direction.values()) {
             routing.putInt("Priority" + direction.ordinal(), getTargetPriority(direction).ordinal());
-            ItemStack filter = targetFilters.get(direction);
-            if (filter != null && !filter.isEmpty()) {
-                routing.put("Filter" + direction.ordinal(), filter.save(new CompoundNBT()));
-            }
+            routing.put("Rule" + direction.ordinal(), getMutableFilter(direction).save());
         }
         nbt.put("RoutingConfig", routing);
 
@@ -321,28 +343,24 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         private final BlockPos inventoryPos;
         private final IItemHandler handler;
         private final ItemRoutingPriority priority;
-        private final ItemStack filter;
+        private final ItemRouteFilter filter;
 
         private ItemEndpoint(BlockPos inventoryPos, IItemHandler handler,
-                             ItemRoutingPriority priority, ItemStack filter) {
+                             ItemRoutingPriority priority, ItemRouteFilter filter) {
             this.inventoryPos = inventoryPos;
             this.handler = handler;
             this.priority = priority;
-            this.filter = filter == null ? ItemStack.EMPTY : filter.copy();
+            this.filter = new ItemRouteFilter(filter);
         }
 
         private static ItemEndpoint source(BlockPos inventoryPos, IItemHandler handler) {
-            return new ItemEndpoint(inventoryPos, handler, ItemRoutingPriority.NORMAL, ItemStack.EMPTY);
+            return new ItemEndpoint(
+                    inventoryPos, handler, ItemRoutingPriority.NORMAL, new ItemRouteFilter());
         }
 
         private static ItemEndpoint target(BlockPos inventoryPos, IItemHandler handler,
-                                           ItemRoutingPriority priority, ItemStack filter) {
+                                           ItemRoutingPriority priority, ItemRouteFilter filter) {
             return new ItemEndpoint(inventoryPos, handler, priority, filter);
-        }
-
-        private boolean accepts(ItemStack stack) {
-            return filter.isEmpty()
-                    || (ItemStack.isSame(filter, stack) && ItemStack.tagMatches(filter, stack));
         }
     }
 

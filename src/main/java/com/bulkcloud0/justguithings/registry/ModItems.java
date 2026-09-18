@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.item.EnergyCellBlockItem;
 import com.bulkcloud0.justguithings.item.FluidReservoirBlockItem;
 import com.bulkcloud0.justguithings.item.MachineModuleItem;
+import com.bulkcloud0.justguithings.item.RoutingControllerItem;
 import com.bulkcloud0.justguithings.item.TooltipItem;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import net.minecraft.item.BlockItem;
@@ -49,9 +50,8 @@ public final class ModItems {
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
                     "tooltip.justguithings.configurator.use"));
     public static final RegistryObject<Item> ROUTING_CONTROLLER = ITEMS.register("routing_controller",
-            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
-                    "tooltip.justguithings.routing_controller.priority",
-                    "tooltip.justguithings.routing_controller.filter"));
+            () -> new RoutingControllerItem(
+                    new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
             () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.SPEED,
                     "tooltip.justguithings.speed_module.effect", "tooltip.justguithings.speed_module.compatibility"));
