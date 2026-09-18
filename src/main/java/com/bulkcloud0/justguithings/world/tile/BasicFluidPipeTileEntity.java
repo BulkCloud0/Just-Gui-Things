@@ -1,6 +1,12 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
+import com.bulkcloud0.justguithings.logistics.FluidRoutingSourceRule;
+import com.bulkcloud0.justguithings.logistics.FluidRoutingTargetRule;
+import com.bulkcloud0.justguithings.logistics.RoutingFilterMode;
+import com.bulkcloud0.justguithings.logistics.RoutingFilterSampleChange;
+import com.bulkcloud0.justguithings.logistics.RoutingPriority;
+import com.bulkcloud0.justguithings.logistics.RoutingRedstoneMode;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -23,8 +29,16 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
     private static final int RECOVERY_CAPACITY = 1_000;
     private static final int NETWORK_CACHE_TTL = 100;
     private static final int VISUAL_REFRESH_INTERVAL = 10;
+    private static final RoutingPriority[] ROUTING_ORDER = {
+            RoutingPriority.HIGH,
+            RoutingPriority.NORMAL,
+            RoutingPriority.LOW
+    };
 
     private final EnumMap<Direction, ConduitTransferMode> sideModes = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, FluidRoutingTargetRule> targetRules = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, FluidRoutingSourceRule> sourceRules = new EnumMap<>(Direction.class);
+
     private final FluidTank recoveryTank = new FluidTank(RECOVERY_CAPACITY) {
         @Override
         protected void onContentsChanged() {
@@ -39,6 +53,8 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         super(ModTileEntities.BASIC_FLUID_PIPE.get(), NETWORK_CACHE_TTL);
         for (Direction direction : Direction.values()) {
             sideModes.put(direction, ConduitTransferMode.BOTH);
+            targetRules.put(direction, new FluidRoutingTargetRule());
+            sourceRules.put(direction, new FluidRoutingSourceRule());
         }
     }
 
@@ -78,6 +94,114 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         return next;
     }
 
+    public RoutingPriority cycleTargetPriority(Direction direction) {
+        RoutingPriority next = getMutableTargetRule(direction).cyclePriority();
+        setChanged();
+        return next;
+    }
+
+    public RoutingFilterSampleChange toggleTargetFilterSample(Direction direction, FluidStack sample) {
+        RoutingFilterSampleChange change = getMutableTargetRule(direction).toggleFilterSample(sample);
+        if (change != RoutingFilterSampleChange.FULL) {
+            setChanged();
+        }
+        return change;
+    }
+
+    public int getTargetFilterSampleCount(Direction direction) {
+        return getMutableTargetRule(direction).getFilterSampleCount();
+    }
+
+    public void clearTargetFilter(Direction direction) {
+        getMutableTargetRule(direction).clearFilterSamples();
+        setChanged();
+    }
+
+    public RoutingFilterMode cycleTargetFilterMode(Direction direction) {
+        RoutingFilterMode next = getMutableTargetRule(direction).cycleFilterMode();
+        setChanged();
+        return next;
+    }
+
+    public boolean toggleTargetFilterNbt(Direction direction) {
+        boolean matchNbt = getMutableTargetRule(direction).toggleFilterNbt();
+        setChanged();
+        return matchNbt;
+    }
+
+    public RoutingRedstoneMode cycleTargetRedstoneMode(Direction direction) {
+        RoutingRedstoneMode next = getMutableTargetRule(direction).cycleRedstoneMode();
+        setChanged();
+        return next;
+    }
+
+    public RoutingFilterSampleChange toggleSourceFilterSample(Direction direction, FluidStack sample) {
+        RoutingFilterSampleChange change = getMutableSourceRule(direction).toggleFilterSample(sample);
+        if (change != RoutingFilterSampleChange.FULL) {
+            setChanged();
+        }
+        return change;
+    }
+
+    public int getSourceFilterSampleCount(Direction direction) {
+        return getMutableSourceRule(direction).getFilterSampleCount();
+    }
+
+    public void clearSourceFilter(Direction direction) {
+        getMutableSourceRule(direction).clearFilterSamples();
+        setChanged();
+    }
+
+    public RoutingFilterMode cycleSourceFilterMode(Direction direction) {
+        RoutingFilterMode next = getMutableSourceRule(direction).cycleFilterMode();
+        setChanged();
+        return next;
+    }
+
+    public boolean toggleSourceFilterNbt(Direction direction) {
+        boolean matchNbt = getMutableSourceRule(direction).toggleFilterNbt();
+        setChanged();
+        return matchNbt;
+    }
+
+    public int cycleSourceMinStock(Direction direction) {
+        int minStock = getMutableSourceRule(direction).cycleMinStock();
+        setChanged();
+        return minStock;
+    }
+
+    public RoutingRedstoneMode cycleSourceRedstoneMode(Direction direction) {
+        RoutingRedstoneMode next = getMutableSourceRule(direction).cycleRedstoneMode();
+        setChanged();
+        return next;
+    }
+
+    private FluidRoutingTargetRule getTargetRule(Direction direction) {
+        return new FluidRoutingTargetRule(getMutableTargetRule(direction));
+    }
+
+    private FluidRoutingSourceRule getSourceRule(Direction direction) {
+        return new FluidRoutingSourceRule(getMutableSourceRule(direction));
+    }
+
+    private FluidRoutingTargetRule getMutableTargetRule(Direction direction) {
+        FluidRoutingTargetRule rule = targetRules.get(direction);
+        if (rule == null) {
+            rule = new FluidRoutingTargetRule();
+            targetRules.put(direction, rule);
+        }
+        return rule;
+    }
+
+    private FluidRoutingSourceRule getMutableSourceRule(Direction direction) {
+        FluidRoutingSourceRule rule = sourceRules.get(direction);
+        if (rule == null) {
+            rule = new FluidRoutingSourceRule();
+            sourceRules.put(direction, rule);
+        }
+        return rule;
+    }
+
     private void transferFluids(List<BasicFluidPipeTileEntity> network) {
         Set<BlockPos> pipePositions = new HashSet<>();
         for (BasicFluidPipeTileEntity pipe : network) {
@@ -88,8 +212,8 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
             pipePositions.add(pipe.getBlockPos());
         }
 
-        List<FluidEndpoint> sources = new ArrayList<>();
-        List<FluidEndpoint> targets = new ArrayList<>();
+        List<SourceEndpoint> sources = new ArrayList<>();
+        List<TargetEndpoint> targets = new ArrayList<>();
         collectEndpoints(network, pipePositions, sources, targets);
 
         if (targets.isEmpty()) {
@@ -103,26 +227,15 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
 
         int sourceStart = Math.floorMod(sourceCursor, sources.size());
         for (int sourceOffset = 0; sourceOffset < sources.size() && budget > 0; sourceOffset++) {
-            FluidEndpoint source = sources.get((sourceStart + sourceOffset) % sources.size());
-            FluidStack simulatedDrain = source.handler.drain(budget, IFluidHandler.FluidAction.SIMULATE);
+            SourceEndpoint source = sources.get((sourceStart + sourceOffset) % sources.size());
+            FluidStack simulatedDrain = source.rule.findDrainable(source.handler, budget);
             if (simulatedDrain.isEmpty()) {
                 continue;
             }
 
-            int targetStart = Math.floorMod(targetCursor, targets.size());
-            for (int targetOffset = 0; targetOffset < targets.size() && budget > 0; targetOffset++) {
-                int targetIndex = (targetStart + targetOffset) % targets.size();
-                FluidEndpoint target = targets.get(targetIndex);
-                if (target.inventoryPos.equals(source.inventoryPos)) {
-                    continue;
-                }
-
-                int moved = moveFluid(network, source, target, simulatedDrain, budget);
-                if (moved > 0) {
-                    budget -= moved;
-                    targetCursor = (targetIndex + 1) % targets.size();
-                    break;
-                }
+            int moved = routeToTarget(network, source, targets, simulatedDrain, budget);
+            if (moved > 0) {
+                budget -= moved;
             }
 
             if (hasRecovery(network)) {
@@ -133,14 +246,45 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         sourceCursor = (sourceStart + 1) % sources.size();
     }
 
+    private int routeToTarget(List<BasicFluidPipeTileEntity> network,
+                              SourceEndpoint source,
+                              List<TargetEndpoint> targets,
+                              FluidStack simulatedDrain,
+                              int maxAmount) {
+        int targetStart = Math.floorMod(targetCursor, targets.size());
+
+        for (RoutingPriority priority : ROUTING_ORDER) {
+            for (int targetOffset = 0; targetOffset < targets.size(); targetOffset++) {
+                int targetIndex = (targetStart + targetOffset) % targets.size();
+                TargetEndpoint target = targets.get(targetIndex);
+
+                if (target.rule.getPriority() != priority
+                        || target.inventoryPos.equals(source.inventoryPos)
+                        || !target.rule.accepts(simulatedDrain)) {
+                    continue;
+                }
+
+                int moved = moveFluid(network, source, target, simulatedDrain, maxAmount);
+                if (moved > 0) {
+                    targetCursor = (targetIndex + 1) % targets.size();
+                    return moved;
+                }
+            }
+        }
+
+        return 0;
+    }
+
     private void collectEndpoints(List<BasicFluidPipeTileEntity> network,
                                   Set<BlockPos> pipePositions,
-                                  List<FluidEndpoint> sources,
-                                  List<FluidEndpoint> targets) {
+                                  List<SourceEndpoint> sources,
+                                  List<TargetEndpoint> targets) {
         Set<EndpointKey> sourceKeys = new HashSet<>();
         Set<EndpointKey> targetKeys = new HashSet<>();
 
         for (BasicFluidPipeTileEntity pipe : network) {
+            boolean pipePowered = level.hasNeighborSignal(pipe.getBlockPos());
+
             for (Direction direction : Direction.values()) {
                 ConduitTransferMode mode = pipe.getSideMode(direction);
                 if (mode == ConduitTransferMode.DISABLED) {
@@ -165,23 +309,36 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
                 }
 
                 EndpointKey key = new EndpointKey(neighborPos, direction.getOpposite());
+
                 if (mode.canPull() && sourceKeys.add(key)) {
-                    sources.add(new FluidEndpoint(neighborPos, handler));
+                    FluidRoutingSourceRule rule = pipe.getSourceRule(direction);
+                    if (rule.allowsRedstone(pipePowered)) {
+                        sources.add(new SourceEndpoint(neighborPos, handler, rule));
+                    }
                 }
+
                 if (mode.canPush() && targetKeys.add(key)) {
-                    targets.add(new FluidEndpoint(neighborPos, handler));
+                    FluidRoutingTargetRule rule = pipe.getTargetRule(direction);
+                    if (rule.allowsRedstone(pipePowered)) {
+                        targets.add(new TargetEndpoint(neighborPos, handler, rule));
+                    }
                 }
             }
         }
     }
 
     private int moveFluid(List<BasicFluidPipeTileEntity> network,
-                          FluidEndpoint source,
-                          FluidEndpoint target,
+                          SourceEndpoint source,
+                          TargetEndpoint target,
                           FluidStack simulatedDrain,
                           int maxAmount) {
+        int sourceLimit = source.rule.getDrainableAmount(source.handler, simulatedDrain, maxAmount);
+        if (sourceLimit <= 0) {
+            return 0;
+        }
+
         FluidStack offer = simulatedDrain.copy();
-        offer.setAmount(Math.min(maxAmount, simulatedDrain.getAmount()));
+        offer.setAmount(Math.min(sourceLimit, simulatedDrain.getAmount()));
 
         int accepted = target.handler.fill(offer, IFluidHandler.FluidAction.SIMULATE);
         if (accepted <= 0) {
@@ -216,7 +373,7 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
     }
 
     private int flushRecovery(List<BasicFluidPipeTileEntity> network,
-                              List<FluidEndpoint> targets,
+                              List<TargetEndpoint> targets,
                               int budget) {
         if (budget <= 0 || targets.isEmpty()) {
             return budget;
@@ -227,39 +384,50 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
                 FluidStack buffered = pipe.recoveryTank.getFluid().copy();
                 buffered.setAmount(Math.min(buffered.getAmount(), budget));
 
-                boolean moved = false;
-                int targetStart = Math.floorMod(targetCursor, targets.size());
-                for (int offset = 0; offset < targets.size(); offset++) {
-                    int targetIndex = (targetStart + offset) % targets.size();
-                    FluidEndpoint target = targets.get(targetIndex);
-
-                    int accepted = target.handler.fill(buffered, IFluidHandler.FluidAction.SIMULATE);
-                    if (accepted <= 0) {
-                        continue;
-                    }
-
-                    FluidStack transfer = buffered.copy();
-                    transfer.setAmount(Math.min(accepted, buffered.getAmount()));
-                    int inserted = target.handler.fill(transfer, IFluidHandler.FluidAction.EXECUTE);
-                    inserted = Math.max(0, Math.min(inserted, transfer.getAmount()));
-                    if (inserted <= 0) {
-                        continue;
-                    }
-
-                    pipe.recoveryTank.drain(inserted, IFluidHandler.FluidAction.EXECUTE);
-                    budget -= inserted;
-                    targetCursor = (targetIndex + 1) % targets.size();
-                    moved = true;
-                    break;
-                }
-
-                if (!moved) {
+                int moved = routeRecoveryTarget(targets, buffered);
+                if (moved <= 0) {
                     return budget;
                 }
+
+                pipe.recoveryTank.drain(moved, IFluidHandler.FluidAction.EXECUTE);
+                budget -= moved;
             }
         }
 
         return budget;
+    }
+
+    private int routeRecoveryTarget(List<TargetEndpoint> targets, FluidStack buffered) {
+        int targetStart = Math.floorMod(targetCursor, targets.size());
+
+        for (RoutingPriority priority : ROUTING_ORDER) {
+            for (int offset = 0; offset < targets.size(); offset++) {
+                int targetIndex = (targetStart + offset) % targets.size();
+                TargetEndpoint target = targets.get(targetIndex);
+
+                if (target.rule.getPriority() != priority || !target.rule.accepts(buffered)) {
+                    continue;
+                }
+
+                int accepted = target.handler.fill(buffered, IFluidHandler.FluidAction.SIMULATE);
+                if (accepted <= 0) {
+                    continue;
+                }
+
+                FluidStack transfer = buffered.copy();
+                transfer.setAmount(Math.min(accepted, buffered.getAmount()));
+                int inserted = target.handler.fill(transfer, IFluidHandler.FluidAction.EXECUTE);
+                inserted = Math.max(0, Math.min(inserted, transfer.getAmount()));
+                if (inserted <= 0) {
+                    continue;
+                }
+
+                targetCursor = (targetIndex + 1) % targets.size();
+                return inserted;
+            }
+        }
+
+        return 0;
     }
 
     private boolean hasRecovery(List<BasicFluidPipeTileEntity> network) {
@@ -303,6 +471,28 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
             }
         }
 
+        for (Direction direction : Direction.values()) {
+            targetRules.put(direction, new FluidRoutingTargetRule());
+            sourceRules.put(direction, new FluidRoutingSourceRule());
+        }
+
+        if (nbt.contains("RoutingConfig")) {
+            CompoundNBT routing = nbt.getCompound("RoutingConfig");
+            for (Direction direction : Direction.values()) {
+                String targetKey = "TargetRule" + direction.ordinal();
+                String sourceKey = "SourceRule" + direction.ordinal();
+
+                if (routing.contains(targetKey)) {
+                    targetRules.put(direction,
+                            FluidRoutingTargetRule.load(routing.getCompound(targetKey)));
+                }
+                if (routing.contains(sourceKey)) {
+                    sourceRules.put(direction,
+                            FluidRoutingSourceRule.load(routing.getCompound(sourceKey)));
+                }
+            }
+        }
+
         if (nbt.contains("RecoveryTank")) {
             recoveryTank.readFromNBT(nbt.getCompound("RecoveryTank"));
         }
@@ -319,17 +509,41 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
             config.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
         }
         nbt.put("SideConfig", config);
+
+        CompoundNBT routing = new CompoundNBT();
+        for (Direction direction : Direction.values()) {
+            routing.put("TargetRule" + direction.ordinal(), getMutableTargetRule(direction).save());
+            routing.put("SourceRule" + direction.ordinal(), getMutableSourceRule(direction).save());
+        }
+        nbt.put("RoutingConfig", routing);
+
         nbt.put("RecoveryTank", recoveryTank.writeToNBT(new CompoundNBT()));
         return nbt;
     }
 
-    private static final class FluidEndpoint {
+    private static final class SourceEndpoint {
         private final BlockPos inventoryPos;
         private final IFluidHandler handler;
+        private final FluidRoutingSourceRule rule;
 
-        private FluidEndpoint(BlockPos inventoryPos, IFluidHandler handler) {
+        private SourceEndpoint(BlockPos inventoryPos, IFluidHandler handler,
+                               FluidRoutingSourceRule rule) {
             this.inventoryPos = inventoryPos;
             this.handler = handler;
+            this.rule = new FluidRoutingSourceRule(rule);
+        }
+    }
+
+    private static final class TargetEndpoint {
+        private final BlockPos inventoryPos;
+        private final IFluidHandler handler;
+        private final FluidRoutingTargetRule rule;
+
+        private TargetEndpoint(BlockPos inventoryPos, IFluidHandler handler,
+                               FluidRoutingTargetRule rule) {
+            this.inventoryPos = inventoryPos;
+            this.handler = handler;
+            this.rule = new FluidRoutingTargetRule(rule);
         }
     }
 

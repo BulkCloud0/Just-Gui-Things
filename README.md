@@ -12,6 +12,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Coal Generator, Basic Energy Cable and Energy Cell
 - Item and fluid transport through Forge capabilities
 - Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir and Fluid Pump
+- Endpoint routing for item and fluid pipes with filters, priorities, redstone conditions and source reserves
 - Shared machine core for energy, inventory, side configuration and processing state
 - Crusher with data-driven recipes and Speed/Efficiency/Buffer/Batch modules
 - Industrial Mixer, Stamping Press and Resistive Furnace
