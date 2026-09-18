@@ -1,11 +1,8 @@
 package com.bulkcloud0.justguithings.recipe;
 
-import net.minecraft.util.ResourceLocation;
-
-public interface MachineProcessingRecipe {
-    ResourceLocation getId();
-
-    int getProcessingTime();
-
-    int getEnergyPerTick();
+/**
+ * @deprecated Use {@code com.bulkcloud0.justguithings.api.recipe.MachineProcessingRecipe}.
+ */
+@Deprecated
+public interface MachineProcessingRecipe extends com.bulkcloud0.justguithings.api.recipe.MachineProcessingRecipe {
 }

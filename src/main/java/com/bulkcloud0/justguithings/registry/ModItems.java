@@ -4,7 +4,7 @@ import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.item.EnergyCellBlockItem;
 import com.bulkcloud0.justguithings.item.MachineModuleItem;
 import com.bulkcloud0.justguithings.item.TooltipItem;
-import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
+import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
