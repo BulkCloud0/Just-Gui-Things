@@ -2,7 +2,7 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
-import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
+import com.bulkcloud0.justguithings.world.block.AbstractConduitBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -67,7 +67,7 @@ public class BasicEnergyCableTileEntity extends TileEntity implements ITickableT
         }
 
         if ((level.getGameTime() + worldPosition.asLong()) % VISUAL_REFRESH_INTERVAL == 0L) {
-            BasicEnergyCableBlock.refreshConnections(level, worldPosition);
+            AbstractConduitBlock.refreshConnections(level, worldPosition);
         }
 
         ensureNetworkCache();
