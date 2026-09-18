@@ -21,7 +21,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -109,7 +108,11 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
                 AbstractConduitBlock.refreshConnections(world, pos);
 
                 String face = direction.toString().toUpperCase(Locale.ROOT);
-                player.displayClientMessage(new StringTextComponent(face + ": " + mode.name()), true);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.fluid_pipe.side_mode",
+                                face, mode.getDisplayName()),
+                        true);
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
         }

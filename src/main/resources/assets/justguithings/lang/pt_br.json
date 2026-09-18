@@ -166,5 +166,7 @@
   "routing.justguithings.clipboard_resource.item": "Item",
   "routing.justguithings.clipboard_resource.fluid": "Fluido",
   "routing.justguithings.clipboard_resource.energy": "Energia",
-  "routing.justguithings.clipboard_resource.unknown": "Desconhecida"
+  "routing.justguithings.clipboard_resource.unknown": "Desconhecida",
+  "message.justguithings.item_pipe.side_mode": "Modo do tubo de itens %s: %s",
+  "message.justguithings.fluid_pipe.side_mode": "Modo do tubo de fluidos %s: %s"
 }
