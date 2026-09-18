@@ -1,7 +1,10 @@
 package com.bulkcloud0.justguithings.world.block;
 
+import com.bulkcloud0.justguithings.item.RoutingControllerItem;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
+import com.bulkcloud0.justguithings.logistics.ItemFilterMode;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
+import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
 import net.minecraft.block.BlockState;
@@ -43,7 +46,9 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
 
         TileEntity neighbor = world.getBlockEntity(neighborPos);
         return neighbor != null
-                && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
+                && neighbor.getCapability(
+                        CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+                        direction.getOpposite()).isPresent();
     }
 
     private void invalidateAdjacentPipeCaches(World world, BlockPos pos) {
@@ -101,39 +106,70 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
 
         if (held.getItem() == ModItems.ROUTING_CONTROLLER.get()) {
             if (!world.isClientSide) {
-                String face = faceDirection.toString().toUpperCase(Locale.ROOT);
-
-                if (player.isShiftKeyDown()) {
-                    Hand sampleHand = hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
-                    ItemStack sample = player.getItemInHand(sampleHand);
-
-                    pipe.setTargetFilter(faceDirection, sample);
-                    if (sample.isEmpty()) {
-                        player.displayClientMessage(
-                                new TranslationTextComponent(
-                                        "message.justguithings.routing_controller.filter_cleared", face),
-                                true);
-                    } else {
-                        player.displayClientMessage(
-                                new TranslationTextComponent(
-                                        "message.justguithings.routing_controller.filter_set",
-                                        face, sample.getHoverName()),
-                                true);
-                    }
-                } else {
-                    ItemRoutingPriority priority = pipe.cycleTargetPriority(faceDirection);
-                    player.displayClientMessage(
-                            new TranslationTextComponent(
-                                    "message.justguithings.routing_controller.priority",
-                                    face, priority.getDisplayName()),
-                            true);
-                }
+                applyRoutingController(
+                        pipe, faceDirection, player, hand, RoutingControllerItem.getMode(held));
             }
-
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
         }
 
         return ActionResultType.PASS;
+    }
+
+    private void applyRoutingController(BasicItemPipeTileEntity pipe, Direction direction,
+                                        PlayerEntity player, Hand controllerHand,
+                                        RoutingControllerMode controllerMode) {
+        String face = direction.toString().toUpperCase(Locale.ROOT);
+
+        switch (controllerMode) {
+            case FILTER_SAMPLE:
+                Hand sampleHand = controllerHand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
+                ItemStack sample = player.getItemInHand(sampleHand);
+                if (sample.isEmpty()) {
+                    pipe.clearTargetFilter(direction);
+                    player.displayClientMessage(
+                            new TranslationTextComponent(
+                                    "message.justguithings.routing_controller.filter_cleared", face),
+                            true);
+                } else {
+                    pipe.setTargetFilterSample(direction, sample);
+                    player.displayClientMessage(
+                            new TranslationTextComponent(
+                                    "message.justguithings.routing_controller.filter_set",
+                                    face, sample.getHoverName()),
+                            true);
+                }
+                break;
+
+            case FILTER_MODE:
+                ItemFilterMode filterMode = pipe.cycleTargetFilterMode(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.routing_controller.filter_mode",
+                                face, filterMode.getDisplayName()),
+                        true);
+                break;
+
+            case NBT_MATCH:
+                boolean matchNbt = pipe.toggleTargetFilterNbt(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                matchNbt
+                                        ? "message.justguithings.routing_controller.nbt_exact"
+                                        : "message.justguithings.routing_controller.nbt_ignored",
+                                face),
+                        true);
+                break;
+
+            case PRIORITY:
+            default:
+                ItemRoutingPriority priority = pipe.cycleTargetPriority(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.routing_controller.priority",
+                                face, priority.getDisplayName()),
+                        true);
+                break;
+        }
     }
 
     @Override
