@@ -68,21 +68,49 @@ A missing optional mod must never prevent JGT from loading.
 
 Basic Item Pipes keep Forge `IItemHandler` as the only inventory integration contract. Routing metadata belongs to the pipe face, not to the external inventory.
 
-The Routing Controller has five editing modes. Right-clicking in the air cycles the active mode:
+### Routing Controller scopes
 
-- `Target Priority`: cycles `NORMAL -> HIGH -> LOW -> NORMAL`;
-- `Filter Sample`: toggles the item in the other hand in a per-face sample list (up to 9 entries), or clears the entire list when the other hand is empty;
-- `Whitelist / Blacklist`: toggles whether a matching sample is accepted or rejected;
-- `NBT Matching`: toggles exact item+NBT comparison versus item-only comparison;
-- `Redstone Condition`: cycles `ALWAYS -> REQUIRE_SIGNAL -> REQUIRE_NO_SIGNAL` for that destination face.
+The Routing Controller has two editing scopes:
 
-The controller stores its current editing mode in its own item NBT. Each destination face stores one `ItemRoutingTargetRule`, which owns priority, filter configuration and redstone condition. This avoids parallel per-feature state maps as routing grows.
+- `TARGET`: rules applied when the face is used as a push destination;
+- `SOURCE`: rules applied when the face is used as a pull source.
 
-An empty filter list means the endpoint accepts all items regardless of whitelist/blacklist mode. Matching succeeds when any configured sample matches according to the NBT rule. Existing single-sample routing NBT is migrated into the new sample list automatically.
+Shift-right-clicking in the air switches scope. Normal right-clicking in the air cycles only the modes supported by the current scope. The controller persists separate target/source modes in its own item NBT and reads the old single `RoutingMode` value as the target mode for compatibility.
 
-The network always tries HIGH targets before NORMAL and LOW targets. Round-robin fairness is preserved between targets at the same priority. If a higher-priority target is full, rejects the current item, or fails its filter rule, routing falls through to the next target and then lower priorities.
+### Target rules
 
-Filter evaluation is implemented by the reusable `ItemRouteFilter` value object rather than by machine- or inventory-specific checks. Connected inventories remain completely unaware of JGT routing rules.
+Each destination face stores one `ItemRoutingTargetRule` with:
 
+- priority: `HIGH`, `NORMAL`, or `LOW`;
+- up to 9 filter samples;
+- whitelist or blacklist behavior;
+- exact-NBT or item-only matching;
+- redstone condition: `ALWAYS`, `REQUIRE_SIGNAL`, or `REQUIRE_NO_SIGNAL`.
 
-Redstone evaluation is local to the pipe block that owns the destination face. `REQUIRE_SIGNAL` enables that target while the pipe receives any neighboring redstone signal; `REQUIRE_NO_SIGNAL` does the inverse. Redstone only gates push targets and does not alter source extraction or the connected inventory capability.
+The network always tries HIGH targets before NORMAL and LOW targets. Round-robin fairness is preserved between targets at the same priority. If a higher-priority target is full, rejects the current item, or fails its filter/redstone rule, routing falls through to the next target and then lower priorities.
+
+### Source rules
+
+Each pull-capable source face stores one `ItemRoutingSourceRule` with:
+
+- up to 9 extraction filter samples;
+- whitelist or blacklist behavior;
+- exact-NBT or item-only matching;
+- redstone condition;
+- minimum stock presets: `0 -> 1 -> 8 -> 16 -> 32 -> 64 -> 0`.
+
+The source filter is evaluated before extraction. Minimum stock is counted across the entire exposed `IItemHandler` for the candidate item identity, not only the current slot. When NBT matching is enabled, each item+NBT variant keeps its own reserve; when NBT matching is disabled, variants of the same item contribute to the same reserve.
+
+Source redstone only enables or disables extraction from that endpoint. Target redstone only enables or disables insertion into that endpoint.
+
+### Filter persistence
+
+An empty filter list accepts all items regardless of whitelist/blacklist mode. Matching succeeds when any configured sample matches according to the NBT rule.
+
+Existing routing data remains loadable:
+
+- legacy `Filter*` data migrates to a target filter list;
+- older `Rule*` data migrates to `TargetRule*`;
+- current source rules are stored independently as `SourceRule*`.
+
+Filter evaluation remains a JGT-side policy layer. Connected inventories never need JGT-specific interfaces or integration code.
