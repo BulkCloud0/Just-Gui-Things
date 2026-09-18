@@ -24,6 +24,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -31,6 +32,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class RoutingControllerItem extends TooltipItem {
     private static final String LEGACY_MODE_KEY = "RoutingMode";
@@ -169,7 +171,8 @@ public class RoutingControllerItem extends TooltipItem {
                     filter.getSampleCount(), ItemRouteFilter.MAX_SAMPLES,
                     getNbtModeName(filter.isMatchNbt()),
                     rule.getRedstoneMode().getDisplayName(),
-                    rule.getMinStock());
+                    rule.getMinStock(),
+                    getItemSampleIds(filter));
         }
 
         ItemRoutingTargetRule rule = pipe.getTargetRule(direction);
@@ -181,7 +184,8 @@ public class RoutingControllerItem extends TooltipItem {
                 filter.getMode().getDisplayName(),
                 filter.getSampleCount(), ItemRouteFilter.MAX_SAMPLES,
                 getNbtModeName(filter.isMatchNbt()),
-                rule.getRedstoneMode().getDisplayName());
+                rule.getRedstoneMode().getDisplayName(),
+                getItemSampleIds(filter));
     }
 
     private ITextComponent getFluidInspection(BasicFluidPipeTileEntity pipe, Direction direction,
@@ -198,7 +202,8 @@ public class RoutingControllerItem extends TooltipItem {
                     filter.getSampleCount(), FluidRouteFilter.MAX_SAMPLES,
                     getNbtModeName(filter.isMatchNbt()),
                     rule.getRedstoneMode().getDisplayName(),
-                    rule.getMinStock());
+                    rule.getMinStock(),
+                    getFluidSampleIds(filter));
         }
 
         FluidRoutingTargetRule rule = pipe.getTargetRule(direction);
@@ -210,7 +215,8 @@ public class RoutingControllerItem extends TooltipItem {
                 filter.getMode().getDisplayName(),
                 filter.getSampleCount(), FluidRouteFilter.MAX_SAMPLES,
                 getNbtModeName(filter.isMatchNbt()),
-                rule.getRedstoneMode().getDisplayName());
+                rule.getRedstoneMode().getDisplayName(),
+                getFluidSampleIds(filter));
     }
 
     private ITextComponent getEnergyInspection(BasicEnergyCableTileEntity cable, Direction direction,
@@ -231,6 +237,26 @@ public class RoutingControllerItem extends TooltipItem {
                 face, sideMode,
                 rule.getPriority().getDisplayName(),
                 rule.getRedstoneMode().getDisplayName());
+    }
+
+    private String getItemSampleIds(ItemRouteFilter filter) {
+        StringJoiner ids = new StringJoiner(", ");
+        for (ItemStack sample : filter.getSamples()) {
+            String id = Registry.ITEM.getKey(sample.getItem()).toString();
+            ids.add(sample.hasTag() ? id + "[NBT]" : id);
+        }
+        String value = ids.toString();
+        return value.isEmpty() ? "-" : value;
+    }
+
+    private String getFluidSampleIds(FluidRouteFilter filter) {
+        StringJoiner ids = new StringJoiner(", ");
+        for (net.minecraftforge.fluids.FluidStack sample : filter.getSamples()) {
+            String id = Registry.FLUID.getKey(sample.getFluid()).toString();
+            ids.add(sample.getTag() != null ? id + "[NBT]" : id);
+        }
+        String value = ids.toString();
+        return value.isEmpty() ? "-" : value;
     }
 
     private ITextComponent getNbtModeName(boolean matchNbt) {
