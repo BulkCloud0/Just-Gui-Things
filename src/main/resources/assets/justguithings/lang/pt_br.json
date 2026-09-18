@@ -147,10 +147,12 @@
   "routing.justguithings.conduit_mode.disabled": "Desativado",
   "routing.justguithings.nbt_mode.exact": "Exato",
   "routing.justguithings.nbt_mode.ignored": "Ignorado",
-  "message.justguithings.routing_controller.inspect_item_target": "%s Destino de Itens | E/S: %s | Prioridade: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Amostras: %s",
-  "message.justguithings.routing_controller.inspect_item_source": "%s Fonte de Itens | E/S: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Estoque mínimo: %s | Amostras: %s",
-  "message.justguithings.routing_controller.inspect_fluid_target": "%s Destino de Fluido | E/S: %s | Prioridade: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Amostras: %s",
-  "message.justguithings.routing_controller.inspect_fluid_source": "%s Fonte de Fluido | E/S: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Reserva mínima: %s mB | Amostras: %s",
-  "message.justguithings.routing_controller.inspect_energy_target": "%s Destino de Energia | E/S: %s | Prioridade: %s | Redstone: %s",
-  "message.justguithings.routing_controller.inspect_energy_source": "%s Fonte de Energia | E/S: %s | Redstone: %s"
+  "message.justguithings.routing_controller.inspect_item_target": "%s Destino de Itens | E/S: %s | Prioridade: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Amostras: %s | Estado: %s",
+  "message.justguithings.routing_controller.inspect_item_source": "%s Fonte de Itens | E/S: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Estoque mínimo: %s | Amostras: %s | Estado: %s",
+  "message.justguithings.routing_controller.inspect_fluid_target": "%s Destino de Fluido | E/S: %s | Prioridade: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Amostras: %s | Estado: %s",
+  "message.justguithings.routing_controller.inspect_fluid_source": "%s Fonte de Fluido | E/S: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Reserva mínima: %s mB | Amostras: %s | Estado: %s",
+  "message.justguithings.routing_controller.inspect_energy_target": "%s Destino de Energia | E/S: %s | Prioridade: %s | Redstone: %s | Estado: %s",
+  "message.justguithings.routing_controller.inspect_energy_source": "%s Fonte de Energia | E/S: %s | Redstone: %s | Estado: %s",
+  "routing.justguithings.endpoint_state.active": "Ativo",
+  "routing.justguithings.endpoint_state.inactive": "Inativo"
 }
