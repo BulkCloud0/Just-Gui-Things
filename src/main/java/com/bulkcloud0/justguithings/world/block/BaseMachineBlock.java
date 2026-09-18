@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineInventoryDropHelper;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
+import com.bulkcloud0.justguithings.world.DirectionText;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,13 +15,13 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 import java.util.function.Supplier;
 
 public abstract class BaseMachineBlock<T extends BaseMachineTileEntity> extends Block {
@@ -75,7 +76,7 @@ public abstract class BaseMachineBlock<T extends BaseMachineTileEntity> extends 
             }
             if (!world.isClientSide) {
                 MachineSideMode mode = tile.cycleSideMode(hit.getDirection());
-                String face = hit.getDirection().toString().toUpperCase(Locale.ROOT);
+                ITextComponent face = DirectionText.getDisplayName(hit.getDirection());
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.machine.side_mode",

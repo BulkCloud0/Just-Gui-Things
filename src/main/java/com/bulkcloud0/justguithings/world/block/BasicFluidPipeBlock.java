@@ -11,6 +11,7 @@ import com.bulkcloud0.justguithings.logistics.RoutingFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.RoutingPriority;
 import com.bulkcloud0.justguithings.logistics.RoutingRedstoneMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
+import com.bulkcloud0.justguithings.world.DirectionText;
 import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,6 +22,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -28,7 +30,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 public class BasicFluidPipeBlock extends AbstractConduitBlock {
     public BasicFluidPipeBlock(Properties properties) {
@@ -110,7 +111,7 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
                 ConduitTransferMode mode = pipe.cycleSideMode(direction);
                 AbstractConduitBlock.refreshConnections(world, pos);
 
-                String face = direction.toString().toUpperCase(Locale.ROOT);
+                ITextComponent face = DirectionText.getDisplayName(direction);
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.fluid_pipe.side_mode",
@@ -150,7 +151,7 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
     private void applyTargetRoutingController(BasicFluidPipeTileEntity pipe, Direction direction,
                                               PlayerEntity player, Hand controllerHand,
                                               RoutingControllerMode controllerMode) {
-        String face = direction.toString().toUpperCase(Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
 
         switch (controllerMode) {
             case FILTER_SAMPLE:
@@ -197,7 +198,7 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
     private void applySourceRoutingController(BasicFluidPipeTileEntity pipe, Direction direction,
                                               PlayerEntity player, Hand controllerHand,
                                               RoutingControllerMode controllerMode) {
-        String face = direction.toString().toUpperCase(Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
 
         switch (controllerMode) {
             case FILTER_SAMPLE:
@@ -243,7 +244,7 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
 
     private void applyFilterSample(BasicFluidPipeTileEntity pipe, Direction direction,
                                    PlayerEntity player, Hand controllerHand,
-                                   String face, boolean source) {
+                                   ITextComponent face, boolean source) {
         Hand sampleHand = controllerHand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
         ItemStack sampleItem = player.getItemInHand(sampleHand);
 

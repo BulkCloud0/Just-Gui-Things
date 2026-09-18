@@ -182,5 +182,11 @@
   "message.justguithings.configurator.inspect_item_pipe": "%s Item Pipe | I/O: %s",
   "message.justguithings.configurator.inspect_fluid_pipe": "%s Fluid Pipe | I/O: %s",
   "message.justguithings.configurator.inspect_energy_cable": "%s Energy Cable | I/O: %s",
-  "message.justguithings.configurator.inspect_machine": "%s Machine | I/O: %s"
+  "message.justguithings.configurator.inspect_machine": "%s Machine | I/O: %s",
+  "direction.justguithings.down": "Down",
+  "direction.justguithings.up": "Up",
+  "direction.justguithings.north": "North",
+  "direction.justguithings.south": "South",
+  "direction.justguithings.west": "West",
+  "direction.justguithings.east": "East"
 }

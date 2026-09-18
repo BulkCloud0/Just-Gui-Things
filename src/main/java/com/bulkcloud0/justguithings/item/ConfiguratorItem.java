@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.item;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
+import com.bulkcloud0.justguithings.world.DirectionText;
 import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +15,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 public class ConfiguratorItem extends TooltipItem {
     public ConfiguratorItem(Properties properties) {
@@ -50,7 +50,7 @@ public class ConfiguratorItem extends TooltipItem {
 
     @Nullable
     private ITextComponent getInspectionText(TileEntity tile, Direction direction) {
-        String face = direction.toString().toUpperCase(Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
 
         if (tile instanceof BasicItemPipeTileEntity) {
             ConduitTransferMode mode = ((BasicItemPipeTileEntity) tile).getSideMode(direction);
