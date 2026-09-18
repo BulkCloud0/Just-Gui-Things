@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.logistics.EnergyRoutingTargetRule;
+import com.bulkcloud0.justguithings.logistics.FairShareAllocator;
 import com.bulkcloud0.justguithings.logistics.RoutingPriority;
 import com.bulkcloud0.justguithings.logistics.RoutingRedstoneMode;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -115,8 +116,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     }
 
     private void distributeEnergy(List<BasicEnergyCableTileEntity> network) {
-        int available = getNetworkEnergy(network);
-        int budget = Math.min(TRANSFER_RATE, available);
+        int budget = Math.min(TRANSFER_RATE, getNetworkEnergy(network));
         if (budget <= 0) {
             return;
         }
@@ -135,35 +135,95 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         boolean movedAny = false;
 
         for (RoutingPriority priority : ROUTING_ORDER) {
-            for (int offset = 0; offset < receivers.size() && budget > 0 && available > 0; offset++) {
-                int receiverIndex = (start + offset) % receivers.size();
-                EnergyTargetEndpoint target = receivers.get(receiverIndex);
-                if (target.rule.getPriority() != priority) {
-                    continue;
-                }
-
-                int offer = Math.min(budget, available);
-                int accepted = target.handler.receiveEnergy(offer, true);
-                if (accepted <= 0) {
-                    continue;
-                }
-
-                accepted = target.handler.receiveEnergy(Math.min(offer, accepted), false);
-                if (accepted <= 0) {
-                    continue;
-                }
-
-                drainNetworkEnergy(network, accepted);
-                available -= accepted;
-                budget -= accepted;
-                distributionCursor = (receiverIndex + 1) % receivers.size();
-                movedAny = true;
+            if (budget <= 0) {
+                break;
             }
+
+            List<EnergyTargetEndpoint> priorityTargets = new ArrayList<>();
+            for (int offset = 0; offset < receivers.size(); offset++) {
+                EnergyTargetEndpoint target = receivers.get((start + offset) % receivers.size());
+                if (target.rule.getPriority() == priority) {
+                    priorityTargets.add(target);
+                }
+            }
+
+            if (priorityTargets.isEmpty()) {
+                continue;
+            }
+
+            boolean retry;
+            int distributionRounds = 0;
+            do {
+                retry = false;
+                distributionRounds++;
+                int[] demands = new int[priorityTargets.size()];
+
+                for (int index = 0; index < priorityTargets.size(); index++) {
+                    demands[index] = Math.max(0,
+                            priorityTargets.get(index).handler.receiveEnergy(budget, true));
+                }
+
+                int[] allocations = FairShareAllocator.allocate(budget, demands);
+                int movedThisRound = 0;
+
+                for (int index = 0; index < priorityTargets.size() && budget > 0; index++) {
+                    int planned = Math.min(allocations[index], budget);
+                    if (planned <= 0) {
+                        continue;
+                    }
+
+                    EnergyTargetEndpoint target = priorityTargets.get(index);
+                    int accepted = transferEnergyAtomically(network, target.handler, planned);
+                    if (accepted <= 0) {
+                        continue;
+                    }
+
+                    budget -= accepted;
+                    movedThisRound += accepted;
+                    movedAny = true;
+
+                    int receiverIndex = receivers.indexOf(target);
+                    if (receiverIndex >= 0) {
+                        distributionCursor = (receiverIndex + 1) % receivers.size();
+                    }
+
+                    if (accepted < planned) {
+                        retry = true;
+                    }
+                }
+
+                if (movedThisRound <= 0) {
+                    break;
+                }
+
+            } while (retry && budget > 0 && distributionRounds < 3);
         }
 
         if (!movedAny) {
             distributionCursor = (start + 1) % receivers.size();
         }
+    }
+
+    private int transferEnergyAtomically(List<BasicEnergyCableTileEntity> network,
+                                         IEnergyStorage receiver,
+                                         int requested) {
+        if (requested <= 0) {
+            return 0;
+        }
+
+        int accepted = Math.max(0, receiver.receiveEnergy(requested, true));
+        int reserved = drainNetworkEnergy(network, Math.min(requested, accepted));
+        if (reserved <= 0) {
+            return 0;
+        }
+
+        int inserted = Math.max(0, Math.min(reserved, receiver.receiveEnergy(reserved, false)));
+        int refund = reserved - inserted;
+        if (refund > 0) {
+            returnNetworkEnergy(network, refund);
+        }
+
+        return inserted;
     }
 
     private List<EnergyTargetEndpoint> collectReceivers(List<BasicEnergyCableTileEntity> network,
@@ -202,7 +262,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                     continue;
                 }
 
-                receivers.add(new EnergyTargetEndpoint(neighborPos, receiver, rule));
+                receivers.add(new EnergyTargetEndpoint(receiver, rule));
             }
         }
 
@@ -224,8 +284,10 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         return (int) total;
     }
 
-    private void drainNetworkEnergy(List<BasicEnergyCableTileEntity> network, int amount) {
-        int remaining = amount;
+    private int drainNetworkEnergy(List<BasicEnergyCableTileEntity> network, int amount) {
+        int remaining = Math.max(0, amount);
+        int drainedTotal = 0;
+
         for (BasicEnergyCableTileEntity cable : network) {
             if (remaining <= 0) {
                 break;
@@ -237,8 +299,34 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
             int drained = cable.energyStorage.consumeEnergy(remaining);
             if (drained > 0) {
                 remaining -= drained;
+                drainedTotal += drained;
                 cable.setChanged();
             }
+        }
+
+        return drainedTotal;
+    }
+
+    private void returnNetworkEnergy(List<BasicEnergyCableTileEntity> network, int amount) {
+        int remaining = Math.max(0, amount);
+
+        for (BasicEnergyCableTileEntity cable : network) {
+            if (remaining <= 0) {
+                break;
+            }
+            if (cable.isRemoved()) {
+                continue;
+            }
+
+            int restored = cable.energyStorage.addEnergy(remaining);
+            if (restored > 0) {
+                remaining -= restored;
+                cable.setChanged();
+            }
+        }
+
+        if (remaining > 0) {
+            throw new IllegalStateException("Unable to return reserved energy to conduit network");
         }
     }
 
@@ -295,13 +383,11 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     }
 
     private static final class EnergyTargetEndpoint {
-        private final BlockPos blockPos;
         private final IEnergyStorage handler;
         private final EnergyRoutingTargetRule rule;
 
-        private EnergyTargetEndpoint(BlockPos blockPos, IEnergyStorage handler,
+        private EnergyTargetEndpoint(IEnergyStorage handler,
                                      EnergyRoutingTargetRule rule) {
-            this.blockPos = blockPos.immutable();
             this.handler = handler;
             this.rule = new EnergyRoutingTargetRule(rule);
         }
