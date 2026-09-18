@@ -115,6 +115,9 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
         }
 
         if (held.getItem() == ModItems.ROUTING_CONTROLLER.get()) {
+            if (player.isShiftKeyDown()) {
+                return ActionResultType.PASS;
+            }
             if (!world.isClientSide) {
                 RoutingControllerScope scope = RoutingControllerItem.getScope(held);
                 RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);

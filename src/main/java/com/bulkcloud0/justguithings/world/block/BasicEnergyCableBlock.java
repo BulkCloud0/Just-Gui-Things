@@ -116,6 +116,9 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
         if (held.getItem() != ModItems.ROUTING_CONTROLLER.get()) {
             return ActionResultType.PASS;
         }
+        if (player.isShiftKeyDown()) {
+            return ActionResultType.PASS;
+        }
 
         if (!world.isClientSide) {
             RoutingControllerScope scope = RoutingControllerItem.getScope(held);
