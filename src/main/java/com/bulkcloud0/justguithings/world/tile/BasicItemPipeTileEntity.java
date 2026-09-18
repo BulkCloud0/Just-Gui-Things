@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
+import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
 import com.bulkcloud0.justguithings.logistics.ItemTransferHelper;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import net.minecraft.block.BlockState;
@@ -23,8 +24,16 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
     public static final int TRANSFER_RATE = 8;
     private static final int NETWORK_CACHE_TTL = 100;
     private static final int VISUAL_REFRESH_INTERVAL = 10;
+    private static final ItemRoutingPriority[] ROUTING_ORDER = {
+            ItemRoutingPriority.HIGH,
+            ItemRoutingPriority.NORMAL,
+            ItemRoutingPriority.LOW
+    };
 
     private final EnumMap<Direction, ConduitTransferMode> sideModes = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, ItemRoutingPriority> targetPriorities = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, ItemStack> targetFilters = new EnumMap<>(Direction.class);
+
     private int sourceCursor;
     private int targetCursor;
 
@@ -32,6 +41,8 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         super(ModTileEntities.BASIC_ITEM_PIPE.get(), NETWORK_CACHE_TTL);
         for (Direction direction : Direction.values()) {
             sideModes.put(direction, ConduitTransferMode.BOTH);
+            targetPriorities.put(direction, ItemRoutingPriority.NORMAL);
+            targetFilters.put(direction, ItemStack.EMPTY);
         }
     }
 
@@ -71,6 +82,33 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return next;
     }
 
+    public ItemRoutingPriority getTargetPriority(Direction direction) {
+        return targetPriorities.getOrDefault(direction, ItemRoutingPriority.NORMAL);
+    }
+
+    public ItemRoutingPriority cycleTargetPriority(Direction direction) {
+        ItemRoutingPriority next = getTargetPriority(direction).next();
+        targetPriorities.put(direction, next);
+        setChanged();
+        return next;
+    }
+
+    public ItemStack getTargetFilter(Direction direction) {
+        ItemStack stack = targetFilters.get(direction);
+        return stack == null || stack.isEmpty() ? ItemStack.EMPTY : stack.copy();
+    }
+
+    public void setTargetFilter(Direction direction, ItemStack filter) {
+        if (filter == null || filter.isEmpty()) {
+            targetFilters.put(direction, ItemStack.EMPTY);
+        } else {
+            ItemStack copy = filter.copy();
+            copy.setCount(1);
+            targetFilters.put(direction, copy);
+        }
+        setChanged();
+    }
+
     private void transferItems(List<BasicItemPipeTileEntity> network) {
         Set<BlockPos> pipePositions = new HashSet<>();
         for (BasicItemPipeTileEntity pipe : network) {
@@ -101,25 +139,37 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                     continue;
                 }
 
-                int targetStart = Math.floorMod(targetCursor, targets.size());
-                for (int targetOffset = 0; targetOffset < targets.size() && budget > 0; targetOffset++) {
-                    int targetIndex = (targetStart + targetOffset) % targets.size();
-                    ItemEndpoint target = targets.get(targetIndex);
-                    if (target.inventoryPos.equals(source.inventoryPos)) {
-                        continue;
-                    }
-
-                    int moved = moveItem(source, slot, target, budget);
-                    if (moved > 0) {
-                        budget -= moved;
-                        targetCursor = (targetIndex + 1) % targets.size();
-                        break;
-                    }
+                int moved = routeToTarget(source, slot, targets, budget);
+                if (moved > 0) {
+                    budget -= moved;
                 }
             }
         }
 
         sourceCursor = (sourceStart + 1) % sources.size();
+    }
+
+    private int routeToTarget(ItemEndpoint source, int sourceSlot, List<ItemEndpoint> targets, int maxAmount) {
+        int targetStart = Math.floorMod(targetCursor, targets.size());
+
+        for (ItemRoutingPriority priority : ROUTING_ORDER) {
+            for (int targetOffset = 0; targetOffset < targets.size(); targetOffset++) {
+                int targetIndex = (targetStart + targetOffset) % targets.size();
+                ItemEndpoint target = targets.get(targetIndex);
+
+                if (target.priority != priority || target.inventoryPos.equals(source.inventoryPos)) {
+                    continue;
+                }
+
+                int moved = moveItem(source, sourceSlot, target, maxAmount);
+                if (moved > 0) {
+                    targetCursor = (targetIndex + 1) % targets.size();
+                    return moved;
+                }
+            }
+        }
+
+        return 0;
     }
 
     private void collectEndpoints(List<BasicItemPipeTileEntity> network,
@@ -155,10 +205,14 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
                 EndpointKey key = new EndpointKey(neighborPos, direction.getOpposite());
                 if (mode.canPull() && sourceKeys.add(key)) {
-                    sources.add(new ItemEndpoint(neighborPos, handler));
+                    sources.add(ItemEndpoint.source(neighborPos, handler));
                 }
                 if (mode.canPush() && targetKeys.add(key)) {
-                    targets.add(new ItemEndpoint(neighborPos, handler));
+                    targets.add(ItemEndpoint.target(
+                            neighborPos,
+                            handler,
+                            pipe.getTargetPriority(direction),
+                            pipe.getTargetFilter(direction)));
                 }
             }
         }
@@ -166,7 +220,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
     private int moveItem(ItemEndpoint source, int sourceSlot, ItemEndpoint target, int maxAmount) {
         ItemStack simulatedExtract = source.handler.extractItem(sourceSlot, maxAmount, true);
-        if (simulatedExtract.isEmpty()) {
+        if (simulatedExtract.isEmpty() || !target.accepts(simulatedExtract)) {
             return 0;
         }
 
@@ -212,6 +266,31 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
             }
         }
 
+        for (Direction direction : Direction.values()) {
+            targetPriorities.put(direction, ItemRoutingPriority.NORMAL);
+            targetFilters.put(direction, ItemStack.EMPTY);
+        }
+
+        if (nbt.contains("RoutingConfig")) {
+            CompoundNBT routing = nbt.getCompound("RoutingConfig");
+            for (Direction direction : Direction.values()) {
+                String priorityKey = "Priority" + direction.ordinal();
+                String filterKey = "Filter" + direction.ordinal();
+
+                if (routing.contains(priorityKey)) {
+                    targetPriorities.put(direction,
+                            ItemRoutingPriority.fromOrdinal(routing.getInt(priorityKey)));
+                }
+                if (routing.contains(filterKey)) {
+                    ItemStack filter = ItemStack.of(routing.getCompound(filterKey));
+                    if (!filter.isEmpty()) {
+                        filter.setCount(1);
+                        targetFilters.put(direction, filter);
+                    }
+                }
+            }
+        }
+
         invalidateNetworkCache();
     }
 
@@ -224,16 +303,46 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
             config.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
         }
         nbt.put("SideConfig", config);
+
+        CompoundNBT routing = new CompoundNBT();
+        for (Direction direction : Direction.values()) {
+            routing.putInt("Priority" + direction.ordinal(), getTargetPriority(direction).ordinal());
+            ItemStack filter = targetFilters.get(direction);
+            if (filter != null && !filter.isEmpty()) {
+                routing.put("Filter" + direction.ordinal(), filter.save(new CompoundNBT()));
+            }
+        }
+        nbt.put("RoutingConfig", routing);
+
         return nbt;
     }
 
     private static final class ItemEndpoint {
         private final BlockPos inventoryPos;
         private final IItemHandler handler;
+        private final ItemRoutingPriority priority;
+        private final ItemStack filter;
 
-        private ItemEndpoint(BlockPos inventoryPos, IItemHandler handler) {
+        private ItemEndpoint(BlockPos inventoryPos, IItemHandler handler,
+                             ItemRoutingPriority priority, ItemStack filter) {
             this.inventoryPos = inventoryPos;
             this.handler = handler;
+            this.priority = priority;
+            this.filter = filter == null ? ItemStack.EMPTY : filter.copy();
+        }
+
+        private static ItemEndpoint source(BlockPos inventoryPos, IItemHandler handler) {
+            return new ItemEndpoint(inventoryPos, handler, ItemRoutingPriority.NORMAL, ItemStack.EMPTY);
+        }
+
+        private static ItemEndpoint target(BlockPos inventoryPos, IItemHandler handler,
+                                           ItemRoutingPriority priority, ItemStack filter) {
+            return new ItemEndpoint(inventoryPos, handler, priority, filter);
+        }
+
+        private boolean accepts(ItemStack stack) {
+            return filter.isEmpty()
+                    || (ItemStack.isSame(filter, stack) && ItemStack.tagMatches(filter, stack));
         }
     }
 

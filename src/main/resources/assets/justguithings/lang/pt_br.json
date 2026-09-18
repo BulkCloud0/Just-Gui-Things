@@ -67,5 +67,14 @@
   "jei.justguithings.rod_forming": "Formação de Hastes",
   "item.justguithings.power_coil_module": "Módulo de Bobina de Potência",
   "tooltip.justguithings.power_coil_module.effect": "2x velocidade de processamento, 2,5x FE/t (~25% mais FE por operação).",
-  "tooltip.justguithings.power_coil_module.compatibility": "Compatível: Fornalha Resistiva"
+  "tooltip.justguithings.power_coil_module.compatibility": "Compatível: Fornalha Resistiva",
+  "item.justguithings.routing_controller": "Controlador de Roteamento",
+  "tooltip.justguithings.routing_controller.priority": "Clique com o botão direito em uma face do tubo de itens para alternar a prioridade do destino.",
+  "tooltip.justguithings.routing_controller.filter": "Shift+clique: usa o item da outra mão como whitelist exata; mão vazia limpa o filtro.",
+  "routing.justguithings.priority.normal": "Normal",
+  "routing.justguithings.priority.high": "Alta",
+  "routing.justguithings.priority.low": "Baixa",
+  "message.justguithings.routing_controller.priority": "Prioridade do destino %s: %s",
+  "message.justguithings.routing_controller.filter_set": "Whitelist %s: %s",
+  "message.justguithings.routing_controller.filter_cleared": "Whitelist %s removida."
 }

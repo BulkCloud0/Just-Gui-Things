@@ -48,6 +48,10 @@ public final class ModItems {
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
                     "tooltip.justguithings.configurator.use"));
+    public static final RegistryObject<Item> ROUTING_CONTROLLER = ITEMS.register("routing_controller",
+            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
+                    "tooltip.justguithings.routing_controller.priority",
+                    "tooltip.justguithings.routing_controller.filter"));
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
             () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.SPEED,
                     "tooltip.justguithings.speed_module.effect", "tooltip.justguithings.speed_module.compatibility"));
