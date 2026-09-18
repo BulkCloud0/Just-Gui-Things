@@ -49,5 +49,8 @@
   "block.justguithings.fluid_pump": "Fluid Pump",
   "container.justguithings.fluid_pump": "Fluid Pump",
   "screen.justguithings.fluid_pump.source_ok": "Water source: OK",
-  "screen.justguithings.fluid_pump.source_missing": "Water source: missing"
+  "screen.justguithings.fluid_pump.source_missing": "Water source: missing",
+  "block.justguithings.resistive_furnace": "Resistive Furnace",
+  "container.justguithings.resistive_furnace": "Resistive Furnace",
+  "jei.justguithings.heating": "Resistive Heating"
 }

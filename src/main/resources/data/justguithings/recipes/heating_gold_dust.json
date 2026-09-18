@@ -1,0 +1,11 @@
+{
+  "type": "justguithings:heating",
+  "ingredient": {
+    "tag": "forge:dusts/gold"
+  },
+  "result": {
+    "item": "minecraft:gold_ingot"
+  },
+  "processing_time": 120,
+  "energy_per_tick": 45
+}

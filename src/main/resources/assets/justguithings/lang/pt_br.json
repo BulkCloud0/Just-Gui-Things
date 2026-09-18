@@ -49,5 +49,8 @@
   "block.justguithings.fluid_pump": "Bomba de Fluidos",
   "container.justguithings.fluid_pump": "Bomba de Fluidos",
   "screen.justguithings.fluid_pump.source_ok": "Fonte de água: OK",
-  "screen.justguithings.fluid_pump.source_missing": "Fonte de água: ausente"
+  "screen.justguithings.fluid_pump.source_missing": "Fonte de água: ausente",
+  "block.justguithings.resistive_furnace": "Fornalha Resistiva",
+  "container.justguithings.resistive_furnace": "Fornalha Resistiva",
+  "jei.justguithings.heating": "Aquecimento Resistivo"
 }

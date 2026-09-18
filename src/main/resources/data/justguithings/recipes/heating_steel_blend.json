@@ -1,0 +1,11 @@
+{
+  "type": "justguithings:heating",
+  "ingredient": {
+    "item": "justguithings:steel_blend"
+  },
+  "result": {
+    "tag": "forge:ingots/steel"
+  },
+  "processing_time": 160,
+  "energy_per_tick": 60
+}
