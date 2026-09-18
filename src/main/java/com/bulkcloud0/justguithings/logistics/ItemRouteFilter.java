@@ -12,7 +12,7 @@ public final class ItemRouteFilter {
     public static final int MAX_SAMPLES = 9;
 
     private final List<ItemStack> samples = new ArrayList<>();
-    private ItemFilterMode mode = ItemFilterMode.WHITELIST;
+    private RoutingFilterMode mode = RoutingFilterMode.WHITELIST;
     private boolean matchNbt = true;
 
     public ItemRouteFilter() {
@@ -75,11 +75,11 @@ public final class ItemRouteFilter {
         samples.clear();
     }
 
-    public ItemFilterMode getMode() {
+    public RoutingFilterMode getMode() {
         return mode;
     }
 
-    public ItemFilterMode cycleMode() {
+    public RoutingFilterMode cycleMode() {
         mode = mode.next();
         return mode;
     }
@@ -106,7 +106,7 @@ public final class ItemRouteFilter {
             }
         }
 
-        return mode == ItemFilterMode.WHITELIST ? matches : !matches;
+        return mode == RoutingFilterMode.WHITELIST ? matches : !matches;
     }
 
     public boolean matchesIdentity(ItemStack first, ItemStack second) {
@@ -147,7 +147,7 @@ public final class ItemRouteFilter {
         ItemRouteFilter filter = new ItemRouteFilter();
 
         if (nbt.contains("Mode")) {
-            filter.mode = ItemFilterMode.fromOrdinal(nbt.getInt("Mode"));
+            filter.mode = RoutingFilterMode.fromOrdinal(nbt.getInt("Mode"));
         }
         if (nbt.contains("MatchNbt")) {
             filter.matchNbt = nbt.getBoolean("MatchNbt");

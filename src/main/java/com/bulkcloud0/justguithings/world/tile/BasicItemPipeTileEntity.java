@@ -1,7 +1,7 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
-import com.bulkcloud0.justguithings.logistics.ItemFilterMode;
+import com.bulkcloud0.justguithings.logistics.RoutingFilterMode;
 import com.bulkcloud0.justguithings.logistics.ItemFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
@@ -119,8 +119,8 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         setChanged();
     }
 
-    public ItemFilterMode cycleTargetFilterMode(Direction direction) {
-        ItemFilterMode next = getMutableTargetRule(direction).cycleFilterMode();
+    public RoutingFilterMode cycleTargetFilterMode(Direction direction) {
+        RoutingFilterMode next = getMutableTargetRule(direction).cycleFilterMode();
         setChanged();
         return next;
     }
@@ -154,8 +154,8 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         setChanged();
     }
 
-    public ItemFilterMode cycleSourceFilterMode(Direction direction) {
-        ItemFilterMode next = getMutableSourceRule(direction).cycleFilterMode();
+    public RoutingFilterMode cycleSourceFilterMode(Direction direction) {
+        RoutingFilterMode next = getMutableSourceRule(direction).cycleFilterMode();
         setChanged();
         return next;
     }

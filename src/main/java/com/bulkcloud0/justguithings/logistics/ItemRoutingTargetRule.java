@@ -50,7 +50,7 @@ public final class ItemRoutingTargetRule {
         filter.clearSamples();
     }
 
-    public ItemFilterMode cycleFilterMode() {
+    public RoutingFilterMode cycleFilterMode() {
         return filter.cycleMode();
     }
 
