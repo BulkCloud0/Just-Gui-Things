@@ -9,7 +9,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
@@ -22,11 +21,11 @@ import javax.annotation.Nullable;
 public class PressingRecipe implements IRecipe<IInventory> {
     private final ResourceLocation id;
     private final Ingredient input;
-    private final ItemStack result;
+    private final RecipeOutput result;
     private final int processingTime;
     private final int energyPerTick;
 
-    public PressingRecipe(ResourceLocation id, Ingredient input, ItemStack result, int processingTime, int energyPerTick) {
+    public PressingRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
         this.id = id;
         this.input = input;
         this.result = result;
@@ -41,7 +40,7 @@ public class PressingRecipe implements IRecipe<IInventory> {
 
     @Override
     public ItemStack assemble(IInventory inventory) {
-        return result.copy();
+        return result.resolve(inventory.getItem(0));
     }
 
     @Override
@@ -51,7 +50,7 @@ public class PressingRecipe implements IRecipe<IInventory> {
 
     @Override
     public ItemStack getResultItem() {
-        return result;
+        return result.resolve();
     }
 
     @Override
@@ -80,6 +79,10 @@ public class PressingRecipe implements IRecipe<IInventory> {
         return input;
     }
 
+    public java.util.List<ItemStack> getResultDisplayStacks() {
+        return result.getDisplayStacks();
+    }
+
     public int getProcessingTime() {
         return processingTime;
     }
@@ -96,15 +99,12 @@ public class PressingRecipe implements IRecipe<IInventory> {
             }
 
             Ingredient input = Ingredient.fromJson(json.get("ingredient"));
-            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
+            RecipeOutput result = RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "result"));
             int processingTime = JSONUtils.getAsInt(json, "processing_time", 120);
             int energyPerTick = JSONUtils.getAsInt(json, "energy_per_tick", 30);
 
             if (input.isEmpty()) {
                 throw new JsonSyntaxException("Pressing recipe " + recipeId + " has an empty ingredient");
-            }
-            if (result.isEmpty()) {
-                throw new JsonSyntaxException("Pressing recipe " + recipeId + " has an empty result");
             }
             if (processingTime <= 0 || energyPerTick <= 0) {
                 throw new JsonSyntaxException("Pressing recipe time and FE/t must be greater than zero in " + recipeId);
@@ -117,7 +117,7 @@ public class PressingRecipe implements IRecipe<IInventory> {
         @Override
         public PressingRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
-            ItemStack result = buffer.readItem();
+            RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
             return new PressingRecipe(recipeId, input, result, processingTime, energyPerTick);
@@ -126,7 +126,7 @@ public class PressingRecipe implements IRecipe<IInventory> {
         @Override
         public void toNetwork(PacketBuffer buffer, PressingRecipe recipe) {
             recipe.input.toNetwork(buffer);
-            buffer.writeItem(recipe.result);
+            recipe.result.toNetwork(buffer);
             buffer.writeVarInt(recipe.processingTime);
             buffer.writeVarInt(recipe.energyPerTick);
         }

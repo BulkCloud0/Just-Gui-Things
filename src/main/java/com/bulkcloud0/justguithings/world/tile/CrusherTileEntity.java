@@ -152,7 +152,7 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
 
     private int resolveBatchSize(CrusherRecipe recipe) {
         ItemStack input = inventory.getStackInSlot(0);
-        ItemStack result = recipe.getResultItem();
+        ItemStack result = recipe.assemble(new Inventory(input.copy()));
         if (input.isEmpty() || result.isEmpty() || result.getCount() <= 0) {
             return 0;
         }
@@ -178,7 +178,7 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
             return false;
         }
 
-        ItemStack result = recipe.getResultItem();
+        ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
         if (result.isEmpty()) {
             return false;
         }

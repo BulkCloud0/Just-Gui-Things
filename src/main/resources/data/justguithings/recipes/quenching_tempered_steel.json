@@ -3,7 +3,7 @@
   "ingredient": {
     "tag": "forge:ingots/steel"
   },
-  "fluid": "minecraft:water",
+  "fluid_tag": "minecraft:water",
   "fluid_amount": 250,
   "result": {
     "item": "justguithings:tempered_steel_ingot"

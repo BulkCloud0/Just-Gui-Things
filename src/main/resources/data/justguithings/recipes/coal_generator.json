@@ -6,9 +6,15 @@
     "IRI"
   ],
   "key": {
-    "I": { "item": "minecraft:iron_ingot" },
-    "F": { "item": "minecraft:furnace" },
-    "R": { "item": "minecraft:redstone" }
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "F": {
+      "item": "minecraft:furnace"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
   },
   "result": {
     "item": "justguithings:coal_generator"

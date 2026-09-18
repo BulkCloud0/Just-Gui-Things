@@ -89,7 +89,7 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
 
     @Override
     protected boolean canProcessRecipe(PressingRecipe recipe) {
-        ItemStack result = recipe.getResultItem();
+        ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
         if (result.isEmpty()) {
             return false;
         }

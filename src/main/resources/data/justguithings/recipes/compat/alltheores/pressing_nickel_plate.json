@@ -1,1 +1,0 @@
-{"conditions":[{"type":"forge:mod_loaded","modid":"alltheores"},{"type":"forge:item_exists","item":"alltheores:nickel_plate"}],"type":"justguithings:pressing","ingredient":{"tag":"forge:ingots/nickel"},"result":{"item":"alltheores:nickel_plate","count":1},"processing_time":120,"energy_per_tick":30}
