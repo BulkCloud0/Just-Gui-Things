@@ -34,6 +34,10 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
     @Override
     protected boolean canConnectTo(IBlockReader world, BlockPos pos, Direction direction) {
         BlockPos neighborPos = pos.relative(direction);
+        if (!isPositionLoaded(world, neighborPos)) {
+            return false;
+        }
+
         BlockState neighborState = world.getBlockState(neighborPos);
         if (neighborState.getBlock() instanceof BasicEnergyCableBlock) {
             return true;
@@ -45,7 +49,7 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
             return false;
         }
 
-        TileEntity neighbor = world.getBlockEntity(neighborPos);
+        TileEntity neighbor = getLoadedBlockEntity(world, neighborPos);
         return neighbor != null
                 && neighbor.getCapability(
                         CapabilityEnergy.ENERGY,
@@ -58,7 +62,7 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
             ((BasicEnergyCableTileEntity) self).invalidateNetworkCache();
         }
         for (Direction direction : Direction.values()) {
-            TileEntity neighbor = world.getBlockEntity(pos.relative(direction));
+            TileEntity neighbor = getLoadedBlockEntity(world, pos.relative(direction));
             if (neighbor instanceof BasicEnergyCableTileEntity) {
                 ((BasicEnergyCableTileEntity) neighbor).invalidateNetworkCache();
             }

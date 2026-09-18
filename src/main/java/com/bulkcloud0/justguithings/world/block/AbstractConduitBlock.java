@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -73,6 +74,18 @@ public abstract class AbstractConduitBlock extends Block {
     }
 
     protected abstract boolean canConnectTo(IBlockReader world, BlockPos pos, Direction direction);
+
+    protected static boolean isPositionLoaded(IBlockReader world, BlockPos pos) {
+        return !(world instanceof World) || ((World) world).hasChunkAt(pos);
+    }
+
+    @Nullable
+    protected static TileEntity getLoadedBlockEntity(IBlockReader world, BlockPos pos) {
+        if (!isPositionLoaded(world, pos)) {
+            return null;
+        }
+        return world.getBlockEntity(pos);
+    }
 
     public static void refreshConnections(World world, BlockPos pos) {
         BlockState current = world.getBlockState(pos);
