@@ -2,10 +2,8 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
-import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -16,15 +14,12 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
-public class BasicEnergyCableTileEntity extends TileEntity implements ITickableTileEntity {
+public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity<BasicEnergyCableTileEntity> {
     public static final int INTERNAL_BUFFER = 1_000;
     public static final int TRANSFER_RATE = 500;
     private static final int NETWORK_CACHE_TTL = 100;
@@ -51,13 +46,20 @@ public class BasicEnergyCableTileEntity extends TileEntity implements ITickableT
     };
 
     private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
-    private List<BasicEnergyCableTileEntity> cachedNetwork = Collections.emptyList();
-    private BlockPos cachedController;
-    private long cacheValidUntil;
     private int distributionCursor;
 
     public BasicEnergyCableTileEntity() {
-        super(ModTileEntities.BASIC_ENERGY_CABLE.get());
+        super(ModTileEntities.BASIC_ENERGY_CABLE.get(), NETWORK_CACHE_TTL);
+    }
+
+    @Override
+    protected Class<BasicEnergyCableTileEntity> getNetworkNodeClass() {
+        return BasicEnergyCableTileEntity.class;
+    }
+
+    @Override
+    protected void onNetworkCacheCleared() {
+        distributionCursor = 0;
     }
 
     @Override
@@ -66,105 +68,12 @@ public class BasicEnergyCableTileEntity extends TileEntity implements ITickableT
             return;
         }
 
-        if ((level.getGameTime() + worldPosition.asLong()) % VISUAL_REFRESH_INTERVAL == 0L) {
-            BasicEnergyCableBlock.refreshConnections(level, worldPosition);
-        }
-
-        ensureNetworkCache();
-        if (cachedController == null || !worldPosition.equals(cachedController)) {
+        tickNetworkMaintenance(VISUAL_REFRESH_INTERVAL);
+        if (!isNetworkController()) {
             return;
         }
 
-        distributeEnergy(cachedNetwork);
-    }
-
-    private void ensureNetworkCache() {
-        if (level == null) {
-            return;
-        }
-
-        long gameTime = level.getGameTime();
-        if (!cachedNetwork.isEmpty() && cachedController != null && gameTime < cacheValidUntil) {
-            return;
-        }
-
-        rebuildNetworkCache(gameTime);
-    }
-
-    private void rebuildNetworkCache(long gameTime) {
-        List<BasicEnergyCableTileEntity> discovered = discoverNetwork();
-        if (discovered.isEmpty()) {
-            clearNetworkCacheLocal();
-            return;
-        }
-
-        BlockPos controller = discovered.get(0).getBlockPos();
-        for (BasicEnergyCableTileEntity cable : discovered) {
-            if (cable.getBlockPos().asLong() < controller.asLong()) {
-                controller = cable.getBlockPos();
-            }
-        }
-
-        List<BasicEnergyCableTileEntity> sharedNetwork = Collections.unmodifiableList(new ArrayList<>(discovered));
-        long validUntil = gameTime + NETWORK_CACHE_TTL;
-        for (BasicEnergyCableTileEntity cable : discovered) {
-            cable.cachedNetwork = sharedNetwork;
-            cable.cachedController = controller;
-            cable.cacheValidUntil = validUntil;
-        }
-    }
-
-    private List<BasicEnergyCableTileEntity> discoverNetwork() {
-        List<BasicEnergyCableTileEntity> cables = new ArrayList<>();
-        Queue<BlockPos> queue = new ArrayDeque<>();
-        Set<BlockPos> visited = new HashSet<>();
-
-        queue.add(worldPosition);
-        visited.add(worldPosition);
-
-        while (!queue.isEmpty()) {
-            BlockPos pos = queue.poll();
-            TileEntity tile = level.getBlockEntity(pos);
-            if (!(tile instanceof BasicEnergyCableTileEntity)) {
-                continue;
-            }
-
-            BasicEnergyCableTileEntity cable = (BasicEnergyCableTileEntity) tile;
-            cables.add(cable);
-
-            for (Direction direction : Direction.values()) {
-                BlockPos next = pos.relative(direction);
-                if (!visited.add(next)) {
-                    continue;
-                }
-
-                TileEntity nextTile = level.getBlockEntity(next);
-                if (nextTile instanceof BasicEnergyCableTileEntity) {
-                    queue.add(next);
-                }
-            }
-        }
-
-        return cables;
-    }
-
-    public void invalidateNetworkCache() {
-        if (cachedNetwork.isEmpty()) {
-            clearNetworkCacheLocal();
-            return;
-        }
-
-        List<BasicEnergyCableTileEntity> previousNetwork = new ArrayList<>(cachedNetwork);
-        for (BasicEnergyCableTileEntity cable : previousNetwork) {
-            cable.clearNetworkCacheLocal();
-        }
-    }
-
-    private void clearNetworkCacheLocal() {
-        cachedNetwork = Collections.emptyList();
-        cachedController = null;
-        cacheValidUntil = 0L;
-        distributionCursor = 0;
+        distributeEnergy(getCachedNetwork());
     }
 
     private void distributeEnergy(List<BasicEnergyCableTileEntity> network) {
@@ -258,7 +167,7 @@ public class BasicEnergyCableTileEntity extends TileEntity implements ITickableT
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
         energyStorage.setEnergy(nbt.getInt("Energy"));
-        clearNetworkCacheLocal();
+        invalidateNetworkCache();
     }
 
     @Override
@@ -279,7 +188,6 @@ public class BasicEnergyCableTileEntity extends TileEntity implements ITickableT
 
     @Override
     public void setRemoved() {
-        invalidateNetworkCache();
         super.setRemoved();
         energyCapability.invalidate();
     }

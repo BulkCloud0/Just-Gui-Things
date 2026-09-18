@@ -30,6 +30,8 @@ public final class ModItems {
                     new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
     public static final RegistryObject<Item> BASIC_ENERGY_CABLE = ITEMS.register("basic_energy_cable",
             () -> new BlockItem(ModBlocks.BASIC_ENERGY_CABLE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> BASIC_ITEM_PIPE = ITEMS.register("basic_item_pipe",
+            () -> new BlockItem(ModBlocks.BASIC_ITEM_PIPE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),

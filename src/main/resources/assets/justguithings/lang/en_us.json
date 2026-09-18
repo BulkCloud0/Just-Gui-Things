@@ -27,7 +27,7 @@
   "item.justguithings.tempered_steel_ingot": "Tempered Steel Ingot",
   "tooltip.justguithings.energy_cell.energy": "Stored Energy: %s / %s FE",
   "tooltip.justguithings.energy_cell.portable": "Retains stored FE and side configuration when broken.",
-  "tooltip.justguithings.configurator.use": "Right-click a machine face to cycle Input / Output / Energy / Disabled.",
+  "tooltip.justguithings.configurator.use": "Right-click configurable faces to cycle supported I/O modes.",
   "tooltip.justguithings.speed_module.effect": "+50% process speed multiplier per module; FE/t scales with speed.",
   "tooltip.justguithings.speed_module.compatibility": "Compatible: Crusher, Stamping Press",
   "tooltip.justguithings.efficiency_module.effect": "-20% processing FE cost per module, down to 20% of base.",
@@ -39,5 +39,6 @@
   "jei.justguithings.crushing": "Crushing",
   "jei.justguithings.pressing": "Pressing",
   "jei.justguithings.mixing": "Industrial Mixing",
-  "jei.justguithings.quenching": "Quenching"
+  "jei.justguithings.quenching": "Quenching",
+  "block.justguithings.basic_item_pipe": "Basic Item Pipe"
 }
