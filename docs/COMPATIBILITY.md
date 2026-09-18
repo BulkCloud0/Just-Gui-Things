@@ -101,7 +101,7 @@ Each pull-capable source face stores one `ItemRoutingSourceRule` with:
 
 The source filter is evaluated before extraction. Minimum stock is counted across the entire exposed `IItemHandler` for the candidate item identity, not only the current slot. When NBT matching is enabled, each item+NBT variant keeps its own reserve; when NBT matching is disabled, variants of the same item contribute to the same reserve.
 
-Source redstone only enables or disables extraction from that endpoint. Target redstone only enables or disables insertion into that endpoint.
+Source redstone only enables or disables extraction from that endpoint. Target redstone only enables or disables insertion into that endpoint. Source endpoints are traversed round-robin; after a successful tick, the next scan starts after the last source that actually contributed, so empty or temporarily blocked sources do not distort fairness.
 
 ### Filter persistence
 
@@ -128,7 +128,7 @@ The existing Routing Controller configures fluid endpoints with the same TARGET/
 
 Fluid samples are resolved from the item in the other hand. JGT first queries Forge `IFluidHandlerItem`, so buckets and compatible portable tanks from other mods work without adapters. A fallback reads JGT's portable reservoir `BlockEntityTag/Tank` data.
 
-Minimum reserve is counted across all exposed tanks for the candidate fluid identity. With NBT matching enabled, tagged fluid variants reserve independently; with NBT matching disabled, the same fluid type shares one reserve.
+Minimum reserve is counted across all exposed tanks for the candidate fluid identity. With NBT matching enabled, tagged fluid variants reserve independently; with NBT matching disabled, the same fluid type shares one reserve. Fluid source endpoints are traversed round-robin, with the next scan starting after the last source that actually contributed.
 
 If a destination accepts only part of the current per-tick fluid budget, the remaining budget continues through other eligible destinations in the same tick before falling to lower priorities.
 
