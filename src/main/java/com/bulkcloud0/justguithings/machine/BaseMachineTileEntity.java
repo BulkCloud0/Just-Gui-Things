@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.machine;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.logistics.FairShareAllocator;
 import com.bulkcloud0.justguithings.machine.module.IMachineModule;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTags;
 import net.minecraft.block.BlockState;
@@ -23,7 +24,10 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class BaseMachineTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
     private static final int SIDE_CONFIG_VERSION = 5;
@@ -307,6 +311,84 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         return level.getBlockEntity(pos);
     }
 
+    protected final int pushEnergyToNeighborsFairly(int maxOutput) {
+        return pushEnergyToNeighborsFairly(maxOutput, neighbor -> true);
+    }
+
+    protected final int pushEnergyToNeighborsFairly(int maxOutput, Predicate<TileEntity> neighborFilter) {
+        if (level == null || maxOutput <= 0 || energyStorage.getEnergyStored() <= 0) {
+            return 0;
+        }
+
+        List<EnergyPushTarget> targets = new ArrayList<>();
+        for (Direction direction : Direction.values()) {
+            MachineSideMode mode = getSideMode(direction);
+            if (!canExtractEnergyFrom(direction, mode)) {
+                continue;
+            }
+
+            TileEntity neighbor = getLoadedBlockEntity(worldPosition.relative(direction));
+            if (neighbor == null || (neighborFilter != null && !neighborFilter.test(neighbor))) {
+                continue;
+            }
+
+            IEnergyStorage receiver = neighbor
+                    .getCapability(CapabilityEnergy.ENERGY, direction.getOpposite())
+                    .orElse(null);
+            if (receiver != null && receiver.canReceive()) {
+                targets.add(new EnergyPushTarget(receiver));
+            }
+        }
+
+        if (targets.isEmpty()) {
+            return 0;
+        }
+
+        int transferred = 0;
+        for (int round = 0; round < 3; round++) {
+            int budget = energyStorage.extractEnergy(maxOutput, true);
+            if (budget <= 0) {
+                break;
+            }
+
+            int[] demands = new int[targets.size()];
+            for (int index = 0; index < targets.size(); index++) {
+                demands[index] = Math.max(0, targets.get(index).handler.receiveEnergy(budget, true));
+            }
+
+            int[] allocations = FairShareAllocator.allocate(budget, demands);
+            int movedThisRound = 0;
+
+            for (int index = 0; index < targets.size(); index++) {
+                int planned = allocations[index];
+                if (planned <= 0) {
+                    continue;
+                }
+
+                int extracted = energyStorage.extractEnergy(planned, false);
+                if (extracted <= 0) {
+                    break;
+                }
+
+                int inserted = targets.get(index).handler.receiveEnergy(extracted, false);
+                if (inserted < extracted) {
+                    int refunded = extracted - inserted;
+                    energyStorage.addEnergy(refunded);
+                    refundEnergyExtractBudget(refunded);
+                }
+
+                movedThisRound += inserted;
+                transferred += inserted;
+            }
+
+            if (movedThisRound <= 0) {
+                break;
+            }
+        }
+
+        return transferred;
+    }
+
     public int getEnergyCapacity() {
         return baseEnergyCapacity;
     }
@@ -414,6 +496,14 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         }
 
         return super.getCapability(cap, side);
+    }
+
+    private static final class EnergyPushTarget {
+        private final IEnergyStorage handler;
+
+        private EnergyPushTarget(IEnergyStorage handler) {
+            this.handler = handler;
+        }
     }
 
     @Override

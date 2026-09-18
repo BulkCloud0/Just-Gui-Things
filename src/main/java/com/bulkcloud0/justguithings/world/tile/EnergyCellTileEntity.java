@@ -8,15 +8,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
@@ -120,47 +115,13 @@ public class EnergyCellTileEntity extends BaseMachineTileEntity {
 
     @Override
     public void tick() {
-        if (level == null || level.isClientSide || energyStorage.getEnergyStored() <= 0) {
+        if (level == null || level.isClientSide) {
             return;
         }
 
-        int budget = Math.min(MAX_TRANSFER, energyStorage.getEnergyStored());
-        for (Direction direction : Direction.values()) {
-            MachineSideMode mode = getSideMode(direction);
-            if (!canExtractEnergyFrom(direction, mode)) {
-                continue;
-            }
-            if (budget <= 0 || energyStorage.getEnergyStored() <= 0) {
-                break;
-            }
-
-            TileEntity neighbor = getLoadedBlockEntity(worldPosition.relative(direction));
-            if (neighbor == null || neighbor instanceof EnergyCellTileEntity) {
-                continue;
-            }
-
-            IEnergyStorage receiver = neighbor
-                    .getCapability(CapabilityEnergy.ENERGY, direction.getOpposite())
-                    .orElse(null);
-            if (receiver == null || !receiver.canReceive()) {
-                continue;
-            }
-
-            int offer = Math.min(budget, energyStorage.getEnergyStored());
-            int accepted = receiver.receiveEnergy(offer, true);
-            if (accepted <= 0) {
-                continue;
-            }
-
-            int extracted = energyStorage.extractEnergy(accepted, false);
-            int inserted = receiver.receiveEnergy(extracted, false);
-            if (inserted < extracted) {
-                int refunded = extracted - inserted;
-                energyStorage.addEnergy(refunded);
-                refundEnergyExtractBudget(refunded);
-            }
-            budget -= inserted;
-        }
+        pushEnergyToNeighborsFairly(
+                MAX_TRANSFER,
+                neighbor -> !(neighbor instanceof EnergyCellTileEntity));
     }
 
     public IIntArray getDataAccess() {

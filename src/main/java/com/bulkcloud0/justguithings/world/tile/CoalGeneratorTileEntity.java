@@ -11,13 +11,10 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
@@ -143,7 +140,7 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
             }
         }
 
-        if (pushEnergyToNeighbors() > 0) {
+        if (pushEnergyToNeighborsFairly(MAX_OUTPUT_PER_TICK) > 0) {
             changed = true;
         }
 
@@ -163,57 +160,6 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
 
     private boolean isCoalFuel(ItemStack stack) {
         return stack.getItem() == Items.COAL || stack.getItem() == Items.CHARCOAL;
-    }
-
-    private int pushEnergyToNeighbors() {
-        if (level == null || energyStorage.getEnergyStored() <= 0) {
-            return 0;
-        }
-
-        int remainingOutput = Math.min(MAX_OUTPUT_PER_TICK, energyStorage.getEnergyStored());
-        int transferred = 0;
-
-        for (Direction direction : Direction.values()) {
-            if (remainingOutput <= 0 || energyStorage.getEnergyStored() <= 0) {
-                break;
-            }
-
-            MachineSideMode mode = getSideMode(direction);
-            if (!canExtractEnergyFrom(direction, mode)) {
-                continue;
-            }
-
-            TileEntity neighbor = getLoadedBlockEntity(worldPosition.relative(direction));
-            if (neighbor == null) {
-                continue;
-            }
-
-            IEnergyStorage receiver = neighbor
-                    .getCapability(CapabilityEnergy.ENERGY, direction.getOpposite())
-                    .orElse(null);
-            if (receiver == null || !receiver.canReceive()) {
-                continue;
-            }
-
-            int offer = Math.min(remainingOutput, energyStorage.getEnergyStored());
-            int accepted = receiver.receiveEnergy(offer, true);
-            if (accepted <= 0) {
-                continue;
-            }
-
-            int extracted = energyStorage.extractEnergy(accepted, false);
-            int inserted = receiver.receiveEnergy(extracted, false);
-            if (inserted < extracted) {
-                int refunded = extracted - inserted;
-                energyStorage.addEnergy(refunded);
-                refundEnergyExtractBudget(refunded);
-            }
-
-            remainingOutput -= inserted;
-            transferred += inserted;
-        }
-
-        return transferred;
     }
 
     public IIntArray getDataAccess() {
