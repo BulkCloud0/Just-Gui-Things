@@ -4,8 +4,10 @@ import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
 import com.bulkcloud0.justguithings.world.DirectionText;
+import com.bulkcloud0.justguithings.world.block.AbstractConduitBlock;
 import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.tileentity.TileEntity;
@@ -39,7 +41,8 @@ public class ConfiguratorItem extends TooltipItem {
         }
 
         if (!context.getLevel().isClientSide) {
-            ITextComponent inspection = getInspectionText(tile, context.getClickedFace());
+            BlockState state = context.getLevel().getBlockState(context.getClickedPos());
+            ITextComponent inspection = getInspectionText(tile, state, context.getClickedFace());
             if (inspection != null) {
                 player.displayClientMessage(inspection, false);
             }
@@ -49,28 +52,30 @@ public class ConfiguratorItem extends TooltipItem {
     }
 
     @Nullable
-    private ITextComponent getInspectionText(TileEntity tile, Direction direction) {
+    private ITextComponent getInspectionText(TileEntity tile, BlockState state, Direction direction) {
         ITextComponent face = DirectionText.getDisplayName(direction);
+        ITextComponent connection = getConnectionStateName(
+                AbstractConduitBlock.isConnected(state, direction));
 
         if (tile instanceof BasicItemPipeTileEntity) {
             ConduitTransferMode mode = ((BasicItemPipeTileEntity) tile).getSideMode(direction);
             return new TranslationTextComponent(
                     "message.justguithings.configurator.inspect_item_pipe",
-                    face, mode.getDisplayName());
+                    face, mode.getDisplayName(), connection);
         }
 
         if (tile instanceof BasicFluidPipeTileEntity) {
             ConduitTransferMode mode = ((BasicFluidPipeTileEntity) tile).getSideMode(direction);
             return new TranslationTextComponent(
                     "message.justguithings.configurator.inspect_fluid_pipe",
-                    face, mode.getDisplayName());
+                    face, mode.getDisplayName(), connection);
         }
 
         if (tile instanceof BasicEnergyCableTileEntity) {
             ConduitTransferMode mode = ((BasicEnergyCableTileEntity) tile).getSideMode(direction);
             return new TranslationTextComponent(
                     "message.justguithings.configurator.inspect_energy_cable",
-                    face, mode.getEnergyDisplayName());
+                    face, mode.getEnergyDisplayName(), connection);
         }
 
         if (tile instanceof BaseMachineTileEntity) {
@@ -81,6 +86,13 @@ public class ConfiguratorItem extends TooltipItem {
         }
 
         return null;
+    }
+
+    private ITextComponent getConnectionStateName(boolean connected) {
+        return new TranslationTextComponent(
+                connected
+                        ? "connection.justguithings.connected"
+                        : "connection.justguithings.disconnected");
     }
 
 }

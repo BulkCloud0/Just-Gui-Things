@@ -179,14 +179,16 @@
   "machine_side_mode.justguithings.fluid_output": "Fluid Output",
   "message.justguithings.machine.side_mode": "%s machine side mode: %s",
   "tooltip.justguithings.configurator.inspect": "Shift-right-click configurable faces to inspect the current I/O mode.",
-  "message.justguithings.configurator.inspect_item_pipe": "%s Item Pipe | I/O: %s",
-  "message.justguithings.configurator.inspect_fluid_pipe": "%s Fluid Pipe | I/O: %s",
-  "message.justguithings.configurator.inspect_energy_cable": "%s Energy Cable | I/O: %s",
+  "message.justguithings.configurator.inspect_item_pipe": "%s Item Pipe | I/O: %s | Connection: %s",
+  "message.justguithings.configurator.inspect_fluid_pipe": "%s Fluid Pipe | I/O: %s | Connection: %s",
+  "message.justguithings.configurator.inspect_energy_cable": "%s Energy Cable | I/O: %s | Connection: %s",
   "message.justguithings.configurator.inspect_machine": "%s Machine | I/O: %s",
   "direction.justguithings.down": "Down",
   "direction.justguithings.up": "Up",
   "direction.justguithings.north": "North",
   "direction.justguithings.south": "South",
   "direction.justguithings.west": "West",
-  "direction.justguithings.east": "East"
+  "direction.justguithings.east": "East",
+  "connection.justguithings.connected": "Connected",
+  "connection.justguithings.disconnected": "Disconnected"
 }

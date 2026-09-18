@@ -93,6 +93,11 @@ public abstract class AbstractConduitBlock extends Block {
 
     protected abstract boolean canConnectTo(IBlockReader world, BlockPos pos, Direction direction);
 
+    public static boolean isConnected(BlockState state, Direction direction) {
+        return state.getBlock() instanceof AbstractConduitBlock
+                && state.getValue(propertyFor(direction));
+    }
+
     protected static boolean isPositionLoaded(IBlockReader world, BlockPos pos) {
         return !(world instanceof World) || ((World) world).hasChunkAt(pos);
     }
