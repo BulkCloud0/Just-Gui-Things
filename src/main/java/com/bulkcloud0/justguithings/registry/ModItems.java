@@ -70,6 +70,11 @@ public final class ModItems {
             () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.BATCH,
                     "tooltip.justguithings.batch_module.effect",
                     "tooltip.justguithings.batch_module.compatibility"));
+    public static final RegistryObject<Item> INDUCTION_COIL_MODULE = ITEMS.register("induction_coil_module",
+            () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
+                    MachineModuleTypes.INDUCTION_COIL,
+                    "tooltip.justguithings.induction_coil_module.effect",
+                    "tooltip.justguithings.induction_coil_module.compatibility"));
 
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));

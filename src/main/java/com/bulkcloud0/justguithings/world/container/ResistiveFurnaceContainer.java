@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ResistiveFurnaceContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 2;
+    private static final int MACHINE_SLOT_COUNT = 3;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -41,6 +41,7 @@ public class ResistiveFurnaceContainer extends Container {
                 return false;
             }
         });
+        addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 80, 56));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -89,6 +90,11 @@ public class ResistiveFurnaceContainer extends Container {
 
         if (index < MACHINE_SLOT_COUNT) {
             if (!moveItemStackTo(stack, MACHINE_SLOT_COUNT, slots.size(), true)) {
+                return ItemStack.EMPTY;
+            }
+        } else if (tileEntity.findModuleSlot(stack) >= 0) {
+            int moduleSlot = tileEntity.findModuleSlot(stack);
+            if (!moveItemStackTo(stack, moduleSlot, moduleSlot + 1, false)) {
                 return ItemStack.EMPTY;
             }
         } else if (tileEntity.canAcceptInput(stack)) {

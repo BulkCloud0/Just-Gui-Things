@@ -70,5 +70,8 @@
   "item.justguithings.tempered_steel_wire": "Fio de Aço Temperado",
   "item.justguithings.tensioning_spindle": "Fuso de Tensionamento",
   "tooltip.justguithings.tensioning_spindle": "Fuso específico para trefilação controlada sob alta tensão.",
-  "jei.justguithings.wire_drawing": "Trefilação"
+  "jei.justguithings.wire_drawing": "Trefilação",
+  "item.justguithings.induction_coil_module": "Módulo de Bobina de Indução",
+  "tooltip.justguithings.induction_coil_module.effect": "2x velocidade de processamento, 2,5x FE/t (~25% mais FE por operação).",
+  "tooltip.justguithings.induction_coil_module.compatibility": "Compatível: Fornalha Resistiva"
 }

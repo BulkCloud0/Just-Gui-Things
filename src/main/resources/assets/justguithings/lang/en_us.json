@@ -70,5 +70,8 @@
   "item.justguithings.tempered_steel_wire": "Tempered Steel Wire",
   "item.justguithings.tensioning_spindle": "Tensioning Spindle",
   "tooltip.justguithings.tensioning_spindle": "Machine-specific spindle for controlled high-tension wire drawing.",
-  "jei.justguithings.wire_drawing": "Wire Drawing"
+  "jei.justguithings.wire_drawing": "Wire Drawing",
+  "item.justguithings.induction_coil_module": "Induction Coil Module",
+  "tooltip.justguithings.induction_coil_module.effect": "2x processing speed, 2.5x FE/t (~25% more FE per operation).",
+  "tooltip.justguithings.induction_coil_module.compatibility": "Compatible: Resistive Furnace"
 }
