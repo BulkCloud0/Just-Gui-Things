@@ -132,5 +132,11 @@
   "message.justguithings.routing_controller.energy_priority": "Prioridade do consumidor de energia %s: %s",
   "message.justguithings.routing_controller.energy_redstone": "Condição de redstone do consumidor de energia %s: %s",
   "message.justguithings.routing_controller.energy_target_only": "O cabo de energia %s usa o escopo DESTINO para roteamento de consumidores.",
-  "message.justguithings.routing_controller.energy_mode_unsupported": "O modo de roteamento %s não se aplica a consumidores de energia."
+  "message.justguithings.routing_controller.energy_mode_unsupported": "O modo de roteamento %s não se aplica a consumidores de energia.",
+  "routing.justguithings.energy_side_mode.both": "Entrada + Saída",
+  "routing.justguithings.energy_side_mode.input": "Entrada",
+  "routing.justguithings.energy_side_mode.output": "Saída",
+  "routing.justguithings.energy_side_mode.disabled": "Desativado",
+  "message.justguithings.energy_cable.side_mode": "Modo do cabo de energia %s: %s",
+  "message.justguithings.routing_controller.energy_output_required": "A face %s precisa ser Saída ou Entrada + Saída antes de aplicar roteamento de consumidor."
 }

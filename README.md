@@ -13,7 +13,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Item and fluid transport through Forge capabilities
 - Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir and Fluid Pump
 - Endpoint routing for item and fluid pipes with filters, priorities, redstone conditions and source reserves
-- Energy consumer routing with endpoint priority and redstone control
+- Energy consumer routing with endpoint priority, redstone control, fair distribution and Configurator-based per-face input/output modes
 - Shared machine core for energy, inventory, side configuration and processing state
 - Crusher with data-driven recipes and Speed/Efficiency/Buffer/Batch modules
 - Industrial Mixer, Stamping Press and Resistive Furnace

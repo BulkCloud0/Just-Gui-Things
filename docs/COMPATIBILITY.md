@@ -141,12 +141,21 @@ Basic Energy Cables keep Forge `IEnergyStorage` as the only external energy inte
 
 Energy routing intentionally models only consumer endpoints in v1. Producers already inject FE into cable buffers through the cable's exposed `IEnergyStorage`, so source filters/reserves would not match the current network flow.
 
+Each cable face also stores a conduit transfer mode. The Configurator cycles:
+
+- `BOTH`: accepts FE from external producers and exposes output/extraction;
+- `PULL`: displayed to players as `INPUT`, accepts external FE but is not considered a consumer-output face;
+- `PUSH`: displayed as `OUTPUT`, participates in consumer routing and does not accept external FE;
+- `DISABLED`: hides the sided energy capability and excludes that external endpoint.
+
+Cable-to-cable adjacency remains part of the same internal network regardless of endpoint mode; the mode applies to the external connection on that face. Existing saves without `SideConfig` load every face as `BOTH`, preserving previous behavior.
+
 Each cable face can store one `EnergyRoutingTargetRule` with:
 
 - priority: `HIGH`, `NORMAL`, or `LOW`;
 - redstone condition: `ALWAYS`, `REQUIRE_SIGNAL`, or `REQUIRE_NO_SIGNAL`.
 
-The Routing Controller configures energy consumers only in `TARGET` scope. `PRIORITY` and `REDSTONE` are the supported edit modes; filter/NBT/source modes report that they do not apply instead of silently changing semantics.
+The Routing Controller configures energy consumers only in `TARGET` scope. `PRIORITY` and `REDSTONE` are the supported edit modes and require an OUTPUT-capable face; filter/NBT/source modes report that they do not apply instead of silently changing semantics.
 
 Consumer discovery is keyed by block position plus exposed side, preserving compatibility with sided `IEnergyStorage` implementations. Distribution checks HIGH consumers before NORMAL and LOW consumers, while the round-robin cursor preserves fairness within active endpoints.
 
