@@ -4,7 +4,7 @@ import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.recipe.HeatingRecipe;
-import com.bulkcloud0.justguithings.recipe.ExtrudingRecipe;
+import com.bulkcloud0.justguithings.recipe.RodFormingRecipe;
 import com.bulkcloud0.justguithings.recipe.WireDrawingRecipe;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -25,8 +25,8 @@ public final class ModRecipes {
             IRecipeType.register(JustGuiThings.MOD_ID + ":mixing");
     public static final IRecipeType<HeatingRecipe> HEATING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":heating");
-    public static final IRecipeType<ExtrudingRecipe> EXTRUDING_TYPE =
-            IRecipeType.register(JustGuiThings.MOD_ID + ":extruding");
+    public static final IRecipeType<RodFormingRecipe> ROD_FORMING_TYPE =
+            IRecipeType.register(JustGuiThings.MOD_ID + ":rod_forming");
     public static final IRecipeType<WireDrawingRecipe> WIRE_DRAWING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":wire_drawing");
 
@@ -38,8 +38,8 @@ public final class ModRecipes {
             RECIPE_SERIALIZERS.register("mixing", MixingRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<HeatingRecipe>> HEATING_SERIALIZER =
             RECIPE_SERIALIZERS.register("heating", HeatingRecipe.Serializer::new);
-    public static final RegistryObject<IRecipeSerializer<ExtrudingRecipe>> EXTRUDING_SERIALIZER =
-            RECIPE_SERIALIZERS.register("extruding", ExtrudingRecipe.Serializer::new);
+    public static final RegistryObject<IRecipeSerializer<RodFormingRecipe>> ROD_FORMING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("rod_forming", RodFormingRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<WireDrawingRecipe>> WIRE_DRAWING_SERIALIZER =
             RECIPE_SERIALIZERS.register("wire_drawing", WireDrawingRecipe.Serializer::new);
 

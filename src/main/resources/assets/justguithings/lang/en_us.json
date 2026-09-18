@@ -49,11 +49,6 @@
   "block.justguithings.resistive_furnace": "Resistive Furnace",
   "container.justguithings.resistive_furnace": "Resistive Furnace",
   "jei.justguithings.heating": "Resistive Heating",
-  "block.justguithings.precision_extruder": "Precision Extruder",
-  "container.justguithings.precision_extruder": "Precision Extruder",
-  "item.justguithings.hardened_extrusion_die": "Hardened Extrusion Die",
-  "tooltip.justguithings.hardened_extrusion_die": "Precision forming component used by the rod-forming machine.",
-  "jei.justguithings.extruding": "Precision Extrusion",
   "block.justguithings.wire_mill": "Wire Mill",
   "container.justguithings.wire_mill": "Wire Mill",
   "item.justguithings.iron_rod": "Iron Rod",
@@ -65,7 +60,12 @@
   "item.justguithings.tensioning_spindle": "Tensioning Spindle",
   "tooltip.justguithings.tensioning_spindle": "Machine-specific spindle for controlled high-tension wire drawing.",
   "jei.justguithings.wire_drawing": "Wire Drawing",
-  "item.justguithings.induction_coil_module": "Induction Coil Module",
-  "tooltip.justguithings.induction_coil_module.effect": "2x processing speed, 2.5x FE/t (~25% more FE per operation).",
-  "tooltip.justguithings.induction_coil_module.compatibility": "Compatible: Resistive Furnace"
+  "block.justguithings.rod_mill": "Rod Mill",
+  "container.justguithings.rod_mill": "Rod Mill",
+  "item.justguithings.precision_roller_assembly": "Precision Roller Assembly",
+  "tooltip.justguithings.precision_roller_assembly": "Machine-specific roller assembly for consistent rod forming.",
+  "jei.justguithings.rod_forming": "Rod Forming",
+  "item.justguithings.power_coil_module": "Power Coil Module",
+  "tooltip.justguithings.power_coil_module.effect": "2x processing speed, 2.5x FE/t (~25% more FE per operation).",
+  "tooltip.justguithings.power_coil_module.compatibility": "Compatible: Resistive Furnace"
 }

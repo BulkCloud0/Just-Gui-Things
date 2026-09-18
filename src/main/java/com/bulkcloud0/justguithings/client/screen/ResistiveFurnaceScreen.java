@@ -84,6 +84,6 @@ public class ResistiveFurnaceScreen extends ContainerScreen<ResistiveFurnaceCont
         font.draw(matrixStack,
                 menu.getCurrentEnergyPerTick() + " FE/t",
                 8.0F, 55.0F, TEXT);
-        font.draw(matrixStack, "IC", 101.0F, 59.0F, TEXT);
+        font.draw(matrixStack, "PC", 101.0F, 59.0F, TEXT);
     }
 }

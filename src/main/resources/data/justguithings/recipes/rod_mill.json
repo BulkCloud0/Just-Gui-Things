@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PAP",
+    "RCR",
+    "PIP"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/iron"
+    },
+    "A": {
+      "tag": "justguithings:machine_components/roller_assemblies"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "C": {
+      "item": "justguithings:basic_energy_cable"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "justguithings:rod_mill"
+  }
+}

@@ -4,23 +4,23 @@
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:ingots/gold"
+        "tag": "forge:ingots/tin"
       }
     },
     {
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:rods/gold"
+        "tag": "forge:rods/tin"
       }
     }
   ],
-  "type": "justguithings:extruding",
+  "type": "justguithings:rod_forming",
   "ingredient": {
-    "tag": "forge:ingots/gold"
+    "tag": "forge:ingots/tin"
   },
   "result": {
-    "tag": "forge:rods/gold",
+    "tag": "forge:rods/tin",
     "count": 2
   },
   "processing_time": 160,

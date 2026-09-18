@@ -4,23 +4,23 @@
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:ingots/iron"
+        "tag": "forge:ingots/osmium"
       }
     },
     {
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:rods/iron"
+        "tag": "forge:rods/osmium"
       }
     }
   ],
-  "type": "justguithings:extruding",
+  "type": "justguithings:rod_forming",
   "ingredient": {
-    "tag": "forge:ingots/iron"
+    "tag": "forge:ingots/osmium"
   },
   "result": {
-    "tag": "forge:rods/iron",
+    "tag": "forge:rods/osmium",
     "count": 2
   },
   "processing_time": 160,

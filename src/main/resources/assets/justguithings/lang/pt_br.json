@@ -49,11 +49,6 @@
   "block.justguithings.resistive_furnace": "Fornalha Resistiva",
   "container.justguithings.resistive_furnace": "Fornalha Resistiva",
   "jei.justguithings.heating": "Aquecimento Resistivo",
-  "block.justguithings.precision_extruder": "Extrusora de Precisão",
-  "container.justguithings.precision_extruder": "Extrusora de Precisão",
-  "item.justguithings.hardened_extrusion_die": "Matriz de Extrusão Endurecida",
-  "tooltip.justguithings.hardened_extrusion_die": "Componente de conformação de precisão usado pela máquina de hastes.",
-  "jei.justguithings.extruding": "Extrusão de Precisão",
   "block.justguithings.wire_mill": "Trefiladora",
   "container.justguithings.wire_mill": "Trefiladora",
   "item.justguithings.iron_rod": "Haste de Ferro",
@@ -65,7 +60,12 @@
   "item.justguithings.tensioning_spindle": "Fuso de Tensionamento",
   "tooltip.justguithings.tensioning_spindle": "Fuso específico para trefilação controlada sob alta tensão.",
   "jei.justguithings.wire_drawing": "Trefilação",
-  "item.justguithings.induction_coil_module": "Módulo de Bobina de Indução",
-  "tooltip.justguithings.induction_coil_module.effect": "2x velocidade de processamento, 2,5x FE/t (~25% mais FE por operação).",
-  "tooltip.justguithings.induction_coil_module.compatibility": "Compatível: Fornalha Resistiva"
+  "block.justguithings.rod_mill": "Laminador de Hastes",
+  "container.justguithings.rod_mill": "Laminador de Hastes",
+  "item.justguithings.precision_roller_assembly": "Conjunto de Rolos de Precisão",
+  "tooltip.justguithings.precision_roller_assembly": "Conjunto de rolos específico para formação consistente de hastes.",
+  "jei.justguithings.rod_forming": "Formação de Hastes",
+  "item.justguithings.power_coil_module": "Módulo de Bobina de Potência",
+  "tooltip.justguithings.power_coil_module.effect": "2x velocidade de processamento, 2,5x FE/t (~25% mais FE por operação).",
+  "tooltip.justguithings.power_coil_module.compatibility": "Compatível: Fornalha Resistiva"
 }

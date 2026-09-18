@@ -4,23 +4,23 @@
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:ingots/steel"
+        "tag": "forge:ingots/silver"
       }
     },
     {
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:rods/steel"
+        "tag": "forge:rods/silver"
       }
     }
   ],
-  "type": "justguithings:extruding",
+  "type": "justguithings:rod_forming",
   "ingredient": {
-    "tag": "forge:ingots/steel"
+    "tag": "forge:ingots/silver"
   },
   "result": {
-    "tag": "forge:rods/steel",
+    "tag": "forge:rods/silver",
     "count": 2
   },
   "processing_time": 160,

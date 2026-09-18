@@ -4,23 +4,23 @@
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:ingots/silver"
+        "tag": "forge:ingots/uranium"
       }
     },
     {
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:rods/silver"
+        "tag": "forge:rods/uranium"
       }
     }
   ],
-  "type": "justguithings:extruding",
+  "type": "justguithings:rod_forming",
   "ingredient": {
-    "tag": "forge:ingots/silver"
+    "tag": "forge:ingots/uranium"
   },
   "result": {
-    "tag": "forge:rods/silver",
+    "tag": "forge:rods/uranium",
     "count": 2
   },
   "processing_time": 160,

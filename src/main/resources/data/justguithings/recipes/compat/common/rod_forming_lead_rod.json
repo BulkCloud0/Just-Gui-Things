@@ -4,23 +4,23 @@
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:ingots/copper"
+        "tag": "forge:ingots/lead"
       }
     },
     {
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:rods/copper"
+        "tag": "forge:rods/lead"
       }
     }
   ],
-  "type": "justguithings:extruding",
+  "type": "justguithings:rod_forming",
   "ingredient": {
-    "tag": "forge:ingots/copper"
+    "tag": "forge:ingots/lead"
   },
   "result": {
-    "tag": "forge:rods/copper",
+    "tag": "forge:rods/lead",
     "count": 2
   },
   "processing_time": 160,

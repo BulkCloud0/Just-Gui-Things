@@ -21,7 +21,7 @@ public class ResistiveFurnaceTileEntity extends BaseSingleInputProcessingMachine
     public static final int DEFAULT_PROCESS_TICKS = 140;
     public static final int DEFAULT_ENERGY_PER_TICK = 40;
 
-    private static final int INDUCTION_SLOT = 2;
+    private static final int POWER_COIL_SLOT = 2;
 
     public ResistiveFurnaceTileEntity() {
         super(ModTileEntities.RESISTIVE_FURNACE.get(), ModRecipes.HEATING_TYPE,
@@ -31,17 +31,17 @@ public class ResistiveFurnaceTileEntity extends BaseSingleInputProcessingMachine
     @Nullable
     @Override
     protected ResourceLocation getModuleTypeForSlot(int slot) {
-        return slot == INDUCTION_SLOT ? MachineModuleTypes.INDUCTION_COIL : null;
+        return slot == POWER_COIL_SLOT ? MachineModuleTypes.POWER_COIL : null;
     }
 
     @Override
     protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
-        return MachineModuleTypes.INDUCTION_COIL.equals(moduleType) ? 1 : super.getModuleSlotLimit(slot, moduleType);
+        return MachineModuleTypes.POWER_COIL.equals(moduleType) ? 1 : super.getModuleSlotLimit(slot, moduleType);
     }
 
     @Override
     protected int getEffectiveProcessingTime(HeatingRecipe recipe) {
-        if (!hasInductionCoil()) {
+        if (!hasPowerCoil()) {
             return recipe.getProcessingTime();
         }
         return Math.max(1, (recipe.getProcessingTime() + 1) / 2);
@@ -49,14 +49,14 @@ public class ResistiveFurnaceTileEntity extends BaseSingleInputProcessingMachine
 
     @Override
     protected int getEffectiveEnergyPerTick(HeatingRecipe recipe) {
-        if (!hasInductionCoil()) {
+        if (!hasPowerCoil()) {
             return recipe.getEnergyPerTick();
         }
         return Math.max(1, (recipe.getEnergyPerTick() * 5 + 1) / 2);
     }
 
-    public boolean hasInductionCoil() {
-        return getModuleCount(MachineModuleTypes.INDUCTION_COIL) > 0;
+    public boolean hasPowerCoil() {
+        return getModuleCount(MachineModuleTypes.POWER_COIL) > 0;
     }
 
     @Override

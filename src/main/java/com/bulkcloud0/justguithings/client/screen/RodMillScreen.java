@@ -1,14 +1,14 @@
 package com.bulkcloud0.justguithings.client.screen;
 
-import com.bulkcloud0.justguithings.world.container.PrecisionExtruderContainer;
-import com.bulkcloud0.justguithings.world.tile.PrecisionExtruderTileEntity;
+import com.bulkcloud0.justguithings.world.container.RodMillContainer;
+import com.bulkcloud0.justguithings.world.tile.RodMillTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
 
-public class PrecisionExtruderScreen extends ContainerScreen<PrecisionExtruderContainer> {
+public class RodMillScreen extends ContainerScreen<RodMillContainer> {
     private static final int PANEL = 0xFF20262E;
     private static final int INNER = 0xFF313942;
     private static final int SLOT = 0xFF11161C;
@@ -19,7 +19,7 @@ public class PrecisionExtruderScreen extends ContainerScreen<PrecisionExtruderCo
     private static final int PROGRESS = 0xFF8CCB72;
     private static final int TEXT = 0xFFE5E9ED;
 
-    public PrecisionExtruderScreen(PrecisionExtruderContainer menu, PlayerInventory inventory, ITextComponent title) {
+    public RodMillScreen(RodMillContainer menu, PlayerInventory inventory, ITextComponent title) {
         super(menu, inventory, title);
         imageWidth = 176;
         imageHeight = 166;
@@ -35,13 +35,10 @@ public class PrecisionExtruderScreen extends ContainerScreen<PrecisionExtruderCo
 
     @Override
     protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-        int left = leftPos;
-        int top = topPos;
-
+        int left = leftPos, top = topPos;
         AbstractGui.fill(matrixStack, left, top, left + imageWidth, top + imageHeight, PANEL);
         AbstractGui.fill(matrixStack, left + 5, top + 18, left + 171, top + 76, INNER);
         AbstractGui.fill(matrixStack, left + 5, top + 80, left + 171, top + 161, INNER);
-
         drawSlot(matrixStack, left + 43, top + 34);
         drawSlot(matrixStack, left + 115, top + 34);
 
@@ -50,21 +47,15 @@ public class PrecisionExtruderScreen extends ContainerScreen<PrecisionExtruderCo
                 drawSlot(matrixStack, left + 7 + column * 18, top + 83 + row * 18);
             }
         }
-        for (int column = 0; column < 9; column++) {
-            drawSlot(matrixStack, left + 7 + column * 18, top + 141);
-        }
+        for (int column = 0; column < 9; column++) drawSlot(matrixStack, left + 7 + column * 18, top + 141);
 
         AbstractGui.fill(matrixStack, left + 69, top + 38, left + 105, top + 50, PROGRESS_BG);
         int progressWidth = menu.getProgressScaled(34);
-        if (progressWidth > 0) {
-            AbstractGui.fill(matrixStack, left + 70, top + 39, left + 70 + progressWidth, top + 49, PROGRESS);
-        }
+        if (progressWidth > 0) AbstractGui.fill(matrixStack, left + 70, top + 39, left + 70 + progressWidth, top + 49, PROGRESS);
 
         int energyHeight = menu.getEnergyScaled(48);
         AbstractGui.fill(matrixStack, left + 147, top + 24, left + 158, top + 74, ENERGY_BG);
-        if (energyHeight > 0) {
-            AbstractGui.fill(matrixStack, left + 149, top + 72 - energyHeight, left + 156, top + 72, ENERGY);
-        }
+        if (energyHeight > 0) AbstractGui.fill(matrixStack, left + 149, top + 72 - energyHeight, left + 156, top + 72, ENERGY);
     }
 
     private void drawSlot(MatrixStack matrixStack, int x, int y) {
@@ -77,11 +68,7 @@ public class PrecisionExtruderScreen extends ContainerScreen<PrecisionExtruderCo
         font.draw(matrixStack, title, 8.0F, 6.0F, TEXT);
         SideConfigRenderer.drawHorizontal(matrixStack, font, 8.0F, 19.0F, menu::getSideMode);
         font.draw(matrixStack, inventory.getDisplayName(), 8.0F, inventoryLabelY, TEXT);
-        font.draw(matrixStack,
-                "FE: " + menu.getEnergyStored() + " / " + PrecisionExtruderTileEntity.CAPACITY,
-                82.0F, 6.0F, TEXT);
-        font.draw(matrixStack,
-                menu.getCurrentEnergyPerTick() + " FE/t",
-                8.0F, 55.0F, TEXT);
+        font.draw(matrixStack, "FE: " + menu.getEnergyStored() + " / " + RodMillTileEntity.CAPACITY, 82.0F, 6.0F, TEXT);
+        font.draw(matrixStack, menu.getCurrentEnergyPerTick() + " FE/t", 8.0F, 55.0F, TEXT);
     }
 }

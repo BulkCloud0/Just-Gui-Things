@@ -13,55 +13,52 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
-public class ExtrudingRecipe extends SingleInputProcessingRecipe {
-    public ExtrudingRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
+public class RodFormingRecipe extends SingleInputProcessingRecipe {
+    public RodFormingRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
         super(id, input, result, processingTime, energyPerTick);
     }
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.EXTRUDING_SERIALIZER.get();
+        return ModRecipes.ROD_FORMING_SERIALIZER.get();
     }
 
     @Override
     public IRecipeType<?> getType() {
-        return ModRecipes.EXTRUDING_TYPE;
+        return ModRecipes.ROD_FORMING_TYPE;
     }
 
-    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ExtrudingRecipe> {
+    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<RodFormingRecipe> {
         @Override
-        public ExtrudingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        public RodFormingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             if (!json.has("ingredient")) {
-                throw new JsonSyntaxException("Extruding recipe " + recipeId + " is missing ingredient");
+                throw new JsonSyntaxException("Rod forming recipe " + recipeId + " is missing ingredient");
             }
-
             Ingredient input = Ingredient.fromJson(json.get("ingredient"));
             RecipeOutput result = RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "result"));
             int processingTime = JSONUtils.getAsInt(json, "processing_time", 160);
             int energyPerTick = JSONUtils.getAsInt(json, "energy_per_tick", 55);
-
             if (input.isEmpty()) {
-                throw new JsonSyntaxException("Extruding recipe " + recipeId + " has an empty ingredient");
+                throw new JsonSyntaxException("Rod forming recipe " + recipeId + " has an empty ingredient");
             }
             if (processingTime <= 0 || energyPerTick <= 0) {
-                throw new JsonSyntaxException("Extruding recipe time and FE/t must be greater than zero in " + recipeId);
+                throw new JsonSyntaxException("Rod forming recipe time and FE/t must be greater than zero in " + recipeId);
             }
-
-            return new ExtrudingRecipe(recipeId, input, result, processingTime, energyPerTick);
+            return new RodFormingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
         @Nullable
         @Override
-        public ExtrudingRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public RodFormingRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
-            return new ExtrudingRecipe(recipeId, input, result, processingTime, energyPerTick);
+            return new RodFormingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, ExtrudingRecipe recipe) {
+        public void toNetwork(PacketBuffer buffer, RodFormingRecipe recipe) {
             recipe.input.toNetwork(buffer);
             recipe.result.toNetwork(buffer);
             buffer.writeVarInt(recipe.processingTime);
