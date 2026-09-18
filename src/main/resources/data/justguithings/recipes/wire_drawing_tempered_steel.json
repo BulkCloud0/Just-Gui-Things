@@ -1,0 +1,12 @@
+{
+  "type": "justguithings:wire_drawing",
+  "ingredient": {
+    "tag": "forge:rods/tempered_steel"
+  },
+  "result": {
+    "tag": "forge:wires/tempered_steel",
+    "count": 2
+  },
+  "processing_time": 170,
+  "energy_per_tick": 60
+}

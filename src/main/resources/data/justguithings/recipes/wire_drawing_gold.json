@@ -1,0 +1,12 @@
+{
+  "type": "justguithings:wire_drawing",
+  "ingredient": {
+    "tag": "forge:rods/gold"
+  },
+  "result": {
+    "tag": "forge:wires/gold",
+    "count": 2
+  },
+  "processing_time": 140,
+  "energy_per_tick": 50
+}

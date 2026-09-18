@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RGR",
+    "GQG",
+    "RGR"
+  ],
+  "key": {
+    "R": { "tag": "forge:rods/tempered_steel" },
+    "G": { "tag": "forge:plates/gold" },
+    "Q": { "item": "minecraft:quartz" }
+  },
+  "result": {
+    "item": "justguithings:tensioning_spindle"
+  }
+}
