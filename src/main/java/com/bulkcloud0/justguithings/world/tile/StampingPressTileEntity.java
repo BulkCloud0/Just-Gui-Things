@@ -1,8 +1,8 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
-import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
@@ -73,21 +73,22 @@ public class StampingPressTileEntity extends BaseMachineTileEntity {
 
     @Override
     protected boolean isItemValidForSlot(int slot, ItemStack stack) {
+        return slot == 0 && canAcceptInput(stack);
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
         switch (slot) {
-            case 0:
-                return canAcceptInput(stack);
-            case 2:
-                return stack.getItem() == ModItems.SPEED_UPGRADE.get();
-            case 3:
-                return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
-            default:
-                return false;
+            case 2: return MachineModuleTypes.SPEED;
+            case 3: return MachineModuleTypes.EFFICIENCY;
+            default: return null;
         }
     }
 
     @Override
-    protected int getMachineSlotLimit(int slot) {
-        return slot == 2 || slot == 3 ? MAX_MODULES_PER_TYPE : super.getMachineSlotLimit(slot);
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return MAX_MODULES_PER_TYPE;
     }
 
     @Override
@@ -191,11 +192,11 @@ public class StampingPressTileEntity extends BaseMachineTileEntity {
     }
 
     public int getSpeedUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(2).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.SPEED));
     }
 
     public int getEfficiencyUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(3).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.EFFICIENCY));
     }
 
     public boolean canAcceptInput(ItemStack stack) {

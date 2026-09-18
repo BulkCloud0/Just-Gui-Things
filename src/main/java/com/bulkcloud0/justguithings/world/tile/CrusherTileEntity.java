@@ -1,8 +1,8 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
-import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
@@ -97,25 +97,24 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
 
     @Override
     protected boolean isItemValidForSlot(int slot, ItemStack stack) {
+        return slot == 0 && canAcceptInput(stack);
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
         switch (slot) {
-            case 0:
-                return canAcceptInput(stack);
-            case 2:
-                return stack.getItem() == ModItems.SPEED_UPGRADE.get();
-            case 3:
-                return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
-            case 4:
-                return stack.getItem() == ModItems.BUFFER_UPGRADE.get();
-            case 5:
-                return stack.getItem() == ModItems.BATCH_UPGRADE.get();
-            default:
-                return false;
+            case 2: return MachineModuleTypes.SPEED;
+            case 3: return MachineModuleTypes.EFFICIENCY;
+            case 4: return MachineModuleTypes.BUFFER;
+            case 5: return MachineModuleTypes.BATCH;
+            default: return null;
         }
     }
 
     @Override
-    protected int getMachineSlotLimit(int slot) {
-        return slot >= 2 && slot <= 5 ? MAX_MODULES_PER_TYPE : super.getMachineSlotLimit(slot);
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return MAX_MODULES_PER_TYPE;
     }
 
     @Override
@@ -266,19 +265,19 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
     }
 
     public int getSpeedUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(2).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.SPEED));
     }
 
     public int getEfficiencyUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(3).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.EFFICIENCY));
     }
 
     public int getBufferUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(4).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.BUFFER));
     }
 
     public int getBatchUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(5).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.BATCH));
     }
 
     public int getEnergyCapacity() {

@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.machine;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.machine.module.IMachineModule;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -9,6 +10,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -67,11 +69,19 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         this.inventory = new ItemStackHandler(inventorySize) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                ResourceLocation moduleType = getModuleTypeForSlot(slot);
+                if (moduleType != null) {
+                    return isModuleOfType(stack, moduleType);
+                }
                 return isItemValidForSlot(slot, stack);
             }
 
             @Override
             public int getSlotLimit(int slot) {
+                ResourceLocation moduleType = getModuleTypeForSlot(slot);
+                if (moduleType != null) {
+                    return getModuleSlotLimit(slot, moduleType);
+                }
                 return getMachineSlotLimit(slot);
             }
 
@@ -88,11 +98,59 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
     protected abstract boolean isItemValidForSlot(int slot, ItemStack stack);
 
+    @Nullable
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
+        return null;
+    }
+
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return 64;
+    }
+
     protected int getMachineSlotLimit(int slot) {
         return 64;
     }
 
     protected void onInventoryChanged(int slot) {
+    }
+
+    public final int getModuleCount(ResourceLocation moduleType) {
+        int count = 0;
+        for (int slot = 0; slot < inventory.getSlots(); slot++) {
+            if (moduleType.equals(getModuleTypeForSlot(slot))) {
+                ItemStack stack = inventory.getStackInSlot(slot);
+                if (isModuleOfType(stack, moduleType)) {
+                    count += stack.getCount();
+                }
+            }
+        }
+        return count;
+    }
+
+    public final int findModuleSlot(ItemStack stack) {
+        ResourceLocation moduleType = getModuleType(stack);
+        if (moduleType == null) {
+            return -1;
+        }
+        for (int slot = 0; slot < inventory.getSlots(); slot++) {
+            if (moduleType.equals(getModuleTypeForSlot(slot))) {
+                return slot;
+            }
+        }
+        return -1;
+    }
+
+    @Nullable
+    private ResourceLocation getModuleType(ItemStack stack) {
+        if (stack.isEmpty() || !(stack.getItem() instanceof IMachineModule)) {
+            return null;
+        }
+        return ((IMachineModule) stack.getItem()).getMachineModuleType();
+    }
+
+    private boolean isModuleOfType(ItemStack stack, ResourceLocation expectedType) {
+        ResourceLocation actualType = getModuleType(stack);
+        return actualType != null && expectedType.equals(actualType);
     }
 
     private void initializeDefaultSides() {
