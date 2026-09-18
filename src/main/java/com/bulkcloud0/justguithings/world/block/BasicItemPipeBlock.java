@@ -6,6 +6,7 @@ import com.bulkcloud0.justguithings.logistics.ItemFilterMode;
 import com.bulkcloud0.justguithings.logistics.ItemFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
+import com.bulkcloud0.justguithings.logistics.ItemRoutingRedstoneMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
@@ -180,6 +181,15 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                                         ? "message.justguithings.routing_controller.nbt_exact"
                                         : "message.justguithings.routing_controller.nbt_ignored",
                                 face),
+                        true);
+                break;
+
+            case REDSTONE:
+                ItemRoutingRedstoneMode redstoneMode = pipe.cycleTargetRedstoneMode(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.routing_controller.redstone",
+                                face, redstoneMode.getDisplayName()),
                         true);
                 break;
 

@@ -5,6 +5,8 @@ import com.bulkcloud0.justguithings.logistics.ItemFilterMode;
 import com.bulkcloud0.justguithings.logistics.ItemFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
+import com.bulkcloud0.justguithings.logistics.ItemRoutingRedstoneMode;
+import com.bulkcloud0.justguithings.logistics.ItemRoutingTargetRule;
 import com.bulkcloud0.justguithings.logistics.ItemTransferHelper;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import net.minecraft.block.BlockState;
@@ -34,8 +36,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
     };
 
     private final EnumMap<Direction, ConduitTransferMode> sideModes = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, ItemRoutingPriority> targetPriorities = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, ItemRouteFilter> targetFilters = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, ItemRoutingTargetRule> targetRules = new EnumMap<>(Direction.class);
 
     private int sourceCursor;
     private int targetCursor;
@@ -44,8 +45,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         super(ModTileEntities.BASIC_ITEM_PIPE.get(), NETWORK_CACHE_TTL);
         for (Direction direction : Direction.values()) {
             sideModes.put(direction, ConduitTransferMode.BOTH);
-            targetPriorities.put(direction, ItemRoutingPriority.NORMAL);
-            targetFilters.put(direction, new ItemRouteFilter());
+            targetRules.put(direction, new ItemRoutingTargetRule());
         }
     }
 
@@ -85,23 +85,22 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return next;
     }
 
+    public ItemRoutingTargetRule getTargetRule(Direction direction) {
+        return new ItemRoutingTargetRule(getMutableTargetRule(direction));
+    }
+
     public ItemRoutingPriority getTargetPriority(Direction direction) {
-        return targetPriorities.getOrDefault(direction, ItemRoutingPriority.NORMAL);
+        return getMutableTargetRule(direction).getPriority();
     }
 
     public ItemRoutingPriority cycleTargetPriority(Direction direction) {
-        ItemRoutingPriority next = getTargetPriority(direction).next();
-        targetPriorities.put(direction, next);
+        ItemRoutingPriority next = getMutableTargetRule(direction).cyclePriority();
         setChanged();
         return next;
     }
 
-    public ItemRouteFilter getTargetFilter(Direction direction) {
-        return new ItemRouteFilter(targetFilters.getOrDefault(direction, new ItemRouteFilter()));
-    }
-
     public ItemFilterSampleChange toggleTargetFilterSample(Direction direction, ItemStack sample) {
-        ItemFilterSampleChange change = getMutableFilter(direction).toggleSample(sample);
+        ItemFilterSampleChange change = getMutableTargetRule(direction).toggleFilterSample(sample);
         if (change != ItemFilterSampleChange.FULL) {
             setChanged();
         }
@@ -109,33 +108,39 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
     }
 
     public int getTargetFilterSampleCount(Direction direction) {
-        return getMutableFilter(direction).getSampleCount();
+        return getMutableTargetRule(direction).getFilterSampleCount();
     }
 
     public void clearTargetFilter(Direction direction) {
-        getMutableFilter(direction).clearSamples();
+        getMutableTargetRule(direction).clearFilterSamples();
         setChanged();
     }
 
     public ItemFilterMode cycleTargetFilterMode(Direction direction) {
-        ItemFilterMode next = getMutableFilter(direction).cycleMode();
+        ItemFilterMode next = getMutableTargetRule(direction).cycleFilterMode();
         setChanged();
         return next;
     }
 
     public boolean toggleTargetFilterNbt(Direction direction) {
-        boolean matchNbt = getMutableFilter(direction).toggleMatchNbt();
+        boolean matchNbt = getMutableTargetRule(direction).toggleFilterNbt();
         setChanged();
         return matchNbt;
     }
 
-    private ItemRouteFilter getMutableFilter(Direction direction) {
-        ItemRouteFilter filter = targetFilters.get(direction);
-        if (filter == null) {
-            filter = new ItemRouteFilter();
-            targetFilters.put(direction, filter);
+    public ItemRoutingRedstoneMode cycleTargetRedstoneMode(Direction direction) {
+        ItemRoutingRedstoneMode next = getMutableTargetRule(direction).cycleRedstoneMode();
+        setChanged();
+        return next;
+    }
+
+    private ItemRoutingTargetRule getMutableTargetRule(Direction direction) {
+        ItemRoutingTargetRule rule = targetRules.get(direction);
+        if (rule == null) {
+            rule = new ItemRoutingTargetRule();
+            targetRules.put(direction, rule);
         }
-        return filter;
+        return rule;
     }
 
     private void transferItems(List<BasicItemPipeTileEntity> network) {
@@ -186,7 +191,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                 int targetIndex = (targetStart + targetOffset) % targets.size();
                 ItemEndpoint target = targets.get(targetIndex);
 
-                if (target.priority != priority || target.inventoryPos.equals(source.inventoryPos)) {
+                if (target.rule.getPriority() != priority || target.inventoryPos.equals(source.inventoryPos)) {
                     continue;
                 }
 
@@ -209,6 +214,8 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         Set<EndpointKey> targetKeys = new HashSet<>();
 
         for (BasicItemPipeTileEntity pipe : network) {
+            boolean pipePowered = level.hasNeighborSignal(pipe.getBlockPos());
+
             for (Direction direction : Direction.values()) {
                 ConduitTransferMode mode = pipe.getSideMode(direction);
                 if (mode == ConduitTransferMode.DISABLED) {
@@ -236,12 +243,12 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                 if (mode.canPull() && sourceKeys.add(key)) {
                     sources.add(ItemEndpoint.source(neighborPos, handler));
                 }
+
                 if (mode.canPush() && targetKeys.add(key)) {
-                    targets.add(ItemEndpoint.target(
-                            neighborPos,
-                            handler,
-                            pipe.getTargetPriority(direction),
-                            pipe.getTargetFilter(direction)));
+                    ItemRoutingTargetRule rule = pipe.getTargetRule(direction);
+                    if (rule.allowsRedstone(pipePowered)) {
+                        targets.add(ItemEndpoint.target(neighborPos, handler, rule));
+                    }
                 }
             }
         }
@@ -249,7 +256,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
     private int moveItem(ItemEndpoint source, int sourceSlot, ItemEndpoint target, int maxAmount) {
         ItemStack simulatedExtract = source.handler.extractItem(sourceSlot, maxAmount, true);
-        if (simulatedExtract.isEmpty() || !target.filter.accepts(simulatedExtract)) {
+        if (simulatedExtract.isEmpty() || !target.rule.accepts(simulatedExtract)) {
             return 0;
         }
 
@@ -296,31 +303,41 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         }
 
         for (Direction direction : Direction.values()) {
-            targetPriorities.put(direction, ItemRoutingPriority.NORMAL);
-            targetFilters.put(direction, new ItemRouteFilter());
+            targetRules.put(direction, new ItemRoutingTargetRule());
         }
 
         if (nbt.contains("RoutingConfig")) {
             CompoundNBT routing = nbt.getCompound("RoutingConfig");
             for (Direction direction : Direction.values()) {
-                String priorityKey = "Priority" + direction.ordinal();
-                String ruleKey = "Rule" + direction.ordinal();
+                String targetRuleKey = "TargetRule" + direction.ordinal();
+                if (routing.contains(targetRuleKey)) {
+                    targetRules.put(direction,
+                            ItemRoutingTargetRule.load(routing.getCompound(targetRuleKey)));
+                    continue;
+                }
+
+                ItemRoutingTargetRule migrated = new ItemRoutingTargetRule();
+
+                String legacyPriorityKey = "Priority" + direction.ordinal();
+                if (routing.contains(legacyPriorityKey)) {
+                    migrated.setPriority(
+                            ItemRoutingPriority.fromOrdinal(routing.getInt(legacyPriorityKey)));
+                }
+
+                String legacyRuleKey = "Rule" + direction.ordinal();
                 String legacyFilterKey = "Filter" + direction.ordinal();
 
-                if (routing.contains(priorityKey)) {
-                    targetPriorities.put(direction,
-                            ItemRoutingPriority.fromOrdinal(routing.getInt(priorityKey)));
+                if (routing.contains(legacyRuleKey)) {
+                    migrated.setFilter(
+                            ItemRouteFilter.load(routing.getCompound(legacyRuleKey)));
+                } else if (routing.contains(legacyFilterKey)) {
+                    ItemRouteFilter legacyFilter = new ItemRouteFilter();
+                    legacyFilter.addSample(
+                            ItemStack.of(routing.getCompound(legacyFilterKey)));
+                    migrated.setFilter(legacyFilter);
                 }
 
-                if (routing.contains(ruleKey)) {
-                    targetFilters.put(direction,
-                            ItemRouteFilter.load(routing.getCompound(ruleKey)));
-                } else if (routing.contains(legacyFilterKey)) {
-                    ItemStack legacySample = ItemStack.of(routing.getCompound(legacyFilterKey));
-                    ItemRouteFilter migrated = new ItemRouteFilter();
-                    migrated.addSample(legacySample);
-                    targetFilters.put(direction, migrated);
-                }
+                targetRules.put(direction, migrated);
             }
         }
 
@@ -339,8 +356,9 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
         CompoundNBT routing = new CompoundNBT();
         for (Direction direction : Direction.values()) {
-            routing.putInt("Priority" + direction.ordinal(), getTargetPriority(direction).ordinal());
-            routing.put("Rule" + direction.ordinal(), getMutableFilter(direction).save());
+            routing.put(
+                    "TargetRule" + direction.ordinal(),
+                    getMutableTargetRule(direction).save());
         }
         nbt.put("RoutingConfig", routing);
 
@@ -350,25 +368,21 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
     private static final class ItemEndpoint {
         private final BlockPos inventoryPos;
         private final IItemHandler handler;
-        private final ItemRoutingPriority priority;
-        private final ItemRouteFilter filter;
+        private final ItemRoutingTargetRule rule;
 
-        private ItemEndpoint(BlockPos inventoryPos, IItemHandler handler,
-                             ItemRoutingPriority priority, ItemRouteFilter filter) {
+        private ItemEndpoint(BlockPos inventoryPos, IItemHandler handler, ItemRoutingTargetRule rule) {
             this.inventoryPos = inventoryPos;
             this.handler = handler;
-            this.priority = priority;
-            this.filter = new ItemRouteFilter(filter);
+            this.rule = new ItemRoutingTargetRule(rule);
         }
 
         private static ItemEndpoint source(BlockPos inventoryPos, IItemHandler handler) {
-            return new ItemEndpoint(
-                    inventoryPos, handler, ItemRoutingPriority.NORMAL, new ItemRouteFilter());
+            return new ItemEndpoint(inventoryPos, handler, new ItemRoutingTargetRule());
         }
 
         private static ItemEndpoint target(BlockPos inventoryPos, IItemHandler handler,
-                                           ItemRoutingPriority priority, ItemRouteFilter filter) {
-            return new ItemEndpoint(inventoryPos, handler, priority, filter);
+                                           ItemRoutingTargetRule rule) {
+            return new ItemEndpoint(inventoryPos, handler, rule);
         }
     }
 
