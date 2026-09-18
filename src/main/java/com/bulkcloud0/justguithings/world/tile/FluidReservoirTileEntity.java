@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.text.ITextComponent;
@@ -20,7 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class FluidReservoirTileEntity extends TileEntity {
+public class FluidReservoirTileEntity extends TileEntity implements INamedContainerProvider {
     public static final int CAPACITY = 16_000;
 
     private final FluidTank tank = new FluidTank(CAPACITY) {
