@@ -85,6 +85,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         ConduitTransferMode next = getSideMode(direction).next();
         sideModes.put(direction, next);
         setChanged();
+        syncToClient();
         return next;
     }
 
