@@ -40,7 +40,7 @@ public final class SideConfigRenderer {
             int column = index % 3;
             MachineSideMode mode = modeGetter.apply(DIRECTIONS[index]);
             String token = LABELS[index] + ":" + code(mode);
-            font.draw(matrixStack, token, x + column * 21.0F, y + row * 10.0F, color(mode));
+            font.draw(matrixStack, token, x + column * 21.0F, y + row * 10.0F, SideModeColors.getMachineColor(mode));
         }
     }
 
