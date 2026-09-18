@@ -192,5 +192,19 @@
   "connection.justguithings.connected": "Conectado",
   "connection.justguithings.disconnected": "Desconectado",
   "tooltip.justguithings.configurator.overlay": "Enquanto estiver na mão, a face configurável mirada é destacada e identificada na HUD.",
-  "hud.justguithings.configurator.target": "Configurador: %s"
+  "hud.justguithings.configurator.target": "Configurador: %s",
+  "side_config.justguithings.direction.up": "C",
+  "side_config.justguithings.direction.down": "B",
+  "side_config.justguithings.direction.north": "N",
+  "side_config.justguithings.direction.south": "S",
+  "side_config.justguithings.direction.west": "O",
+  "side_config.justguithings.direction.east": "L",
+  "side_config.justguithings.mode.disabled": "-",
+  "side_config.justguithings.mode.input": "E",
+  "side_config.justguithings.mode.output": "S",
+  "side_config.justguithings.mode.energy": "EE",
+  "side_config.justguithings.mode.fluid_input": "EF",
+  "side_config.justguithings.mode.fluid_output": "SF",
+  "side_config.justguithings.mode.energy_output": "SE",
+  "side_config.justguithings.mode.energy_both": "ES"
 }
