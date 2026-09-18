@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.world.block;
 
 import com.bulkcloud0.justguithings.item.RoutingControllerItem;
+import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerScope;
 import com.bulkcloud0.justguithings.logistics.RoutingPriority;
@@ -16,6 +17,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -35,6 +37,12 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
         BlockState neighborState = world.getBlockState(neighborPos);
         if (neighborState.getBlock() instanceof BasicEnergyCableBlock) {
             return true;
+        }
+
+        TileEntity self = world.getBlockEntity(pos);
+        if (self instanceof BasicEnergyCableTileEntity
+                && ((BasicEnergyCableTileEntity) self).getSideMode(direction) == ConduitTransferMode.DISABLED) {
+            return false;
         }
 
         TileEntity neighbor = world.getBlockEntity(neighborPos);
@@ -79,19 +87,44 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
         TileEntity tile = world.getBlockEntity(pos);
         ItemStack held = player.getItemInHand(hand);
 
-        if (!(tile instanceof BasicEnergyCableTileEntity)
-                || held.getItem() != ModItems.ROUTING_CONTROLLER.get()) {
+        if (!(tile instanceof BasicEnergyCableTileEntity)) {
+            return ActionResultType.PASS;
+        }
+
+        Direction direction = hit.getDirection();
+        BasicEnergyCableTileEntity cable = (BasicEnergyCableTileEntity) tile;
+
+        if (held.getItem() == ModItems.CONFIGURATOR.get()) {
+            if (!world.isClientSide) {
+                ConduitTransferMode mode = cable.cycleSideMode(direction);
+                AbstractConduitBlock.refreshConnections(world, pos);
+
+                String face = direction.toString().toUpperCase(Locale.ROOT);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.energy_cable.side_mode",
+                                face, getEnergySideModeName(mode)),
+                        true);
+            }
+            return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
+        }
+
+        if (held.getItem() != ModItems.ROUTING_CONTROLLER.get()) {
             return ActionResultType.PASS;
         }
 
         if (!world.isClientSide) {
             RoutingControllerScope scope = RoutingControllerItem.getScope(held);
             RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
-            Direction direction = hit.getDirection();
             String face = direction.toString().toUpperCase(Locale.ROOT);
-            BasicEnergyCableTileEntity cable = (BasicEnergyCableTileEntity) tile;
 
-            if (scope != RoutingControllerScope.TARGET) {
+            if (!cable.getSideMode(direction).canPush()) {
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.routing_controller.energy_output_required",
+                                face),
+                        true);
+            } else if (scope != RoutingControllerScope.TARGET) {
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.routing_controller.energy_target_only",
@@ -121,6 +154,26 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
         }
 
         return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
+    }
+
+    private ITextComponent getEnergySideModeName(ConduitTransferMode mode) {
+        String key;
+        switch (mode) {
+            case PULL:
+                key = "routing.justguithings.energy_side_mode.input";
+                break;
+            case PUSH:
+                key = "routing.justguithings.energy_side_mode.output";
+                break;
+            case DISABLED:
+                key = "routing.justguithings.energy_side_mode.disabled";
+                break;
+            case BOTH:
+            default:
+                key = "routing.justguithings.energy_side_mode.both";
+                break;
+        }
+        return new TranslationTextComponent(key);
     }
 
     @Override
