@@ -475,8 +475,8 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
+    protected void invalidateCaps() {
+        super.invalidateCaps();
         unsidedEnergyCapability.invalidate();
         for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
             capability.invalidate();

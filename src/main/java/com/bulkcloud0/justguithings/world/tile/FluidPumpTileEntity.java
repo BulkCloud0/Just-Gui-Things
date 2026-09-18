@@ -244,8 +244,8 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
+    protected void invalidateCaps() {
+        super.invalidateCaps();
         fluidCapability.invalidate();
         for (LazyOptional<IFluidHandler> capability : sidedFluidCapabilities.values()) {
             capability.invalidate();

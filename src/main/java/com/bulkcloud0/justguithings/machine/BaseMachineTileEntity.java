@@ -365,8 +365,8 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
+    protected void invalidateCaps() {
+        super.invalidateCaps();
         energyCapability.invalidate();
         itemCapability.invalidate();
 

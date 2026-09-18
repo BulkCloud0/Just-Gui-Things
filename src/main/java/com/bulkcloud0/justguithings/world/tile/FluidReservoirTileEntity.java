@@ -101,8 +101,8 @@ public class FluidReservoirTileEntity extends TileEntity implements INamedContai
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
+    protected void invalidateCaps() {
+        super.invalidateCaps();
         fluidCapability.invalidate();
     }
 }
