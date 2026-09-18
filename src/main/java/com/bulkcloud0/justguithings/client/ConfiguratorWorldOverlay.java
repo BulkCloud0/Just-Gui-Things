@@ -1,9 +1,7 @@
 package com.bulkcloud0.justguithings.client;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
-import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
-import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
@@ -31,13 +29,6 @@ import javax.annotation.Nullable;
 
 @Mod.EventBusSubscriber(modid = JustGuiThings.MOD_ID, value = Dist.CLIENT)
 public final class ConfiguratorWorldOverlay {
-    private static final ModeColor DISABLED = ModeColor.fromRgb(0x7D8791);
-    private static final ModeColor INPUT = ModeColor.fromRgb(0x63C174);
-    private static final ModeColor OUTPUT = ModeColor.fromRgb(0xE29A4A);
-    private static final ModeColor ENERGY = ModeColor.fromRgb(0x45C7D9);
-    private static final ModeColor FLUID_INPUT = ModeColor.fromRgb(0x5B8DEF);
-    private static final ModeColor FLUID_OUTPUT = ModeColor.fromRgb(0x4EC6E6);
-
     private static final double FACE_INSET = 0.08D;
     private static final double FACE_OFFSET = 0.002D;
     private static final double FACE_DEPTH = 0.003D;
@@ -60,7 +51,7 @@ public final class ConfiguratorWorldOverlay {
 
         BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
         TileEntity tile = minecraft.level.getBlockEntity(blockHit.getBlockPos());
-        ModeColor color = getModeColor(tile, blockHit.getDirection());
+        Integer color = getModeColor(tile, blockHit.getDirection());
         if (color == null) {
             return;
         }
@@ -76,58 +67,24 @@ public final class ConfiguratorWorldOverlay {
     }
 
     @Nullable
-    private static ModeColor getModeColor(@Nullable TileEntity tile, Direction direction) {
+    private static Integer getModeColor(@Nullable TileEntity tile, Direction direction) {
         if (tile instanceof BasicItemPipeTileEntity) {
-            return getConduitColor(((BasicItemPipeTileEntity) tile).getSideMode(direction));
+            return SideModeColors.getConduitColor(((BasicItemPipeTileEntity) tile).getSideMode(direction));
         }
         if (tile instanceof BasicFluidPipeTileEntity) {
-            return getConduitColor(((BasicFluidPipeTileEntity) tile).getSideMode(direction));
+            return SideModeColors.getConduitColor(((BasicFluidPipeTileEntity) tile).getSideMode(direction));
         }
         if (tile instanceof BasicEnergyCableTileEntity) {
-            return getConduitColor(((BasicEnergyCableTileEntity) tile).getSideMode(direction));
+            return SideModeColors.getConduitColor(((BasicEnergyCableTileEntity) tile).getSideMode(direction));
         }
         if (tile instanceof BaseMachineTileEntity) {
-            return getMachineColor(((BaseMachineTileEntity) tile).getSideMode(direction));
+            return SideModeColors.getMachineColor(((BaseMachineTileEntity) tile).getSideMode(direction));
         }
         return null;
     }
 
-    private static ModeColor getConduitColor(ConduitTransferMode mode) {
-        switch (mode) {
-            case PULL:
-                return INPUT;
-            case PUSH:
-                return OUTPUT;
-            case BOTH:
-                return ENERGY;
-            case DISABLED:
-            default:
-                return DISABLED;
-        }
-    }
-
-    private static ModeColor getMachineColor(MachineSideMode mode) {
-        switch (mode) {
-            case INPUT:
-                return INPUT;
-            case OUTPUT:
-                return OUTPUT;
-            case FLUID_INPUT:
-                return FLUID_INPUT;
-            case FLUID_OUTPUT:
-                return FLUID_OUTPUT;
-            case ENERGY:
-            case ENERGY_OUTPUT:
-            case ENERGY_BOTH:
-                return ENERGY;
-            case DISABLED:
-            default:
-                return DISABLED;
-        }
-    }
-
     private static void renderFaceOutline(RenderWorldLastEvent event, Minecraft minecraft,
-                                          BlockPos pos, Direction direction, ModeColor color) {
+                                          BlockPos pos, Direction direction, int color) {
         double minX = pos.getX() + FACE_INSET;
         double minY = pos.getY() + FACE_INSET;
         double minZ = pos.getZ() + FACE_INSET;
@@ -175,29 +132,10 @@ public final class ConfiguratorWorldOverlay {
         WorldRenderer.renderLineBox(
                 matrixStack, builder,
                 minX, minY, minZ, maxX, maxY, maxZ,
-                color.red, color.green, color.blue, 1.0F,
-                color.red, color.green, color.blue);
+                SideModeColors.red(color), SideModeColors.green(color), SideModeColors.blue(color), 1.0F,
+                SideModeColors.red(color), SideModeColors.green(color), SideModeColors.blue(color));
 
         matrixStack.popPose();
         buffer.endBatch(RenderType.lines());
-    }
-
-    private static final class ModeColor {
-        private final float red;
-        private final float green;
-        private final float blue;
-
-        private ModeColor(float red, float green, float blue) {
-            this.red = red;
-            this.green = green;
-            this.blue = blue;
-        }
-
-        private static ModeColor fromRgb(int rgb) {
-            return new ModeColor(
-                    ((rgb >> 16) & 0xFF) / 255.0F,
-                    ((rgb >> 8) & 0xFF) / 255.0F,
-                    (rgb & 0xFF) / 255.0F);
-        }
     }
 }
