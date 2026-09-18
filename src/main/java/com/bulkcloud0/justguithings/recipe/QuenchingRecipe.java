@@ -3,8 +3,6 @@ package com.bulkcloud0.justguithings.recipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -18,7 +16,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -26,13 +23,13 @@ import javax.annotation.Nullable;
 public class QuenchingRecipe implements IRecipe<IInventory> {
     private final ResourceLocation id;
     private final Ingredient input;
-    private final Fluid fluid;
+    private final FluidIngredient fluid;
     private final int fluidAmount;
     private final ItemStack result;
     private final int processingTime;
     private final int energyPerTick;
 
-    public QuenchingRecipe(ResourceLocation id, Ingredient input, Fluid fluid, int fluidAmount,
+    public QuenchingRecipe(ResourceLocation id, Ingredient input, FluidIngredient fluid, int fluidAmount,
                            ItemStack result, int processingTime, int energyPerTick) {
         this.id = id;
         this.input = input;
@@ -51,7 +48,7 @@ public class QuenchingRecipe implements IRecipe<IInventory> {
     public boolean matches(ItemStack item, FluidStack fluidStack) {
         return input.test(item)
                 && !fluidStack.isEmpty()
-                && fluidStack.getFluid() == fluid
+                && fluid.test(fluidStack)
                 && fluidStack.getAmount() >= fluidAmount;
     }
 
@@ -96,8 +93,12 @@ public class QuenchingRecipe implements IRecipe<IInventory> {
         return input;
     }
 
-    public Fluid getFluid() {
-        return fluid;
+    public boolean matchesFluid(FluidStack stack) {
+        return fluid.test(stack);
+    }
+
+    public java.util.List<FluidStack> getFluidDisplayStacks() {
+        return fluid.getDisplayStacks(fluidAmount);
     }
 
     public int getFluidAmount() {
@@ -120,8 +121,7 @@ public class QuenchingRecipe implements IRecipe<IInventory> {
             }
 
             Ingredient input = Ingredient.fromJson(json.get("ingredient"));
-            ResourceLocation fluidId = new ResourceLocation(JSONUtils.getAsString(json, "fluid"));
-            Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
+            FluidIngredient fluid = FluidIngredient.fromJson(recipeId, json);
             ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
             int fluidAmount = JSONUtils.getAsInt(json, "fluid_amount", 250);
             int processingTime = JSONUtils.getAsInt(json, "processing_time", 160);
@@ -129,9 +129,6 @@ public class QuenchingRecipe implements IRecipe<IInventory> {
 
             if (input.isEmpty()) {
                 throw new JsonSyntaxException("Quenching recipe " + recipeId + " has an empty ingredient");
-            }
-            if (fluid == null || fluid == Fluids.EMPTY) {
-                throw new JsonSyntaxException("Unknown fluid " + fluidId + " in " + recipeId);
             }
             if (fluidAmount <= 0 || processingTime <= 0 || energyPerTick <= 0) {
                 throw new JsonSyntaxException("Fluid amount, processing time and FE/t must be greater than zero in " + recipeId);
@@ -147,11 +144,7 @@ public class QuenchingRecipe implements IRecipe<IInventory> {
         @Override
         public QuenchingRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
-            ResourceLocation fluidId = buffer.readResourceLocation();
-            Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
-            if (fluid == null) {
-                fluid = Fluids.EMPTY;
-            }
+            FluidIngredient fluid = FluidIngredient.fromNetwork(buffer);
             int fluidAmount = buffer.readVarInt();
             ItemStack result = buffer.readItem();
             int processingTime = buffer.readVarInt();
@@ -162,8 +155,7 @@ public class QuenchingRecipe implements IRecipe<IInventory> {
         @Override
         public void toNetwork(PacketBuffer buffer, QuenchingRecipe recipe) {
             recipe.input.toNetwork(buffer);
-            ResourceLocation fluidId = ForgeRegistries.FLUIDS.getKey(recipe.fluid);
-            buffer.writeResourceLocation(fluidId);
+            recipe.fluid.toNetwork(buffer);
             buffer.writeVarInt(recipe.fluidAmount);
             buffer.writeItem(recipe.result);
             buffer.writeVarInt(recipe.processingTime);
