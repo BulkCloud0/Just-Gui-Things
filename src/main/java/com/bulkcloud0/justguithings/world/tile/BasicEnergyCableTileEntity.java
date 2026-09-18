@@ -151,10 +151,11 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                 continue;
             }
 
-            int beforePriority = budget;
             boolean retry;
+            int distributionRounds = 0;
             do {
                 retry = false;
+                distributionRounds++;
                 int[] demands = new int[priorityTargets.size()];
 
                 for (int index = 0; index < priorityTargets.size(); index++) {
@@ -195,11 +196,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                     break;
                 }
 
-                if (budget > 0 && movedThisRound < beforePriority) {
-                    retry = true;
-                }
-                beforePriority = budget;
-            } while (retry && budget > 0);
+            } while (retry && budget > 0 && distributionRounds < 3);
         }
 
         if (!movedAny) {
@@ -265,7 +262,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                     continue;
                 }
 
-                receivers.add(new EnergyTargetEndpoint(neighborPos, receiver, rule));
+                receivers.add(new EnergyTargetEndpoint(receiver, rule));
             }
         }
 
@@ -389,7 +386,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         private final IEnergyStorage handler;
         private final EnergyRoutingTargetRule rule;
 
-        private EnergyTargetEndpoint(BlockPos blockPos, IEnergyStorage handler,
+        private EnergyTargetEndpoint(IEnergyStorage handler,
                                      EnergyRoutingTargetRule rule) {
             this.handler = handler;
             this.rule = new EnergyRoutingTargetRule(rule);
