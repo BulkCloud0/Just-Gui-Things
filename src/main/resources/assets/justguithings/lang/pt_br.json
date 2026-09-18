@@ -182,5 +182,11 @@
   "message.justguithings.configurator.inspect_item_pipe": "%s Tubo de Itens | E/S: %s",
   "message.justguithings.configurator.inspect_fluid_pipe": "%s Tubo de Fluidos | E/S: %s",
   "message.justguithings.configurator.inspect_energy_cable": "%s Cabo de Energia | E/S: %s",
-  "message.justguithings.configurator.inspect_machine": "%s Máquina | E/S: %s"
+  "message.justguithings.configurator.inspect_machine": "%s Máquina | E/S: %s",
+  "direction.justguithings.down": "Baixo",
+  "direction.justguithings.up": "Cima",
+  "direction.justguithings.north": "Norte",
+  "direction.justguithings.south": "Sul",
+  "direction.justguithings.west": "Oeste",
+  "direction.justguithings.east": "Leste"
 }

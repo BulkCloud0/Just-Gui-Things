@@ -7,6 +7,7 @@ import com.bulkcloud0.justguithings.logistics.RoutingControllerScope;
 import com.bulkcloud0.justguithings.logistics.RoutingPriority;
 import com.bulkcloud0.justguithings.logistics.RoutingRedstoneMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
+import com.bulkcloud0.justguithings.world.DirectionText;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,13 +18,13 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 public class BasicEnergyCableBlock extends AbstractConduitBlock {
     public BasicEnergyCableBlock(Properties properties) {
@@ -105,7 +106,7 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
                 ConduitTransferMode mode = cable.cycleSideMode(direction);
                 AbstractConduitBlock.refreshConnections(world, pos);
 
-                String face = direction.toString().toUpperCase(Locale.ROOT);
+                ITextComponent face = DirectionText.getDisplayName(direction);
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.energy_cable.side_mode",
@@ -125,7 +126,7 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
         if (!world.isClientSide) {
             RoutingControllerScope scope = RoutingControllerItem.getScope(held);
             RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
-            String face = direction.toString().toUpperCase(Locale.ROOT);
+            ITextComponent face = DirectionText.getDisplayName(direction);
 
             if (mode == RoutingControllerMode.COPY_RULE) {
                 RoutingControllerItem.copyEnergyRoutingRule(held, scope, cable, direction);
@@ -148,7 +149,7 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
                                               Direction direction,
                                               PlayerEntity player,
                                               RoutingControllerMode mode,
-                                              String face) {
+                                              ITextComponent face) {
         if (!cable.getSideMode(direction).canPush()) {
             player.displayClientMessage(
                     new TranslationTextComponent(
@@ -189,7 +190,7 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
                                               Direction direction,
                                               PlayerEntity player,
                                               RoutingControllerMode mode,
-                                              String face) {
+                                              ITextComponent face) {
         if (!cable.getSideMode(direction).canPull()) {
             player.displayClientMessage(
                     new TranslationTextComponent(

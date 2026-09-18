@@ -10,6 +10,7 @@ import com.bulkcloud0.justguithings.logistics.RoutingRedstoneMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerScope;
 import com.bulkcloud0.justguithings.registry.ModItems;
+import com.bulkcloud0.justguithings.world.DirectionText;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,13 +21,13 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 public class BasicItemPipeBlock extends AbstractConduitBlock {
     public BasicItemPipeBlock(Properties properties) {
@@ -108,7 +109,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 ConduitTransferMode mode = pipe.cycleSideMode(faceDirection);
                 AbstractConduitBlock.refreshConnections(world, pos);
 
-                String face = faceDirection.toString().toUpperCase(Locale.ROOT);
+                ITextComponent face = DirectionText.getDisplayName(faceDirection);
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.item_pipe.side_mode",
@@ -148,7 +149,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
     private void applyTargetRoutingController(BasicItemPipeTileEntity pipe, Direction direction,
                                               PlayerEntity player, Hand controllerHand,
                                               RoutingControllerMode controllerMode) {
-        String face = direction.toString().toUpperCase(Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
 
         switch (controllerMode) {
             case FILTER_SAMPLE:
@@ -199,7 +200,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
     private void applySourceRoutingController(BasicItemPipeTileEntity pipe, Direction direction,
                                               PlayerEntity player, Hand controllerHand,
                                               RoutingControllerMode controllerMode) {
-        String face = direction.toString().toUpperCase(Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
 
         switch (controllerMode) {
             case FILTER_SAMPLE:
@@ -248,7 +249,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
     }
 
     private void applyTargetFilterSample(BasicItemPipeTileEntity pipe, Direction direction,
-                                         PlayerEntity player, Hand controllerHand, String face) {
+                                         PlayerEntity player, Hand controllerHand, ITextComponent face) {
         Hand sampleHand = controllerHand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
         ItemStack sample = player.getItemInHand(sampleHand);
 
@@ -267,7 +268,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
     }
 
     private void applySourceFilterSample(BasicItemPipeTileEntity pipe, Direction direction,
-                                         PlayerEntity player, Hand controllerHand, String face) {
+                                         PlayerEntity player, Hand controllerHand, ITextComponent face) {
         Hand sampleHand = controllerHand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
         ItemStack sample = player.getItemInHand(sampleHand);
 
@@ -285,7 +286,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
         displayFilterSampleChange(player, face, sample, count, change, true);
     }
 
-    private void displayFilterSampleChange(PlayerEntity player, String face, ItemStack sample,
+    private void displayFilterSampleChange(PlayerEntity player, ITextComponent face, ItemStack sample,
                                            int count, RoutingFilterSampleChange change,
                                            boolean source) {
         String prefix = source

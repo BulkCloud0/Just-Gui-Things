@@ -12,6 +12,7 @@ import com.bulkcloud0.justguithings.logistics.ItemRoutingTargetRule;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerScope;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
+import com.bulkcloud0.justguithings.world.DirectionText;
 import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
 import net.minecraft.client.util.ITooltipFlag;
@@ -213,7 +214,7 @@ public class RoutingControllerItem extends TooltipItem {
 
     public static void displayRuleCopied(PlayerEntity player, RoutingControllerScope scope,
                                          Direction direction) {
-        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
         player.displayClientMessage(
                 new TranslationTextComponent(
                         "message.justguithings.routing_controller.rule_copied",
@@ -223,7 +224,7 @@ public class RoutingControllerItem extends TooltipItem {
 
     public static void displayRulePasteResult(PlayerEntity player, RoutingControllerScope scope,
                                               Direction direction, ClipboardPasteResult result) {
-        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
         String key;
         switch (result) {
             case SUCCESS:
@@ -316,7 +317,7 @@ public class RoutingControllerItem extends TooltipItem {
 
     private ITextComponent getItemInspection(BasicItemPipeTileEntity pipe, Direction direction,
                                              RoutingControllerScope scope, boolean powered) {
-        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
 
         if (scope == RoutingControllerScope.SOURCE) {
             ItemRoutingSourceRule rule = pipe.getSourceRule(direction);
@@ -351,7 +352,7 @@ public class RoutingControllerItem extends TooltipItem {
 
     private ITextComponent getFluidInspection(BasicFluidPipeTileEntity pipe, Direction direction,
                                               RoutingControllerScope scope, boolean powered) {
-        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
 
         if (scope == RoutingControllerScope.SOURCE) {
             FluidRoutingSourceRule rule = pipe.getSourceRule(direction);
@@ -386,7 +387,7 @@ public class RoutingControllerItem extends TooltipItem {
 
     private ITextComponent getEnergyInspection(BasicEnergyCableTileEntity cable, Direction direction,
                                                RoutingControllerScope scope, boolean powered) {
-        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+        ITextComponent face = DirectionText.getDisplayName(direction);
         ITextComponent sideMode = cable.getSideMode(direction).getEnergyDisplayName();
 
         if (scope == RoutingControllerScope.SOURCE) {
