@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -280,6 +281,14 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
     public ItemStackHandler getInventory() {
         return inventory;
+    }
+
+    @Nullable
+    protected final TileEntity getLoadedBlockEntity(BlockPos pos) {
+        if (level == null || !level.hasChunkAt(pos)) {
+            return null;
+        }
+        return level.getBlockEntity(pos);
     }
 
     public int getEnergyCapacity() {
