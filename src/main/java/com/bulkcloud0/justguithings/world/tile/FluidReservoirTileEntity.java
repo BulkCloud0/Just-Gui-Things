@@ -31,14 +31,22 @@ public class FluidReservoirTileEntity extends TileEntity implements INamedContai
         }
     };
 
+    private int syncedFluidAmount;
+
     private final IIntArray dataAccess = new IIntArray() {
         @Override
         public int get(int index) {
-            return index == 0 ? tank.getFluidAmount() : 0;
+            if (index != 0) {
+                return 0;
+            }
+            return level != null && level.isClientSide ? syncedFluidAmount : tank.getFluidAmount();
         }
 
         @Override
         public void set(int index, int value) {
+            if (index == 0) {
+                syncedFluidAmount = value;
+            }
         }
 
         @Override
