@@ -186,7 +186,7 @@ This prevents non-stable `IEnergyStorage` implementations from creating FE when 
 
 Item pipes, fluid pipes and energy cables share the same network-topology core.
 
-The full connected conduit network is cached for 100 ticks and invalidated when conduit blocks are added, removed or the cached network is explicitly invalidated. External endpoint topology is cached separately for 20 ticks.
+The full connected conduit network is cached for 100 ticks and invalidated when conduit blocks are added, removed or the cached network is explicitly invalidated. External endpoint topology is cached separately for 20 ticks. When a conduit connection state changes because an adjacent endpoint appears, disappears or becomes visually connectable, JGT invalidates only the shared external-endpoint cache for that network; the full conduit BFS remains cached.
 
 The external endpoint cache stores only:
 
