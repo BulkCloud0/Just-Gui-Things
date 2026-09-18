@@ -4,71 +4,56 @@ A technology-focused Minecraft Forge mod for **Minecraft 1.16.5**.
 
 ## Current milestone: Core Industrial
 
-The first milestone establishes reusable infrastructure for an industrial tech mod.
+The project is building a reusable industrial foundation with broad Forge interoperability and no fixed machine tier ladder.
 
 ### Implemented
 
-- Forge Energy-compatible internal storage
-- DeferredRegister-based block, item, tile entity, container and recipe serializer registration
-- Coal Generator with 100,000 FE buffer
-- 40 FE/t generation from coal or charcoal
-- Up to 200 FE/t automatic output to adjacent Forge Energy consumers
-- Basic Energy Cable network with 500 FE/t transfer throughput
-- Connected cable discovery and network-level distribution to adjacent consumers
-- Energy Cell with 1,000,000 FE storage and 2,000 FE/t bidirectional I/O
-- Persistent machine/cable energy and machine inventory state via NBT
-- Forge item and energy capabilities
-- Server-authoritative container/menu opening
-- Synchronized machine GUI data
-- Custom tech-style generator, Crusher and Energy Cell screens
-- Crusher with 100,000 FE buffer and data-driven processing
-- Speed and Efficiency modules, with up to four of each installed directly in the Crusher
-- No fixed machine tier ladder: progression is driven by machine-specific modules, components and future specialization systems
-- Configurator tool for per-face Crusher automation modes
-- Crusher sides can be set to Input, Output, Energy or Disabled and persist through NBT
-- Default Crusher automation layout: top input, bottom output, horizontal energy
-- Data-driven Crusher recipes loaded from JSON/datapacks
-- Per-recipe processing time and FE/t cost
-- Initial ore doubling: Iron Ore -> 2 Iron Dust and Gold Ore -> 2 Gold Dust
-- Utility crushing: Cobblestone -> Gravel -> Sand
-- Iron Dust and Gold Dust smelting recipes
-- Shift-click handling for machine input/module slots
+- Forge Energy storage and transport through standard capabilities
+- Coal Generator, Basic Energy Cable and Energy Cell
+- Item and fluid transport through Forge capabilities
+- Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir and Fluid Pump
+- Shared machine core for energy, inventory, side configuration and processing state
+- Crusher with data-driven recipes and Speed/Efficiency/Buffer/Batch modules
+- Industrial Mixer, Stamping Press and Resistive Furnace
+- Rod Mill for tag-driven ingot-to-rod forming
+- Wire Mill for tag-driven rod-to-wire processing
+- Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
+- Machine specialization through modules such as the Resistive Furnace Power Coil
+- Configurator-based per-face automation
+- Data-driven recipes loaded through Minecraft's Recipe Manager
+- Forge tag compatibility for shared dusts, ingots, plates, rods and wires
+- Optional-mod recipes guarded by Forge conditions
+- JEI categories for JGT processing recipes
 - English and Brazilian Portuguese translations
 - GitHub Actions build validation
 
-### Crusher recipe format
-
-Crusher recipes live under `data/<namespace>/recipes/` and use the `justguithings:crushing` serializer.
-
-```json
-{
-  "type": "justguithings:crushing",
-  "ingredient": { "item": "minecraft:iron_ore" },
-  "result": { "item": "justguithings:iron_dust", "count": 2 },
-  "processing_time": 100,
-  "energy_per_tick": 20
-}
-```
-
-Because the machine uses Minecraft's recipe manager, datapacks and other mods can provide additional Crusher recipes without changing Java code.
-
 ### Progression direction
 
-Machines do not progress through a Basic/Reinforced/Advanced/Elite ladder. Instead, each machine has its own base characteristics and evolves through modules, better components, specialized processing paths and later industrial systems such as fluids, heat and pressure.
+Machines do not progress through a Basic/Reinforced/Advanced/Elite ladder. Progression is based on production roles, machine-specific components, specialization modules, material forms, logistics and automation.
+
+Ingots are treated as normal material forms. JGT does not use temperature states, pressure states or a tempered-ingot progression.
+
+### Compatibility
+
+Compatibility is architectural rather than based on mandatory mod-specific patches:
+
+- Forge Energy via `IEnergyStorage`
+- Item automation via `IItemHandler`
+- Fluid automation via `IFluidHandler`
+- Forge/Minecraft tags for shared materials
+- Datapack-driven processing recipes
+- Optional integration layers only when another mod exposes behavior that standard Forge APIs cannot represent
+
+See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for extension points and soft-dependency rules.
 
 ### Next
 
-- Extend side configuration to the Energy Cell and future machines
-- JEI integration for Crusher recipes
-- Additional module types such as Buffer and Parallel Processing
-- Additional processing machines and recipe types
-- Improve cable network caching/performance and connection visuals
-- Fluids, heat/pressure and advanced industrial processing
-- Proper custom cable/machine textures and models
-
-## Compatibility
-
-Compatibility is built around Forge capabilities, shared tags, data-driven recipes and optional integration layers. See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for the supported extension points and soft-dependency rules.
+- Expand item-pipe routing, filtering and endpoint priority
+- Add additional machine-specific specialization modules
+- Continue production chains only when they add a clear industrial role
+- Improve network caching/performance and connection visuals
+- Improve machine/cable/pipe textures and models
+- Continue broad compatibility through tags, capabilities and optional adapters
 
 ## Environment
 
