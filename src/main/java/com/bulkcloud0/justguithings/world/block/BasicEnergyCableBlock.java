@@ -99,6 +99,9 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
         BasicEnergyCableTileEntity cable = (BasicEnergyCableTileEntity) tile;
 
         if (held.getItem() == ModItems.CONFIGURATOR.get()) {
+            if (player.isShiftKeyDown()) {
+                return ActionResultType.PASS;
+            }
             if (!world.isClientSide) {
                 ConduitTransferMode mode = cable.cycleSideMode(direction);
                 AbstractConduitBlock.refreshConnections(world, pos);
