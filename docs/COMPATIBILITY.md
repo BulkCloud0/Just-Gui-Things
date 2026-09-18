@@ -140,7 +140,7 @@ The pipe's recovery buffer obeys destination filter and priority rules when retr
 
 External blocks remain integrated only through Forge `IFluidHandler`.
 
-The Configurator uses the same resource-neutral conduit transfer labels for item and fluid pipes: `Pull + Push`, `Pull`, `Push`, and `Disabled` (localized in-game). Energy cables keep their player-facing `Input + Output`, `Input`, `Output`, and `Disabled` terminology because passive Forge Energy ingress/consumer output semantics differ from active item/fluid extraction and insertion.
+The Configurator uses the same resource-neutral conduit transfer labels for item and fluid pipes: `Pull + Push`, `Pull`, `Push`, and `Disabled` (localized in-game). Energy cables keep their player-facing `Input + Output`, `Input`, `Output`, and `Disabled` terminology because passive Forge Energy ingress/consumer output semantics differ from active item/fluid extraction and insertion. That energy-specific display mapping is centralized in `ConduitTransferMode`, so Configurator feedback, Configurator inspection and Routing Controller inspection cannot drift apart.
 
 
 ## Energy-cable routing
