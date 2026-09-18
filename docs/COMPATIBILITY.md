@@ -68,17 +68,21 @@ A missing optional mod must never prevent JGT from loading.
 
 Basic Item Pipes keep Forge `IItemHandler` as the only inventory integration contract. Routing metadata belongs to the pipe face, not to the external inventory.
 
-The Routing Controller has four editing modes. Right-clicking in the air cycles the active mode:
+The Routing Controller has five editing modes. Right-clicking in the air cycles the active mode:
 
 - `Target Priority`: cycles `NORMAL -> HIGH -> LOW -> NORMAL`;
 - `Filter Sample`: toggles the item in the other hand in a per-face sample list (up to 9 entries), or clears the entire list when the other hand is empty;
 - `Whitelist / Blacklist`: toggles whether a matching sample is accepted or rejected;
-- `NBT Matching`: toggles exact item+NBT comparison versus item-only comparison.
+- `NBT Matching`: toggles exact item+NBT comparison versus item-only comparison;
+- `Redstone Condition`: cycles `ALWAYS -> REQUIRE_SIGNAL -> REQUIRE_NO_SIGNAL` for that destination face.
 
-The controller stores its current editing mode in its own item NBT. Each pipe face stores its priority and filter rule independently.
+The controller stores its current editing mode in its own item NBT. Each destination face stores one `ItemRoutingTargetRule`, which owns priority, filter configuration and redstone condition. This avoids parallel per-feature state maps as routing grows.
 
 An empty filter list means the endpoint accepts all items regardless of whitelist/blacklist mode. Matching succeeds when any configured sample matches according to the NBT rule. Existing single-sample routing NBT is migrated into the new sample list automatically.
 
 The network always tries HIGH targets before NORMAL and LOW targets. Round-robin fairness is preserved between targets at the same priority. If a higher-priority target is full, rejects the current item, or fails its filter rule, routing falls through to the next target and then lower priorities.
 
 Filter evaluation is implemented by the reusable `ItemRouteFilter` value object rather than by machine- or inventory-specific checks. Connected inventories remain completely unaware of JGT routing rules.
+
+
+Redstone evaluation is local to the pipe block that owns the destination face. `REQUIRE_SIGNAL` enables that target while the pipe receives any neighboring redstone signal; `REQUIRE_NO_SIGNAL` does the inverse. Redstone only gates push targets and does not alter source extraction or the connected inventory capability.
