@@ -25,6 +25,7 @@ Built-in module types are identified by namespaced IDs:
 - `justguithings:efficiency`
 - `justguithings:buffer`
 - `justguithings:batch`
+- `justguithings:induction_coil`
 
 A compatible item can participate in either of two ways:
 
@@ -37,12 +38,13 @@ Supported module tags:
 - `justguithings:machine_modules/efficiency`
 - `justguithings:machine_modules/buffer`
 - `justguithings:machine_modules/batch`
+- `justguithings:machine_modules/induction_coil`
 
 The tag route is preferred for simple compatibility because it does not require a compile-time dependency on JGT.
 
 An item must resolve to exactly one module tag. Items placed in multiple JGT module tags are treated as ambiguous and are not accepted as tagged modules.
 
-Machines still decide which module types they support. Supplying a valid module item does not make an unsupported module slot appear on a machine.
+Machines still decide which module types they support. Supplying a valid module item does not make an unsupported module slot appear on a machine. The Resistive Furnace supports one `induction_coil` module, trading higher instantaneous FE demand and slightly higher total FE cost for double processing speed.
 
 ## Materials and processing recipes
 
