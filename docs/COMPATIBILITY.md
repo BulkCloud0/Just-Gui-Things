@@ -176,3 +176,21 @@ Energy delivery uses a reserve/commit/refund sequence:
 4. return any execution-time difference to cable buffers.
 
 This prevents non-stable `IEnergyStorage` implementations from creating FE when simulation and execution disagree. Redistribution retries are bounded.
+
+
+## Conduit topology caching
+
+Item pipes, fluid pipes and energy cables share the same network-topology core.
+
+The full connected conduit network is cached for 100 ticks and invalidated when conduit blocks are added, removed or the cached network is explicitly invalidated. External endpoint topology is cached separately for 20 ticks.
+
+The external endpoint cache stores only:
+
+- the owning conduit node;
+- the conduit face;
+- the neighboring block position;
+- the neighboring exposed side.
+
+It never caches `IItemHandler`, `IFluidHandler`, `IEnergyStorage`, `LazyOptional`, or a neighboring `TileEntity`. The live block entity and capability are resolved again during transfer. This reduces repeated 6-direction network scans without retaining capabilities after another mod invalidates or replaces them.
+
+Per-face side modes, routing filters, priorities and redstone rules remain evaluated dynamically and are not part of the topology cache.
