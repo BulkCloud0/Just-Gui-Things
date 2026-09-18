@@ -191,5 +191,6 @@
   "direction.justguithings.east": "East",
   "connection.justguithings.connected": "Connected",
   "connection.justguithings.disconnected": "Disconnected",
-  "tooltip.justguithings.configurator.overlay": "While held, the targeted configurable face is highlighted by its current I/O mode."
+  "tooltip.justguithings.configurator.overlay": "While held, the targeted configurable face is highlighted and identified in the HUD.",
+  "hud.justguithings.configurator.target": "Configurator: %s"
 }
