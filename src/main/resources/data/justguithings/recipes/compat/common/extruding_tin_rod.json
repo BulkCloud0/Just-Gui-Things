@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/tin"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/tin"
+      }
+    }
+  ],
+  "type": "justguithings:extruding",
+  "ingredient": {
+    "tag": "forge:ingots/tin"
+  },
+  "result": {
+    "tag": "forge:rods/tin",
+    "count": 2
+  },
+  "processing_time": 160,
+  "energy_per_tick": 55
+}

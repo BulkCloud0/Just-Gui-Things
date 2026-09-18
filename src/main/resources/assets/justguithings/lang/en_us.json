@@ -52,5 +52,11 @@
   "screen.justguithings.fluid_pump.source_missing": "Water source: missing",
   "block.justguithings.resistive_furnace": "Resistive Furnace",
   "container.justguithings.resistive_furnace": "Resistive Furnace",
-  "jei.justguithings.heating": "Resistive Heating"
+  "jei.justguithings.heating": "Resistive Heating",
+  "block.justguithings.precision_extruder": "Precision Extruder",
+  "container.justguithings.precision_extruder": "Precision Extruder",
+  "item.justguithings.hardened_extrusion_die": "Hardened Extrusion Die",
+  "item.justguithings.tempered_steel_rod": "Tempered Steel Rod",
+  "tooltip.justguithings.hardened_extrusion_die": "Machine-specific die for high-pressure precision extrusion.",
+  "jei.justguithings.extruding": "Precision Extrusion"
 }
