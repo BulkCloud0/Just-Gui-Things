@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.machine;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.machine.module.IMachineModule;
+import com.bulkcloud0.justguithings.machine.module.MachineModuleTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -171,10 +172,13 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
     @Nullable
     private ResourceLocation getModuleType(ItemStack stack) {
-        if (stack.isEmpty() || !(stack.getItem() instanceof IMachineModule)) {
+        if (stack.isEmpty()) {
             return null;
         }
-        return ((IMachineModule) stack.getItem()).getMachineModuleType();
+        if (stack.getItem() instanceof IMachineModule) {
+            return ((IMachineModule) stack.getItem()).getMachineModuleType();
+        }
+        return MachineModuleTags.findType(stack);
     }
 
     private boolean isModuleOfType(ItemStack stack, ResourceLocation expectedType) {
