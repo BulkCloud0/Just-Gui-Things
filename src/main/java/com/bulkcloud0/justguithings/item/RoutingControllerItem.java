@@ -387,7 +387,7 @@ public class RoutingControllerItem extends TooltipItem {
     private ITextComponent getEnergyInspection(BasicEnergyCableTileEntity cable, Direction direction,
                                                RoutingControllerScope scope, boolean powered) {
         String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
-        ITextComponent sideMode = getEnergySideModeName(cable.getSideMode(direction));
+        ITextComponent sideMode = cable.getSideMode(direction).getEnergyDisplayName();
 
         if (scope == RoutingControllerScope.SOURCE) {
             EnergyRoutingSourceRule rule = cable.getSourceRule(direction);
@@ -440,26 +440,6 @@ public class RoutingControllerItem extends TooltipItem {
                 matchNbt
                         ? "routing.justguithings.nbt_mode.exact"
                         : "routing.justguithings.nbt_mode.ignored");
-    }
-
-    private ITextComponent getEnergySideModeName(ConduitTransferMode mode) {
-        String key;
-        switch (mode) {
-            case PULL:
-                key = "routing.justguithings.energy_side_mode.input";
-                break;
-            case PUSH:
-                key = "routing.justguithings.energy_side_mode.output";
-                break;
-            case DISABLED:
-                key = "routing.justguithings.energy_side_mode.disabled";
-                break;
-            case BOTH:
-            default:
-                key = "routing.justguithings.energy_side_mode.both";
-                break;
-        }
-        return new TranslationTextComponent(key);
     }
 
     private ITextComponent getClipboardResourceName(ItemStack stack, RoutingControllerScope scope) {

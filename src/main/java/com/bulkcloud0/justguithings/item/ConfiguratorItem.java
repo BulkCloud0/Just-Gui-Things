@@ -70,7 +70,7 @@ public class ConfiguratorItem extends TooltipItem {
             ConduitTransferMode mode = ((BasicEnergyCableTileEntity) tile).getSideMode(direction);
             return new TranslationTextComponent(
                     "message.justguithings.configurator.inspect_energy_cable",
-                    face, getEnergySideModeName(mode));
+                    face, mode.getEnergyDisplayName());
         }
 
         if (tile instanceof BaseMachineTileEntity) {
@@ -83,23 +83,4 @@ public class ConfiguratorItem extends TooltipItem {
         return null;
     }
 
-    private ITextComponent getEnergySideModeName(ConduitTransferMode mode) {
-        String key;
-        switch (mode) {
-            case PULL:
-                key = "routing.justguithings.energy_side_mode.input";
-                break;
-            case PUSH:
-                key = "routing.justguithings.energy_side_mode.output";
-                break;
-            case DISABLED:
-                key = "routing.justguithings.energy_side_mode.disabled";
-                break;
-            case BOTH:
-            default:
-                key = "routing.justguithings.energy_side_mode.both";
-                break;
-        }
-        return new TranslationTextComponent(key);
-    }
 }

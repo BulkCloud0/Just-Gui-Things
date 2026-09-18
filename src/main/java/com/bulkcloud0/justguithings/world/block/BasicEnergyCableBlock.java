@@ -17,7 +17,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -110,7 +109,7 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
                 player.displayClientMessage(
                         new TranslationTextComponent(
                                 "message.justguithings.energy_cable.side_mode",
-                                face, getEnergySideModeName(mode)),
+                                face, mode.getEnergyDisplayName()),
                         true);
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
@@ -215,26 +214,6 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
                         "message.justguithings.routing_controller.energy_source_mode_unsupported",
                         mode.getDisplayName()),
                 true);
-    }
-
-    private ITextComponent getEnergySideModeName(ConduitTransferMode mode) {
-        String key;
-        switch (mode) {
-            case PULL:
-                key = "routing.justguithings.energy_side_mode.input";
-                break;
-            case PUSH:
-                key = "routing.justguithings.energy_side_mode.output";
-                break;
-            case DISABLED:
-                key = "routing.justguithings.energy_side_mode.disabled";
-                break;
-            case BOTH:
-            default:
-                key = "routing.justguithings.energy_side_mode.both";
-                break;
-        }
-        return new TranslationTextComponent(key);
     }
 
     @Override
