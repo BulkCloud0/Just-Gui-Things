@@ -65,7 +65,7 @@ public final class PressingRecipeCategory implements IRecipeCategory<PressingRec
     @Override
     public void setIngredients(PressingRecipe recipe, IIngredients ingredients) {
         ingredients.setInputIngredients(Collections.singletonList(recipe.getInput()));
-        ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem().copy());
+        ingredients.setOutputs(VanillaTypes.ITEM, recipe.getResultDisplayStacks());
     }
 
     @Override
@@ -74,7 +74,7 @@ public final class PressingRecipeCategory implements IRecipeCategory<PressingRec
         itemStacks.init(0, true, 8, 17);
         itemStacks.init(1, false, 94, 17);
         itemStacks.set(0, Arrays.asList(recipe.getInput().getItems()));
-        itemStacks.set(1, recipe.getResultItem().copy());
+        itemStacks.set(1, recipe.getResultDisplayStacks());
     }
 
     @Override

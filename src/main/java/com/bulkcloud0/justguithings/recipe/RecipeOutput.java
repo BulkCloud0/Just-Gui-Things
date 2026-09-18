@@ -12,6 +12,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class RecipeOutput {
     private final Ingredient ingredient;
@@ -60,8 +62,8 @@ public final class RecipeOutput {
     }
 
     public ItemStack resolve(@Nullable ItemStack context) {
-        ItemStack[] candidates = ingredient.getItems();
-        if (candidates.length == 0) {
+        List<ItemStack> candidates = getDisplayStacks();
+        if (candidates.isEmpty()) {
             return ItemStack.EMPTY;
         }
 
@@ -70,16 +72,20 @@ public final class RecipeOutput {
             for (ItemStack candidate : candidates) {
                 ResourceLocation id = ForgeRegistries.ITEMS.getKey(candidate.getItem());
                 if (id != null && preferredNamespace.equals(id.getNamespace())) {
-                    return withCount(candidate);
+                    return candidate.copy();
                 }
             }
         }
 
-        ItemStack selected = Arrays.stream(candidates)
+        return candidates.get(0).copy();
+    }
+
+    public List<ItemStack> getDisplayStacks() {
+        return Arrays.stream(ingredient.getItems())
                 .filter(stack -> !stack.isEmpty())
-                .min(Comparator.comparing(RecipeOutput::getRegistryName))
-                .orElse(ItemStack.EMPTY);
-        return withCount(selected);
+                .sorted(Comparator.comparing(RecipeOutput::getRegistryName))
+                .map(this::withCount)
+                .collect(Collectors.toList());
     }
 
     private ItemStack withCount(ItemStack stack) {

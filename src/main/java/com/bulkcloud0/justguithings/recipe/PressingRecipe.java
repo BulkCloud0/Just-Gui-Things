@@ -79,6 +79,10 @@ public class PressingRecipe implements IRecipe<IInventory> {
         return input;
     }
 
+    public java.util.List<ItemStack> getResultDisplayStacks() {
+        return result.getDisplayStacks();
+    }
+
     public int getProcessingTime() {
         return processingTime;
     }
