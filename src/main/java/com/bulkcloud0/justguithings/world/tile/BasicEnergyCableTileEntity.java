@@ -132,6 +132,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         }
 
         int start = Math.floorMod(distributionCursor, receivers.size());
+        boolean movedAny = false;
 
         for (RoutingPriority priority : ROUTING_ORDER) {
             for (int offset = 0; offset < receivers.size() && budget > 0 && available > 0; offset++) {
@@ -156,10 +157,11 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                 available -= accepted;
                 budget -= accepted;
                 distributionCursor = (receiverIndex + 1) % receivers.size();
+                movedAny = true;
             }
         }
 
-        if (budget == Math.min(TRANSFER_RATE, getNetworkEnergy(network))) {
+        if (!movedAny) {
             distributionCursor = (start + 1) % receivers.size();
         }
     }
