@@ -96,6 +96,20 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return new ItemRoutingSourceRule(getMutableSourceRule(direction));
     }
 
+    public void setTargetRule(Direction direction, ItemRoutingTargetRule rule) {
+        targetRules.put(direction, rule == null
+                ? new ItemRoutingTargetRule()
+                : new ItemRoutingTargetRule(rule));
+        setChanged();
+    }
+
+    public void setSourceRule(Direction direction, ItemRoutingSourceRule rule) {
+        sourceRules.put(direction, rule == null
+                ? new ItemRoutingSourceRule()
+                : new ItemRoutingSourceRule(rule));
+        setChanged();
+    }
+
     public RoutingPriority cycleTargetPriority(Direction direction) {
         RoutingPriority next = getMutableTargetRule(direction).cyclePriority();
         setChanged();

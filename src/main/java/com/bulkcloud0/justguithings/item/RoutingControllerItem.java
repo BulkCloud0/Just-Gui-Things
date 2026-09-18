@@ -39,6 +39,13 @@ public class RoutingControllerItem extends TooltipItem {
     private static final String SCOPE_KEY = "RoutingScope";
     private static final String TARGET_MODE_KEY = "TargetRoutingMode";
     private static final String SOURCE_MODE_KEY = "SourceRoutingMode";
+    private static final String TARGET_CLIPBOARD_KEY = "TargetRuleClipboard";
+    private static final String SOURCE_CLIPBOARD_KEY = "SourceRuleClipboard";
+    private static final String CLIPBOARD_RESOURCE_KEY = "Resource";
+    private static final String CLIPBOARD_RULE_KEY = "Rule";
+    private static final String RESOURCE_ITEM = "item";
+    private static final String RESOURCE_FLUID = "fluid";
+    private static final String RESOURCE_ENERGY = "energy";
 
     public RoutingControllerItem(Properties properties) {
         super(properties,
@@ -85,6 +92,155 @@ public class RoutingControllerItem extends TooltipItem {
     public static void setMode(ItemStack stack, RoutingControllerScope scope, RoutingControllerMode mode) {
         String key = scope == RoutingControllerScope.TARGET ? TARGET_MODE_KEY : SOURCE_MODE_KEY;
         stack.getOrCreateTag().putInt(key, scope.normalize(mode).ordinal());
+    }
+
+    public enum ClipboardPasteResult {
+        SUCCESS,
+        EMPTY,
+        RESOURCE_MISMATCH
+    }
+
+    public static void copyItemRoutingRule(ItemStack controller, RoutingControllerScope scope,
+                                           BasicItemPipeTileEntity pipe, Direction direction) {
+        CompoundNBT rule = scope == RoutingControllerScope.SOURCE
+                ? pipe.getSourceRule(direction).save()
+                : pipe.getTargetRule(direction).save();
+        storeClipboard(controller, scope, RESOURCE_ITEM, rule);
+    }
+
+    public static ClipboardPasteResult pasteItemRoutingRule(ItemStack controller, RoutingControllerScope scope,
+                                                            BasicItemPipeTileEntity pipe, Direction direction) {
+        CompoundNBT clipboard = getClipboard(controller, scope);
+        ClipboardPasteResult validation = validateClipboard(clipboard, RESOURCE_ITEM);
+        if (validation != ClipboardPasteResult.SUCCESS) {
+            return validation;
+        }
+
+        CompoundNBT rule = clipboard.getCompound(CLIPBOARD_RULE_KEY);
+        if (scope == RoutingControllerScope.SOURCE) {
+            pipe.setSourceRule(direction, ItemRoutingSourceRule.load(rule));
+        } else {
+            pipe.setTargetRule(direction, ItemRoutingTargetRule.load(rule));
+        }
+        return ClipboardPasteResult.SUCCESS;
+    }
+
+    public static void copyFluidRoutingRule(ItemStack controller, RoutingControllerScope scope,
+                                            BasicFluidPipeTileEntity pipe, Direction direction) {
+        CompoundNBT rule = scope == RoutingControllerScope.SOURCE
+                ? pipe.getSourceRule(direction).save()
+                : pipe.getTargetRule(direction).save();
+        storeClipboard(controller, scope, RESOURCE_FLUID, rule);
+    }
+
+    public static ClipboardPasteResult pasteFluidRoutingRule(ItemStack controller, RoutingControllerScope scope,
+                                                             BasicFluidPipeTileEntity pipe, Direction direction) {
+        CompoundNBT clipboard = getClipboard(controller, scope);
+        ClipboardPasteResult validation = validateClipboard(clipboard, RESOURCE_FLUID);
+        if (validation != ClipboardPasteResult.SUCCESS) {
+            return validation;
+        }
+
+        CompoundNBT rule = clipboard.getCompound(CLIPBOARD_RULE_KEY);
+        if (scope == RoutingControllerScope.SOURCE) {
+            pipe.setSourceRule(direction, FluidRoutingSourceRule.load(rule));
+        } else {
+            pipe.setTargetRule(direction, FluidRoutingTargetRule.load(rule));
+        }
+        return ClipboardPasteResult.SUCCESS;
+    }
+
+    public static void copyEnergyRoutingRule(ItemStack controller, RoutingControllerScope scope,
+                                             BasicEnergyCableTileEntity cable, Direction direction) {
+        CompoundNBT rule = scope == RoutingControllerScope.SOURCE
+                ? cable.getSourceRule(direction).save()
+                : cable.getTargetRule(direction).save();
+        storeClipboard(controller, scope, RESOURCE_ENERGY, rule);
+    }
+
+    public static ClipboardPasteResult pasteEnergyRoutingRule(ItemStack controller, RoutingControllerScope scope,
+                                                              BasicEnergyCableTileEntity cable, Direction direction) {
+        CompoundNBT clipboard = getClipboard(controller, scope);
+        ClipboardPasteResult validation = validateClipboard(clipboard, RESOURCE_ENERGY);
+        if (validation != ClipboardPasteResult.SUCCESS) {
+            return validation;
+        }
+
+        CompoundNBT rule = clipboard.getCompound(CLIPBOARD_RULE_KEY);
+        if (scope == RoutingControllerScope.SOURCE) {
+            cable.setSourceRule(direction, EnergyRoutingSourceRule.load(rule));
+        } else {
+            cable.setTargetRule(direction, EnergyRoutingTargetRule.load(rule));
+        }
+        return ClipboardPasteResult.SUCCESS;
+    }
+
+    private static void storeClipboard(ItemStack controller, RoutingControllerScope scope,
+                                       String resource, CompoundNBT rule) {
+        CompoundNBT clipboard = new CompoundNBT();
+        clipboard.putString(CLIPBOARD_RESOURCE_KEY, resource);
+        clipboard.put(CLIPBOARD_RULE_KEY, rule.copy());
+        controller.getOrCreateTag().put(getClipboardKey(scope), clipboard);
+    }
+
+    @Nullable
+    private static CompoundNBT getClipboard(ItemStack controller, RoutingControllerScope scope) {
+        if (controller.isEmpty() || !controller.hasTag()) {
+            return null;
+        }
+
+        String key = getClipboardKey(scope);
+        CompoundNBT tag = controller.getTag();
+        if (tag == null || !tag.contains(key, 10)) {
+            return null;
+        }
+        return tag.getCompound(key);
+    }
+
+    private static ClipboardPasteResult validateClipboard(@Nullable CompoundNBT clipboard, String resource) {
+        if (clipboard == null || !clipboard.contains(CLIPBOARD_RULE_KEY, 10)) {
+            return ClipboardPasteResult.EMPTY;
+        }
+        if (!resource.equals(clipboard.getString(CLIPBOARD_RESOURCE_KEY))) {
+            return ClipboardPasteResult.RESOURCE_MISMATCH;
+        }
+        return ClipboardPasteResult.SUCCESS;
+    }
+
+    private static String getClipboardKey(RoutingControllerScope scope) {
+        return scope == RoutingControllerScope.SOURCE ? SOURCE_CLIPBOARD_KEY : TARGET_CLIPBOARD_KEY;
+    }
+
+    public static void displayRuleCopied(PlayerEntity player, RoutingControllerScope scope,
+                                         Direction direction) {
+        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+        player.displayClientMessage(
+                new TranslationTextComponent(
+                        "message.justguithings.routing_controller.rule_copied",
+                        scope.getDisplayName(), face),
+                true);
+    }
+
+    public static void displayRulePasteResult(PlayerEntity player, RoutingControllerScope scope,
+                                              Direction direction, ClipboardPasteResult result) {
+        String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
+        String key;
+        switch (result) {
+            case SUCCESS:
+                key = "message.justguithings.routing_controller.rule_pasted";
+                break;
+            case RESOURCE_MISMATCH:
+                key = "message.justguithings.routing_controller.rule_clipboard_resource_mismatch";
+                break;
+            case EMPTY:
+            default:
+                key = "message.justguithings.routing_controller.rule_clipboard_empty";
+                break;
+        }
+
+        player.displayClientMessage(
+                new TranslationTextComponent(key, scope.getDisplayName(), face),
+                true);
     }
 
     @Override

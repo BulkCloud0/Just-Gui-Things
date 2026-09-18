@@ -9,7 +9,9 @@ public enum RoutingControllerMode {
     FILTER_MODE,
     NBT_MATCH,
     REDSTONE,
-    MIN_STOCK;
+    MIN_STOCK,
+    COPY_RULE,
+    PASTE_RULE;
 
     public RoutingControllerMode next() {
         RoutingControllerMode[] values = values();

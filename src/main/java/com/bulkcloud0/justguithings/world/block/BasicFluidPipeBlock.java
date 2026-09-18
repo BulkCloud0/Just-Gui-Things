@@ -122,7 +122,14 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
                 RoutingControllerScope scope = RoutingControllerItem.getScope(held);
                 RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
 
-                if (scope == RoutingControllerScope.SOURCE) {
+                if (mode == RoutingControllerMode.COPY_RULE) {
+                    RoutingControllerItem.copyFluidRoutingRule(held, scope, pipe, direction);
+                    RoutingControllerItem.displayRuleCopied(player, scope, direction);
+                } else if (mode == RoutingControllerMode.PASTE_RULE) {
+                    RoutingControllerItem.displayRulePasteResult(
+                            player, scope, direction,
+                            RoutingControllerItem.pasteFluidRoutingRule(held, scope, pipe, direction));
+                } else if (scope == RoutingControllerScope.SOURCE) {
                     applySourceRoutingController(pipe, direction, player, hand, mode);
                 } else {
                     applyTargetRoutingController(pipe, direction, player, hand, mode);

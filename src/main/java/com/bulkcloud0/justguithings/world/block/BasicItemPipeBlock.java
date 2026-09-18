@@ -120,7 +120,14 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 RoutingControllerScope scope = RoutingControllerItem.getScope(held);
                 RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
 
-                if (scope == RoutingControllerScope.SOURCE) {
+                if (mode == RoutingControllerMode.COPY_RULE) {
+                    RoutingControllerItem.copyItemRoutingRule(held, scope, pipe, faceDirection);
+                    RoutingControllerItem.displayRuleCopied(player, scope, faceDirection);
+                } else if (mode == RoutingControllerMode.PASTE_RULE) {
+                    RoutingControllerItem.displayRulePasteResult(
+                            player, scope, faceDirection,
+                            RoutingControllerItem.pasteItemRoutingRule(held, scope, pipe, faceDirection));
+                } else if (scope == RoutingControllerScope.SOURCE) {
                     applySourceRoutingController(pipe, faceDirection, player, hand, mode);
                 } else {
                     applyTargetRoutingController(pipe, faceDirection, player, hand, mode);
