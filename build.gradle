@@ -71,3 +71,84 @@ tasks.named('jar', Jar).configure {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+
+tasks.register('validateCompatRecipes') {
+    group = 'verification'
+    description = 'Validates that optional-mod compatibility recipes are safely guarded.'
+
+    doLast {
+        File compatDir = file('src/main/resources/data/justguithings/recipes/compat')
+        if (!compatDir.exists()) {
+            return
+        }
+
+        def parser = new groovy.json.JsonSlurper()
+        fileTree(compatDir).matching { include '**/*.json' }.files.sort().each { File recipeFile ->
+            def recipe
+            try {
+                recipe = parser.parse(recipeFile)
+            } catch (Exception error) {
+                throw new GradleException("Invalid compatibility recipe JSON: ${recipeFile}", error)
+            }
+
+            List conditions = recipe.conditions instanceof List ? recipe.conditions : []
+            Set<String> loadedMods = conditions.findAll {
+                it instanceof Map && it.type == 'forge:mod_loaded' && it.modid instanceof String
+            }.collect { it.modid as String } as Set<String>
+
+            Set<String> referencedItems = [] as Set<String>
+            Set<String> referencedFluids = [] as Set<String>
+
+            Closure scan
+            scan = { value ->
+                if (value instanceof Map) {
+                    value.each { key, nested ->
+                        if (key == 'conditions') {
+                            return
+                        }
+                        if (key == 'item' && nested instanceof String) {
+                            referencedItems.add(nested as String)
+                        } else if (key == 'fluid' && nested instanceof String) {
+                            referencedFluids.add(nested as String)
+                        } else {
+                            scan(nested)
+                        }
+                    }
+                } else if (value instanceof List) {
+                    value.each { scan(it) }
+                }
+            }
+            scan(recipe)
+
+            referencedItems.findAll {
+                it.contains(':') && !it.startsWith('minecraft:') && !it.startsWith('justguithings:')
+            }.each { String itemId ->
+                String modId = itemId.substring(0, itemId.indexOf(':'))
+                if (!loadedMods.contains(modId)) {
+                    throw new GradleException("Compatibility recipe ${recipeFile} references ${itemId} without forge:mod_loaded for ${modId}")
+                }
+
+                boolean guarded = conditions.any {
+                    it instanceof Map && it.type == 'forge:item_exists' && it.item == itemId
+                }
+                if (!guarded) {
+                    throw new GradleException("Compatibility recipe ${recipeFile} references ${itemId} without forge:item_exists")
+                }
+            }
+
+            referencedFluids.findAll {
+                it.contains(':') && !it.startsWith('minecraft:') && !it.startsWith('justguithings:')
+            }.each { String fluidId ->
+                String modId = fluidId.substring(0, fluidId.indexOf(':'))
+                if (!loadedMods.contains(modId)) {
+                    throw new GradleException("Compatibility recipe ${recipeFile} references fluid ${fluidId} without forge:mod_loaded for ${modId}")
+                }
+            }
+        }
+    }
+}
+
+tasks.named('processResources').configure {
+    dependsOn tasks.named('validateCompatRecipes')
+}
