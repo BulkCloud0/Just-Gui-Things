@@ -23,6 +23,7 @@ public final class SideConfigRenderer {
     private static final int OUTPUT_COLOR = 0xFFE29A4A;
     private static final int ENERGY_COLOR = 0xFF45C7D9;
     private static final int FLUID_INPUT_COLOR = 0xFF5B8DEF;
+    private static final int FLUID_OUTPUT_COLOR = 0xFF4EC6E6;
 
     private SideConfigRenderer() {
     }
@@ -59,6 +60,8 @@ public final class SideConfigRenderer {
                 return "E";
             case FLUID_INPUT:
                 return "F";
+            case FLUID_OUTPUT:
+                return "FO";
             case ENERGY_OUTPUT:
                 return "EO";
             case ENERGY_BOTH:
@@ -79,6 +82,8 @@ public final class SideConfigRenderer {
                 return ENERGY_COLOR;
             case FLUID_INPUT:
                 return FLUID_INPUT_COLOR;
+            case FLUID_OUTPUT:
+                return FLUID_OUTPUT_COLOR;
             case ENERGY_OUTPUT:
             case ENERGY_BOTH:
                 return ENERGY_COLOR;
