@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 
 public abstract class BaseMachineTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
-    private static final int SIDE_CONFIG_VERSION = 3;
+    private static final int SIDE_CONFIG_VERSION = 4;
     private static final MachineSideMode[] DEFAULT_SIDE_MODES = {
             MachineSideMode.DISABLED,
             MachineSideMode.INPUT,
