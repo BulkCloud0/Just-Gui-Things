@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.logistics.ItemFilterMode;
+import com.bulkcloud0.justguithings.logistics.ItemFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
 import com.bulkcloud0.justguithings.logistics.ItemTransferHelper;
@@ -99,13 +100,20 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return new ItemRouteFilter(targetFilters.getOrDefault(direction, new ItemRouteFilter()));
     }
 
-    public void setTargetFilterSample(Direction direction, ItemStack sample) {
-        getMutableFilter(direction).setSample(sample);
-        setChanged();
+    public ItemFilterSampleChange toggleTargetFilterSample(Direction direction, ItemStack sample) {
+        ItemFilterSampleChange change = getMutableFilter(direction).toggleSample(sample);
+        if (change != ItemFilterSampleChange.FULL) {
+            setChanged();
+        }
+        return change;
+    }
+
+    public int getTargetFilterSampleCount(Direction direction) {
+        return getMutableFilter(direction).getSampleCount();
     }
 
     public void clearTargetFilter(Direction direction) {
-        getMutableFilter(direction).clearSample();
+        getMutableFilter(direction).clearSamples();
         setChanged();
     }
 
@@ -310,7 +318,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                 } else if (routing.contains(legacyFilterKey)) {
                     ItemStack legacySample = ItemStack.of(routing.getCompound(legacyFilterKey));
                     ItemRouteFilter migrated = new ItemRouteFilter();
-                    migrated.setSample(legacySample);
+                    migrated.addSample(legacySample);
                     targetFilters.put(direction, migrated);
                 }
             }
