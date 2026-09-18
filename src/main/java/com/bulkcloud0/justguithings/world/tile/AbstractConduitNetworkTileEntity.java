@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduitNetworkTileEntity<T>>
         extends TileEntity implements ITickableTileEntity {
     private static final int EXTERNAL_ENDPOINT_CACHE_TTL = 20;
@@ -22,6 +24,7 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
     private final int networkCacheTtl;
 
     private List<T> cachedNetwork = Collections.emptyList();
+    private Set<BlockPos> cachedNetworkPositions = Collections.emptySet();
     private BlockPos cachedController;
     private long cacheValidUntil;
 
@@ -107,17 +110,23 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
         }
 
         BlockPos controller = discovered.get(0).getBlockPos();
+        Set<BlockPos> discoveredPositions = new HashSet<>();
         for (T node : discovered) {
-            if (node.getBlockPos().asLong() < controller.asLong()) {
-                controller = node.getBlockPos();
+            BlockPos nodePos = node.getBlockPos();
+            discoveredPositions.add(nodePos.immutable());
+            if (nodePos.asLong() < controller.asLong()) {
+                controller = nodePos;
             }
         }
 
         List<T> sharedNetwork = Collections.unmodifiableList(new ArrayList<>(discovered));
+        Set<BlockPos> sharedNetworkPositions =
+                Collections.unmodifiableSet(discoveredPositions);
         long validUntil = gameTime + networkCacheTtl;
         for (T node : discovered) {
             AbstractConduitNetworkTileEntity<T> base = node;
             base.cachedNetwork = sharedNetwork;
+            base.cachedNetworkPositions = sharedNetworkPositions;
             base.cachedController = controller;
             base.cacheValidUntil = validUntil;
             base.clearExternalEndpointCacheLocal();
@@ -135,7 +144,7 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
 
         while (!queue.isEmpty()) {
             BlockPos pos = queue.poll();
-            TileEntity tile = level.getBlockEntity(pos);
+            TileEntity tile = getLoadedBlockEntity(pos);
             if (!nodeClass.isInstance(tile)) {
                 continue;
             }
@@ -149,7 +158,7 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
                     continue;
                 }
 
-                TileEntity nextTile = level.getBlockEntity(next);
+                TileEntity nextTile = getLoadedBlockEntity(next);
                 if (nodeClass.isInstance(nextTile)) {
                     queue.add(next);
                 }
@@ -165,24 +174,22 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
             return;
         }
 
-        Set<BlockPos> networkPositions = new HashSet<>();
         for (T node : cachedNetwork) {
             if (node.isRemoved()) {
                 invalidateNetworkCache();
                 return;
             }
-            networkPositions.add(node.getBlockPos());
         }
 
         List<ExternalEndpoint<T>> endpoints = new ArrayList<>();
         for (T node : cachedNetwork) {
             for (Direction direction : Direction.values()) {
                 BlockPos neighborPos = node.getBlockPos().relative(direction);
-                if (networkPositions.contains(neighborPos)) {
+                if (cachedNetworkPositions.contains(neighborPos)) {
                     continue;
                 }
 
-                if (level.getBlockEntity(neighborPos) == null) {
+                if (getLoadedBlockEntity(neighborPos) == null) {
                     continue;
                 }
 
@@ -198,8 +205,17 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
         externalEndpointsValidUntil = gameTime + EXTERNAL_ENDPOINT_CACHE_TTL;
     }
 
+    @Nullable
+    protected final TileEntity getLoadedBlockEntity(BlockPos pos) {
+        if (level == null || !level.hasChunkAt(pos)) {
+            return null;
+        }
+        return level.getBlockEntity(pos);
+    }
+
     private void clearNetworkCacheLocal() {
         cachedNetwork = Collections.emptyList();
+        cachedNetworkPositions = Collections.emptySet();
         cachedController = null;
         cacheValidUntil = 0L;
         clearExternalEndpointCacheLocal();
