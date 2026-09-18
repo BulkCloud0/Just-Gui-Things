@@ -3,45 +3,47 @@ package com.bulkcloud0.justguithings.world.tile;
 import com.bulkcloud0.justguithings.logistics.ItemPipeSideMode;
 import com.bulkcloud0.justguithings.logistics.ItemTransferHelper;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
-import com.bulkcloud0.justguithings.world.block.AbstractConduitBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
-public class BasicItemPipeTileEntity extends TileEntity implements ITickableTileEntity {
+public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<BasicItemPipeTileEntity> {
     public static final int TRANSFER_RATE = 8;
     private static final int NETWORK_CACHE_TTL = 100;
     private static final int VISUAL_REFRESH_INTERVAL = 10;
 
     private final EnumMap<Direction, ItemPipeSideMode> sideModes = new EnumMap<>(Direction.class);
-
-    private List<BasicItemPipeTileEntity> cachedNetwork = Collections.emptyList();
-    private BlockPos cachedController;
-    private long cacheValidUntil;
     private int sourceCursor;
     private int targetCursor;
 
     public BasicItemPipeTileEntity() {
-        super(ModTileEntities.BASIC_ITEM_PIPE.get());
+        super(ModTileEntities.BASIC_ITEM_PIPE.get(), NETWORK_CACHE_TTL);
         for (Direction direction : Direction.values()) {
             sideModes.put(direction, ItemPipeSideMode.BOTH);
         }
+    }
+
+    @Override
+    protected Class<BasicItemPipeTileEntity> getNetworkNodeClass() {
+        return BasicItemPipeTileEntity.class;
+    }
+
+    @Override
+    protected void onNetworkCacheCleared() {
+        sourceCursor = 0;
+        targetCursor = 0;
     }
 
     @Override
@@ -50,16 +52,12 @@ public class BasicItemPipeTileEntity extends TileEntity implements ITickableTile
             return;
         }
 
-        if ((level.getGameTime() + worldPosition.asLong()) % VISUAL_REFRESH_INTERVAL == 0L) {
-            AbstractConduitBlock.refreshConnections(level, worldPosition);
-        }
-
-        ensureNetworkCache();
-        if (cachedController == null || !worldPosition.equals(cachedController)) {
+        tickNetworkMaintenance(VISUAL_REFRESH_INTERVAL);
+        if (!isNetworkController()) {
             return;
         }
 
-        transferItems(cachedNetwork);
+        transferItems(getCachedNetwork());
     }
 
     public ItemPipeSideMode getSideMode(Direction direction) {
@@ -71,96 +69,6 @@ public class BasicItemPipeTileEntity extends TileEntity implements ITickableTile
         sideModes.put(direction, next);
         setChanged();
         return next;
-    }
-
-    private void ensureNetworkCache() {
-        if (level == null) {
-            return;
-        }
-
-        long gameTime = level.getGameTime();
-        if (!cachedNetwork.isEmpty() && cachedController != null && gameTime < cacheValidUntil) {
-            return;
-        }
-
-        rebuildNetworkCache(gameTime);
-    }
-
-    private void rebuildNetworkCache(long gameTime) {
-        List<BasicItemPipeTileEntity> discovered = discoverNetwork();
-        if (discovered.isEmpty()) {
-            clearNetworkCacheLocal();
-            return;
-        }
-
-        BlockPos controller = discovered.get(0).getBlockPos();
-        for (BasicItemPipeTileEntity pipe : discovered) {
-            if (pipe.getBlockPos().asLong() < controller.asLong()) {
-                controller = pipe.getBlockPos();
-            }
-        }
-
-        List<BasicItemPipeTileEntity> sharedNetwork = Collections.unmodifiableList(new ArrayList<>(discovered));
-        long validUntil = gameTime + NETWORK_CACHE_TTL;
-        for (BasicItemPipeTileEntity pipe : discovered) {
-            pipe.cachedNetwork = sharedNetwork;
-            pipe.cachedController = controller;
-            pipe.cacheValidUntil = validUntil;
-        }
-    }
-
-    private List<BasicItemPipeTileEntity> discoverNetwork() {
-        List<BasicItemPipeTileEntity> pipes = new ArrayList<>();
-        Queue<BlockPos> queue = new ArrayDeque<>();
-        Set<BlockPos> visited = new HashSet<>();
-
-        queue.add(worldPosition);
-        visited.add(worldPosition);
-
-        while (!queue.isEmpty()) {
-            BlockPos pos = queue.poll();
-            TileEntity tile = level.getBlockEntity(pos);
-            if (!(tile instanceof BasicItemPipeTileEntity)) {
-                continue;
-            }
-
-            BasicItemPipeTileEntity pipe = (BasicItemPipeTileEntity) tile;
-            pipes.add(pipe);
-
-            for (Direction direction : Direction.values()) {
-                BlockPos next = pos.relative(direction);
-                if (!visited.add(next)) {
-                    continue;
-                }
-
-                TileEntity nextTile = level.getBlockEntity(next);
-                if (nextTile instanceof BasicItemPipeTileEntity) {
-                    queue.add(next);
-                }
-            }
-        }
-
-        return pipes;
-    }
-
-    public void invalidateNetworkCache() {
-        if (cachedNetwork.isEmpty()) {
-            clearNetworkCacheLocal();
-            return;
-        }
-
-        List<BasicItemPipeTileEntity> previousNetwork = new ArrayList<>(cachedNetwork);
-        for (BasicItemPipeTileEntity pipe : previousNetwork) {
-            pipe.clearNetworkCacheLocal();
-        }
-    }
-
-    private void clearNetworkCacheLocal() {
-        cachedNetwork = Collections.emptyList();
-        cachedController = null;
-        cacheValidUntil = 0L;
-        sourceCursor = 0;
-        targetCursor = 0;
     }
 
     private void transferItems(List<BasicItemPipeTileEntity> network) {
@@ -304,7 +212,7 @@ public class BasicItemPipeTileEntity extends TileEntity implements ITickableTile
             }
         }
 
-        clearNetworkCacheLocal();
+        invalidateNetworkCache();
     }
 
     @Override
@@ -317,12 +225,6 @@ public class BasicItemPipeTileEntity extends TileEntity implements ITickableTile
         }
         nbt.put("SideConfig", config);
         return nbt;
-    }
-
-    @Override
-    public void setRemoved() {
-        invalidateNetworkCache();
-        super.setRemoved();
     }
 
     private static final class ItemEndpoint {
