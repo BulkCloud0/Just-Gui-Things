@@ -2,7 +2,9 @@ package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.item.EnergyCellBlockItem;
+import com.bulkcloud0.justguithings.item.MachineModuleItem;
 import com.bulkcloud0.justguithings.item.TooltipItem;
+import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -33,19 +35,19 @@ public final class ModItems {
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
                     "tooltip.justguithings.configurator.use"));
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
-            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+            () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.SPEED,
                     "tooltip.justguithings.speed_module.effect",
                     "tooltip.justguithings.speed_module.compatibility"));
     public static final RegistryObject<Item> EFFICIENCY_UPGRADE = ITEMS.register("efficiency_upgrade",
-            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+            () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.EFFICIENCY,
                     "tooltip.justguithings.efficiency_module.effect",
                     "tooltip.justguithings.efficiency_module.compatibility"));
     public static final RegistryObject<Item> BUFFER_UPGRADE = ITEMS.register("buffer_upgrade",
-            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+            () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.BUFFER,
                     "tooltip.justguithings.buffer_module.effect",
                     "tooltip.justguithings.buffer_module.compatibility"));
     public static final RegistryObject<Item> BATCH_UPGRADE = ITEMS.register("batch_upgrade",
-            () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE),
+            () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE), MachineModuleTypes.BATCH,
                     "tooltip.justguithings.batch_module.effect",
                     "tooltip.justguithings.batch_module.compatibility"));
 

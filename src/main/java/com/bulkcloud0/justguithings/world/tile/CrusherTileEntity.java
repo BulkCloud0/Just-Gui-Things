@@ -1,43 +1,26 @@
 package com.bulkcloud0.justguithings.world.tile;
 
-import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
-import com.bulkcloud0.justguithings.machine.MachineSideMode;
-import com.bulkcloud0.justguithings.machine.MachineSidedItemHandler;
-import com.bulkcloud0.justguithings.machine.SidedEnergyInputHandler;
+import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
-import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumMap;
 import java.util.Optional;
 
-public class CrusherTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRecipe> {
     public static final int CAPACITY = 100_000;
     public static final int BUFFER_CAPACITY_PER_MODULE = 100_000;
     public static final int MAX_RECEIVE = 1_000;
@@ -45,104 +28,25 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     public static final int DEFAULT_PROCESS_TICKS = 100;
     public static final int MAX_MODULES_PER_TYPE = 4;
 
-    private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
-        @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            int received = super.receiveEnergy(maxReceive, simulate);
-            if (!simulate && received > 0) {
-                setChanged();
-            }
-            return received;
-        }
-    };
-
-    private final ItemStackHandler inventory = new ItemStackHandler(6) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            switch (slot) {
-                case 0:
-                    return canAcceptInput(stack);
-                case 2:
-                    return stack.getItem() == ModItems.SPEED_UPGRADE.get();
-                case 3:
-                    return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
-                case 4:
-                    return stack.getItem() == ModItems.BUFFER_UPGRADE.get();
-                case 5:
-                    return stack.getItem() == ModItems.BATCH_UPGRADE.get();
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            if (slot >= 2 && slot <= 5) {
-                return MAX_MODULES_PER_TYPE;
-            }
-            return super.getSlotLimit(slot);
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            if (slot == 4) {
-                energyStorage.setCapacity(getEnergyCapacity());
-            }
-            setChanged();
-        }
-    };
-
-    private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
-
     private final IIntArray dataAccess = new IIntArray() {
         @Override
         public int get(int index) {
+            if (index <= 4) {
+                return getProcessingData(index);
+            }
             switch (index) {
-                case 0:
-                    return progress;
-                case 1:
-                    return energyStorage.getEnergyStored() & 0xFFFF;
-                case 2:
-                    return (energyStorage.getEnergyStored() >>> 16) & 0xFFFF;
-                case 3:
-                    return currentProcessTicks;
-                case 4:
-                    return currentEnergyPerTick;
-                case 5:
-                    return getSpeedUpgradeCount();
-                case 6:
-                    return getEfficiencyUpgradeCount();
-                case 7:
-                    return getBufferUpgradeCount();
-                case 8:
-                    return getBatchUpgradeCount();
-                default:
-                    return 0;
+                case 5: return getSpeedUpgradeCount();
+                case 6: return getEfficiencyUpgradeCount();
+                case 7: return getBufferUpgradeCount();
+                case 8: return getBatchUpgradeCount();
+                default: return 0;
             }
         }
 
         @Override
         public void set(int index, int value) {
-            switch (index) {
-                case 0:
-                    progress = value;
-                    break;
-                case 1:
-                    energyStorage.setEnergy((energyStorage.getEnergyStored() & 0xFFFF0000) | (value & 0xFFFF));
-                    break;
-                case 2:
-                    energyStorage.setEnergy((energyStorage.getEnergyStored() & 0x0000FFFF) | ((value & 0xFFFF) << 16));
-                    break;
-                case 3:
-                    currentProcessTicks = value;
-                    break;
-                case 4:
-                    currentEnergyPerTick = value;
-                    break;
-                default:
-                    break;
+            if (index <= 4) {
+                setProcessingData(index, value);
             }
         }
 
@@ -152,92 +56,89 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         }
     };
 
-    private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
-    private LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
-    private int progress;
-    private int currentProcessTicks = DEFAULT_PROCESS_TICKS;
-    private int currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
     private int activeBatchSize = 1;
-    private ResourceLocation activeRecipeId;
 
     public CrusherTileEntity() {
-        super(ModTileEntities.CRUSHER.get());
-        initializeDefaultSides();
-        initializeSidedCapabilities();
+        super(ModTileEntities.CRUSHER.get(), CAPACITY, MAX_RECEIVE, 6, 0, 1, 1, 1,
+                DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
     }
 
-    private void initializeDefaultSides() {
-        sideModes.put(Direction.UP, MachineSideMode.INPUT);
-        sideModes.put(Direction.DOWN, MachineSideMode.OUTPUT);
-        sideModes.put(Direction.NORTH, MachineSideMode.ENERGY);
-        sideModes.put(Direction.SOUTH, MachineSideMode.ENERGY);
-        sideModes.put(Direction.WEST, MachineSideMode.ENERGY);
-        sideModes.put(Direction.EAST, MachineSideMode.ENERGY);
+    @Override
+    protected boolean isItemValidForSlot(int slot, ItemStack stack) {
+        return slot == 0 && canAcceptInput(stack);
     }
 
-    private void initializeSidedCapabilities() {
-        for (Direction direction : Direction.values()) {
-            final Direction side = direction;
-            sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
-                    inventory, 0, 1, 1, 1, () -> getSideMode(side))));
-            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new SidedEnergyInputHandler(
-                    energyStorage, () -> getSideMode(side) == MachineSideMode.ENERGY)));
+    @Nullable
+    @Override
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
+        switch (slot) {
+            case 2: return MachineModuleTypes.SPEED;
+            case 3: return MachineModuleTypes.EFFICIENCY;
+            case 4: return MachineModuleTypes.BUFFER;
+            case 5: return MachineModuleTypes.BATCH;
+            default: return null;
         }
     }
 
     @Override
-    public void tick() {
-        if (level == null || level.isClientSide) {
-            return;
-        }
-
-        Optional<CrusherRecipe> recipeOptional = findRecipe(inventory.getStackInSlot(0));
-        if (!recipeOptional.isPresent()) {
-            resetProcessing();
-            return;
-        }
-
-        CrusherRecipe recipe = recipeOptional.get();
-        if (activeRecipeId == null || !activeRecipeId.equals(recipe.getId())) {
-            progress = 0;
-            activeRecipeId = recipe.getId();
-            activeBatchSize = resolveBatchSize(recipe);
-        }
-
-        if (activeBatchSize <= 0 || !canProcess(recipe, activeBatchSize)) {
-            resetProcessing();
-            return;
-        }
-
-        currentProcessTicks = getEffectiveProcessingTime(recipe);
-        currentEnergyPerTick = getEffectiveEnergyPerTick(recipe, activeBatchSize);
-
-        if (energyStorage.getEnergyStored() < currentEnergyPerTick) {
-            return;
-        }
-
-        energyStorage.consumeEnergy(currentEnergyPerTick);
-        progress++;
-
-        if (progress >= currentProcessTicks) {
-            processItem(recipe, activeBatchSize);
-            progress = 0;
-            activeRecipeId = null;
-            activeBatchSize = 1;
-        }
-
-        setChanged();
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return MAX_MODULES_PER_TYPE;
     }
 
-    private void resetProcessing() {
-        if (progress != 0 || activeRecipeId != null || activeBatchSize != 1) {
-            progress = 0;
-            activeRecipeId = null;
-            activeBatchSize = 1;
-            setChanged();
+    @Override
+    protected void onInventoryChanged(int slot) {
+        if (slot == 4) {
+            energyStorage.setCapacity(getEnergyCapacity());
         }
-        currentProcessTicks = DEFAULT_PROCESS_TICKS;
-        currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
+    }
+
+    @Override
+    protected Optional<CrusherRecipe> findCurrentRecipe() {
+        return findRecipe(inventory.getStackInSlot(0));
+    }
+
+    @Override
+    protected ResourceLocation getRecipeId(CrusherRecipe recipe) {
+        return recipe.getId();
+    }
+
+    @Override
+    protected void onRecipeActivated(CrusherRecipe recipe) {
+        activeBatchSize = resolveBatchSize(recipe);
+    }
+
+    @Override
+    protected boolean canProcessRecipe(CrusherRecipe recipe) {
+        return activeBatchSize > 0 && canProcess(recipe, activeBatchSize);
+    }
+
+    @Override
+    protected int getProcessingTime(CrusherRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
+    }
+
+    @Override
+    protected int getEnergyPerTick(CrusherRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
+        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier * Math.max(1, activeBatchSize);
+        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+    }
+
+    @Override
+    protected void processRecipe(CrusherRecipe recipe) {
+        processItem(recipe, activeBatchSize);
+    }
+
+    @Override
+    protected void onProcessingReset() {
+        activeBatchSize = 1;
+    }
+
+    @Override
+    protected void onRecipeCompleted(CrusherRecipe recipe) {
+        activeBatchSize = 1;
     }
 
     private Optional<CrusherRecipe> findRecipe(ItemStack input) {
@@ -313,59 +214,45 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
         }
     }
 
-    private int getEffectiveProcessingTime(CrusherRecipe recipe) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
-    }
-
-    private int getEffectiveEnergyPerTick(CrusherRecipe recipe, int batchSize) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
-        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier * Math.max(1, batchSize);
-        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
-    }
-
     public int getSpeedUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(2).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.SPEED));
     }
 
     public int getEfficiencyUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(3).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.EFFICIENCY));
     }
 
     public int getBufferUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(4).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.BUFFER));
     }
 
     public int getBatchUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(5).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.BATCH));
     }
 
+    @Override
     public int getEnergyCapacity() {
         return CAPACITY + BUFFER_CAPACITY_PER_MODULE * getBufferUpgradeCount();
-    }
-
-    public MachineSideMode getSideMode(Direction side) {
-        return sideModes.getOrDefault(side, MachineSideMode.DISABLED);
-    }
-
-    public MachineSideMode cycleSideMode(Direction side) {
-        MachineSideMode mode = getSideMode(side).next();
-        sideModes.put(side, mode);
-        setChanged();
-        return mode;
     }
 
     public boolean canAcceptInput(ItemStack stack) {
         return findRecipe(stack).isPresent();
     }
 
-    public ItemStackHandler getInventory() {
-        return inventory;
-    }
-
     public IIntArray getDataAccess() {
         return dataAccess;
+    }
+
+    @Override
+    protected void loadAdditionalProcessingData(CompoundNBT nbt) {
+        activeBatchSize = hasActiveRecipe() ? Math.max(1, nbt.getInt("ActiveBatchSize")) : 1;
+    }
+
+    @Override
+    protected void saveAdditionalProcessingData(CompoundNBT nbt) {
+        if (hasActiveRecipe() && progress > 0) {
+            nbt.putInt("ActiveBatchSize", Math.max(1, activeBatchSize));
+        }
     }
 
     @Override
@@ -377,102 +264,5 @@ public class CrusherTileEntity extends TileEntity implements ITickableTileEntity
     @Override
     public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
         return new CrusherContainer(windowId, playerInventory, this);
-    }
-
-    @Override
-    public void load(BlockState state, CompoundNBT nbt) {
-        super.load(state, nbt);
-        inventory.deserializeNBT(nbt.getCompound("Inventory"));
-        energyStorage.setCapacity(getEnergyCapacity());
-        energyStorage.setEnergy(nbt.getInt("Energy"));
-        progress = Math.max(0, nbt.getInt("Progress"));
-        activeRecipeId = null;
-        activeBatchSize = 1;
-
-        String activeRecipe = nbt.getString("ActiveRecipe");
-        if (!activeRecipe.isEmpty()) {
-            try {
-                activeRecipeId = new ResourceLocation(activeRecipe);
-                activeBatchSize = Math.max(1, nbt.getInt("ActiveBatchSize"));
-            } catch (RuntimeException ignored) {
-                activeRecipeId = null;
-                progress = 0;
-                activeBatchSize = 1;
-            }
-        }
-
-        if (activeRecipeId == null) {
-            progress = 0;
-            activeBatchSize = 1;
-        }
-
-        if (nbt.contains("SideConfig")) {
-            CompoundNBT sideConfig = nbt.getCompound("SideConfig");
-            for (Direction direction : Direction.values()) {
-                String key = "Side" + direction.ordinal();
-                if (sideConfig.contains(key)) {
-                    sideModes.put(direction, MachineSideMode.fromOrdinal(sideConfig.getInt(key)));
-                }
-            }
-        }
-    }
-
-    @Override
-    public CompoundNBT save(CompoundNBT nbt) {
-        super.save(nbt);
-        nbt.put("Inventory", inventory.serializeNBT());
-        nbt.putInt("Energy", energyStorage.getEnergyStored());
-        nbt.putInt("Progress", progress);
-        if (activeRecipeId != null && progress > 0) {
-            nbt.putString("ActiveRecipe", activeRecipeId.toString());
-            nbt.putInt("ActiveBatchSize", Math.max(1, activeBatchSize));
-        }
-
-        CompoundNBT sideConfig = new CompoundNBT();
-        for (Direction direction : Direction.values()) {
-            sideConfig.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
-        }
-        nbt.put("SideConfig", sideConfig);
-        return nbt;
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY) {
-            if (side == null) {
-                return energyCapability.cast();
-            }
-            if (getSideMode(side) == MachineSideMode.ENERGY) {
-                LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
-                return sided == null ? LazyOptional.empty() : sided.cast();
-            }
-            return LazyOptional.empty();
-        }
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (side == null) {
-                return itemCapability.cast();
-            }
-            MachineSideMode mode = getSideMode(side);
-            if (mode == MachineSideMode.INPUT || mode == MachineSideMode.OUTPUT) {
-                LazyOptional<IItemHandler> sided = sidedItemCapabilities.get(side);
-                return sided == null ? LazyOptional.empty() : sided.cast();
-            }
-            return LazyOptional.empty();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        energyCapability.invalidate();
-        itemCapability.invalidate();
-        for (LazyOptional<IItemHandler> capability : sidedItemCapabilities.values()) {
-            capability.invalidate();
-        }
-        for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
-            capability.invalidate();
-        }
     }
 }

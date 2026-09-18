@@ -1,102 +1,38 @@
 package com.bulkcloud0.justguithings.world.tile;
 
-import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
-import com.bulkcloud0.justguithings.machine.MachineSideMode;
-import com.bulkcloud0.justguithings.machine.MachineSidedItemHandler;
-import com.bulkcloud0.justguithings.machine.SidedEnergyInputHandler;
+import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
-import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumMap;
 import java.util.Optional;
 
-public class StampingPressTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<PressingRecipe> {
     public static final int CAPACITY = 100_000;
     public static final int MAX_RECEIVE = 1_000;
     public static final int DEFAULT_PROCESS_TICKS = 120;
     public static final int DEFAULT_ENERGY_PER_TICK = 30;
     public static final int MAX_MODULES_PER_TYPE = 4;
 
-    private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, MAX_RECEIVE, 0) {
-        @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            int received = super.receiveEnergy(maxReceive, simulate);
-            if (!simulate && received > 0) {
-                setChanged();
-            }
-            return received;
-        }
-    };
-
-    private final ItemStackHandler inventory = new ItemStackHandler(4) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            switch (slot) {
-                case 0:
-                    return canAcceptInput(stack);
-                case 2:
-                    return stack.getItem() == ModItems.SPEED_UPGRADE.get();
-                case 3:
-                    return stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get();
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            if (slot == 2 || slot == 3) {
-                return MAX_MODULES_PER_TYPE;
-            }
-            return super.getSlotLimit(slot);
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            setChanged();
-        }
-    };
-
-    private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
-    private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
-
     private final IIntArray dataAccess = new IIntArray() {
         @Override
         public int get(int index) {
+            if (index <= 4) {
+                return getProcessingData(index);
+            }
             switch (index) {
-                case 0: return progress;
-                case 1: return energyStorage.getEnergyStored() & 0xFFFF;
-                case 2: return (energyStorage.getEnergyStored() >>> 16) & 0xFFFF;
-                case 3: return currentProcessTicks;
-                case 4: return currentEnergyPerTick;
                 case 5: return getSpeedUpgradeCount();
                 case 6: return getEfficiencyUpgradeCount();
                 default: return 0;
@@ -105,13 +41,8 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
 
         @Override
         public void set(int index, int value) {
-            switch (index) {
-                case 0: progress = value; break;
-                case 1: energyStorage.setEnergy((energyStorage.getEnergyStored() & 0xFFFF0000) | (value & 0xFFFF)); break;
-                case 2: energyStorage.setEnergy((energyStorage.getEnergyStored() & 0x0000FFFF) | ((value & 0xFFFF) << 16)); break;
-                case 3: currentProcessTicks = value; break;
-                case 4: currentEnergyPerTick = value; break;
-                default: break;
+            if (index <= 4) {
+                setProcessingData(index, value);
             }
         }
 
@@ -121,97 +52,48 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
         }
     };
 
-    private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
-    private LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
-
-    private int progress;
-    private int currentProcessTicks = DEFAULT_PROCESS_TICKS;
-    private int currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
-    private ResourceLocation activeRecipeId;
-
     public StampingPressTileEntity() {
-        super(ModTileEntities.STAMPING_PRESS.get());
-        sideModes.put(Direction.UP, MachineSideMode.INPUT);
-        sideModes.put(Direction.DOWN, MachineSideMode.OUTPUT);
-        sideModes.put(Direction.NORTH, MachineSideMode.ENERGY);
-        sideModes.put(Direction.SOUTH, MachineSideMode.ENERGY);
-        sideModes.put(Direction.WEST, MachineSideMode.ENERGY);
-        sideModes.put(Direction.EAST, MachineSideMode.ENERGY);
-        initializeSidedCapabilities();
+        super(ModTileEntities.STAMPING_PRESS.get(), CAPACITY, MAX_RECEIVE, 4, 0, 1, 1, 1,
+                DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
     }
 
-    private void initializeSidedCapabilities() {
-        for (Direction direction : Direction.values()) {
-            final Direction side = direction;
-            sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
-                    inventory, 0, 1, 1, 1, () -> getSideMode(side))));
-            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new SidedEnergyInputHandler(
-                    energyStorage, () -> getSideMode(side) == MachineSideMode.ENERGY)));
+    @Override
+    protected boolean isItemValidForSlot(int slot, ItemStack stack) {
+        return slot == 0 && canAcceptInput(stack);
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
+        switch (slot) {
+            case 2: return MachineModuleTypes.SPEED;
+            case 3: return MachineModuleTypes.EFFICIENCY;
+            default: return null;
         }
     }
 
     @Override
-    public void tick() {
-        if (level == null || level.isClientSide) {
-            return;
-        }
-
-        Optional<PressingRecipe> recipeOptional = findRecipe(inventory.getStackInSlot(0));
-        if (!recipeOptional.isPresent()) {
-            resetProgress();
-            return;
-        }
-
-        PressingRecipe recipe = recipeOptional.get();
-        if (activeRecipeId == null || !activeRecipeId.equals(recipe.getId())) {
-            progress = 0;
-            activeRecipeId = recipe.getId();
-        }
-
-        currentProcessTicks = getEffectiveProcessingTime(recipe);
-        currentEnergyPerTick = getEffectiveEnergyPerTick(recipe);
-
-        if (!canProcess(recipe)) {
-            resetProgress();
-            return;
-        }
-        if (energyStorage.getEnergyStored() < currentEnergyPerTick) {
-            return;
-        }
-
-        energyStorage.consumeEnergy(currentEnergyPerTick);
-        progress++;
-
-        if (progress >= currentProcessTicks) {
-            process(recipe);
-            progress = 0;
-            activeRecipeId = null;
-        }
-        setChanged();
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return MAX_MODULES_PER_TYPE;
     }
 
-    private void resetProgress() {
-        if (progress != 0 || activeRecipeId != null) {
-            progress = 0;
-            activeRecipeId = null;
-            setChanged();
-        }
-        currentProcessTicks = DEFAULT_PROCESS_TICKS;
-        currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
+    @Override
+    protected Optional<PressingRecipe> findCurrentRecipe() {
+        return findRecipe(inventory.getStackInSlot(0));
     }
 
-    private Optional<PressingRecipe> findRecipe(ItemStack input) {
-        if (level == null || input.isEmpty()) {
-            return Optional.empty();
-        }
-        return level.getRecipeManager().getRecipeFor(ModRecipes.PRESSING_TYPE, new Inventory(input.copy()), level);
+    @Override
+    protected ResourceLocation getRecipeId(PressingRecipe recipe) {
+        return recipe.getId();
     }
 
-    private boolean canProcess(PressingRecipe recipe) {
+    @Override
+    protected boolean canProcessRecipe(PressingRecipe recipe) {
         ItemStack result = recipe.getResultItem();
         if (result.isEmpty()) {
             return false;
         }
+
         ItemStack output = inventory.getStackInSlot(1);
         if (output.isEmpty()) {
             return true;
@@ -222,11 +104,27 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
         return output.getCount() + result.getCount() <= output.getMaxStackSize();
     }
 
-    private void process(PressingRecipe recipe) {
+    @Override
+    protected int getProcessingTime(PressingRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
+    }
+
+    @Override
+    protected int getEnergyPerTick(PressingRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
+        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
+        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+    }
+
+    @Override
+    protected void processRecipe(PressingRecipe recipe) {
         ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
         if (result.isEmpty()) {
             return;
         }
+
         inventory.extractItem(0, 1, false);
         ItemStack output = inventory.getStackInSlot(1);
         if (output.isEmpty()) {
@@ -238,47 +136,27 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
         }
     }
 
-    private int getEffectiveProcessingTime(PressingRecipe recipe) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
-    }
-
-    private int getEffectiveEnergyPerTick(PressingRecipe recipe) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
-        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
-        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+    private Optional<PressingRecipe> findRecipe(ItemStack input) {
+        if (level == null || input.isEmpty()) {
+            return Optional.empty();
+        }
+        return level.getRecipeManager().getRecipeFor(ModRecipes.PRESSING_TYPE, new Inventory(input.copy()), level);
     }
 
     public int getSpeedUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(2).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.SPEED));
     }
 
     public int getEfficiencyUpgradeCount() {
-        return Math.min(MAX_MODULES_PER_TYPE, inventory.getStackInSlot(3).getCount());
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.EFFICIENCY));
     }
 
     public boolean canAcceptInput(ItemStack stack) {
         return findRecipe(stack).isPresent();
     }
 
-    public ItemStackHandler getInventory() {
-        return inventory;
-    }
-
     public IIntArray getDataAccess() {
         return dataAccess;
-    }
-
-    public MachineSideMode getSideMode(Direction side) {
-        return sideModes.getOrDefault(side, MachineSideMode.DISABLED);
-    }
-
-    public MachineSideMode cycleSideMode(Direction side) {
-        MachineSideMode mode = getSideMode(side).next();
-        sideModes.put(side, mode);
-        setChanged();
-        return mode;
     }
 
     @Override
@@ -290,96 +168,5 @@ public class StampingPressTileEntity extends TileEntity implements ITickableTile
     @Override
     public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
         return new StampingPressContainer(windowId, playerInventory, this);
-    }
-
-    @Override
-    public void load(BlockState state, CompoundNBT nbt) {
-        super.load(state, nbt);
-        CompoundNBT inventoryNbt = nbt.getCompound("Inventory").copy();
-        inventoryNbt.putInt("Size", 4);
-        inventory.deserializeNBT(inventoryNbt);
-        energyStorage.setEnergy(nbt.getInt("Energy"));
-        progress = Math.max(0, nbt.getInt("Progress"));
-        activeRecipeId = null;
-
-        String activeRecipe = nbt.getString("ActiveRecipe");
-        if (!activeRecipe.isEmpty()) {
-            try {
-                activeRecipeId = new ResourceLocation(activeRecipe);
-            } catch (RuntimeException ignored) {
-                activeRecipeId = null;
-                progress = 0;
-            }
-        }
-        if (activeRecipeId == null) {
-            progress = 0;
-        }
-
-        if (nbt.contains("SideConfig")) {
-            CompoundNBT config = nbt.getCompound("SideConfig");
-            for (Direction direction : Direction.values()) {
-                String key = "Side" + direction.ordinal();
-                if (config.contains(key)) {
-                    sideModes.put(direction, MachineSideMode.fromOrdinal(config.getInt(key)));
-                }
-            }
-        }
-    }
-
-    @Override
-    public CompoundNBT save(CompoundNBT nbt) {
-        super.save(nbt);
-        nbt.put("Inventory", inventory.serializeNBT());
-        nbt.putInt("Energy", energyStorage.getEnergyStored());
-        nbt.putInt("Progress", progress);
-        if (activeRecipeId != null && progress > 0) {
-            nbt.putString("ActiveRecipe", activeRecipeId.toString());
-        }
-        CompoundNBT config = new CompoundNBT();
-        for (Direction direction : Direction.values()) {
-            config.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
-        }
-        nbt.put("SideConfig", config);
-        return nbt;
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY) {
-            if (side == null) {
-                return energyCapability.cast();
-            }
-            if (getSideMode(side) == MachineSideMode.ENERGY) {
-                LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
-                return sided == null ? LazyOptional.empty() : sided.cast();
-            }
-            return LazyOptional.empty();
-        }
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (side == null) {
-                return itemCapability.cast();
-            }
-            MachineSideMode mode = getSideMode(side);
-            if (mode == MachineSideMode.INPUT || mode == MachineSideMode.OUTPUT) {
-                LazyOptional<IItemHandler> sided = sidedItemCapabilities.get(side);
-                return sided == null ? LazyOptional.empty() : sided.cast();
-            }
-            return LazyOptional.empty();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        energyCapability.invalidate();
-        itemCapability.invalidate();
-        for (LazyOptional<IItemHandler> capability : sidedItemCapabilities.values()) {
-            capability.invalidate();
-        }
-        for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
-            capability.invalidate();
-        }
     }
 }

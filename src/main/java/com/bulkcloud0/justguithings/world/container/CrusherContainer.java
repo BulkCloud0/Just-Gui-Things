@@ -2,7 +2,6 @@ package com.bulkcloud0.justguithings.world.container;
 
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModContainers;
-import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -96,20 +95,9 @@ public class CrusherContainer extends Container {
                 if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (stack.getItem() == ModItems.SPEED_UPGRADE.get()) {
-                if (!this.moveItemStackTo(stack, 2, 3, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (stack.getItem() == ModItems.EFFICIENCY_UPGRADE.get()) {
-                if (!this.moveItemStackTo(stack, 3, 4, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (stack.getItem() == ModItems.BUFFER_UPGRADE.get()) {
-                if (!this.moveItemStackTo(stack, 4, 5, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (stack.getItem() == ModItems.BATCH_UPGRADE.get()) {
-                if (!this.moveItemStackTo(stack, 5, 6, false)) {
+            } else if (tileEntity.findModuleSlot(stack) >= 0) {
+                int moduleSlot = tileEntity.findModuleSlot(stack);
+                if (!this.moveItemStackTo(stack, moduleSlot, moduleSlot + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (tileEntity.canAcceptInput(stack)) {
