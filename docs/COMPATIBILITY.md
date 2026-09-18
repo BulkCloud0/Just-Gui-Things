@@ -55,8 +55,17 @@ JGT registers its common materials in Forge tags where a shared convention exist
 - `forge:plates/gold`
 - `forge:ingots/steel`
 - `forge:ingots/tempered_steel`
+- `forge:rods/tempered_steel`
 
-Processing recipe inputs use Minecraft `Ingredient`, so item tags can be used directly in Crusher, Stamping Press and Industrial Mixer recipes.
+Processing recipe inputs use Minecraft `Ingredient`, so item tags can be used directly in Crusher, Stamping Press, Resistive Furnace and Precision Extruder recipes. Tag-based outputs use `RecipeOutput`, allowing compatible output families such as `forge:ingots/<metal>` and `forge:rods/<metal>`.
+
+## Machine-specific components
+
+Machine-specific components may expose a JGT tag when simple datapack substitution is useful. The Precision Extruder accepts:
+
+- `justguithings:machine_components/extrusion_dies`
+
+The built-in `Hardened Extrusion Die` is included in that tag. Other mods or datapacks may add equivalent components without a Java dependency on JGT.
 
 Quenching recipes support either an exact fluid ID or a fluid tag.
 
@@ -84,6 +93,7 @@ Side configuration is capability-specific:
 
 - `INPUT` and `OUTPUT` expose item handlers.
 - `FLUID_INPUT` exposes fluid input.
+- `FLUID_OUTPUT` exposes fluid output.
 - `ENERGY` exposes energy input.
 - `ENERGY_OUTPUT` exposes energy output.
 - `ENERGY_BOTH` exposes bidirectional energy.
