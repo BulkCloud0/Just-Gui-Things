@@ -19,7 +19,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
-public class MixingRecipe implements IRecipe<IInventory> {
+public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecipe {
     private final ResourceLocation id;
     private final Ingredient primary;
     private final Ingredient secondary;

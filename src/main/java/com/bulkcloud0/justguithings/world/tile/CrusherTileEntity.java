@@ -98,11 +98,6 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
     }
 
     @Override
-    protected ResourceLocation getRecipeId(CrusherRecipe recipe) {
-        return recipe.getId();
-    }
-
-    @Override
     protected void onRecipeActivated(CrusherRecipe recipe) {
         activeBatchSize = resolveBatchSize(recipe);
     }
@@ -113,13 +108,13 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
     }
 
     @Override
-    protected int getProcessingTime(CrusherRecipe recipe) {
+    protected int getEffectiveProcessingTime(CrusherRecipe recipe) {
         int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
         return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
     }
 
     @Override
-    protected int getEnergyPerTick(CrusherRecipe recipe) {
+    protected int getEffectiveEnergyPerTick(CrusherRecipe recipe) {
         int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
         int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
         long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier * Math.max(1, activeBatchSize);

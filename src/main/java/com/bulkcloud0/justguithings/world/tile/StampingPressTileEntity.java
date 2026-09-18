@@ -83,11 +83,6 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
     }
 
     @Override
-    protected ResourceLocation getRecipeId(PressingRecipe recipe) {
-        return recipe.getId();
-    }
-
-    @Override
     protected boolean canProcessRecipe(PressingRecipe recipe) {
         ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
         if (result.isEmpty()) {
@@ -105,13 +100,13 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
     }
 
     @Override
-    protected int getProcessingTime(PressingRecipe recipe) {
+    protected int getEffectiveProcessingTime(PressingRecipe recipe) {
         int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
         return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
     }
 
     @Override
-    protected int getEnergyPerTick(PressingRecipe recipe) {
+    protected int getEffectiveEnergyPerTick(PressingRecipe recipe) {
         int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
         int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
         long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;

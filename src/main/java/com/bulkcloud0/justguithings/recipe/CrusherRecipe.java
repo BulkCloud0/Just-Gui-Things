@@ -18,7 +18,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
-public class CrusherRecipe implements IRecipe<IInventory> {
+public class CrusherRecipe implements IRecipe<IInventory>, MachineProcessingRecipe {
     private final ResourceLocation id;
     private final Ingredient input;
     private final RecipeOutput result;

@@ -178,11 +178,6 @@ public class QuenchChamberTileEntity extends BaseProcessingMachineTileEntity<Que
     }
 
     @Override
-    protected ResourceLocation getRecipeId(QuenchingRecipe recipe) {
-        return recipe.getId();
-    }
-
-    @Override
     protected boolean canProcessRecipe(QuenchingRecipe recipe) {
         ItemStack result = recipe.getResultItem();
         if (result.isEmpty()) {
@@ -197,16 +192,6 @@ public class QuenchChamberTileEntity extends BaseProcessingMachineTileEntity<Que
             return false;
         }
         return output.getCount() + result.getCount() <= output.getMaxStackSize();
-    }
-
-    @Override
-    protected int getProcessingTime(QuenchingRecipe recipe) {
-        return recipe.getProcessingTime();
-    }
-
-    @Override
-    protected int getEnergyPerTick(QuenchingRecipe recipe) {
-        return recipe.getEnergyPerTick();
     }
 
     @Override
