@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.block;
 
+import com.bulkcloud0.justguithings.world.tile.AbstractConduitNetworkTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItemUseContext;
@@ -58,7 +59,12 @@ public abstract class AbstractConduitBlock extends Block {
     @Override
     public final BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
                                         IWorld world, BlockPos currentPos, BlockPos neighborPos) {
-        return state.setValue(propertyFor(direction), canConnectTo(world, currentPos, direction));
+        BooleanProperty property = propertyFor(direction);
+        boolean connected = canConnectTo(world, currentPos, direction);
+        if (state.getValue(property) != connected) {
+            invalidateExternalEndpointCache(world, currentPos);
+        }
+        return state.setValue(property, connected);
     }
 
     @Override
@@ -96,7 +102,19 @@ public abstract class AbstractConduitBlock extends Block {
         AbstractConduitBlock conduit = (AbstractConduitBlock) current.getBlock();
         BlockState updated = conduit.updateConnections(current, world, pos);
         if (!updated.equals(current)) {
+            invalidateExternalEndpointCache(world, pos);
             world.setBlock(pos, updated, 3);
+        }
+    }
+
+    private static void invalidateExternalEndpointCache(IWorld world, BlockPos pos) {
+        if (!(world instanceof World) || ((World) world).isClientSide) {
+            return;
+        }
+
+        TileEntity tile = ((World) world).getBlockEntity(pos);
+        if (tile instanceof AbstractConduitNetworkTileEntity) {
+            ((AbstractConduitNetworkTileEntity<?>) tile).invalidateExternalEndpointCache();
         }
     }
 

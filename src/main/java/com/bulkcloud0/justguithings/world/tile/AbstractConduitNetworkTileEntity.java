@@ -86,6 +86,19 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
         }
     }
 
+    public final void invalidateExternalEndpointCache() {
+        if (cachedNetwork.isEmpty()) {
+            clearExternalEndpointCacheLocal();
+            return;
+        }
+
+        List<T> previousNetwork = new ArrayList<>(cachedNetwork);
+        for (T node : previousNetwork) {
+            AbstractConduitNetworkTileEntity<T> base = node;
+            base.clearExternalEndpointCacheLocal();
+        }
+    }
+
     protected void onNetworkCacheCleared() {
     }
 
