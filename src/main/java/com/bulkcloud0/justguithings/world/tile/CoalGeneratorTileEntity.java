@@ -1,50 +1,36 @@
 package com.bulkcloud0.justguithings.world.tile;
 
-import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CoalGeneratorContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class CoalGeneratorTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
     public static final int CAPACITY = 100_000;
     public static final int GENERATION_PER_TICK = 40;
     public static final int MAX_OUTPUT_PER_TICK = 200;
     public static final int COAL_BURN_TICKS = 1_600;
 
-    private final ModEnergyStorage energyStorage = new ModEnergyStorage(CAPACITY, 0, MAX_OUTPUT_PER_TICK);
-    private final ItemStackHandler inventory = new ItemStackHandler(1) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return slot == 0 && CoalGeneratorTileEntity.this.isCoalFuel(stack);
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            setChanged();
-        }
+    private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
+            MachineSideMode.DISABLED,
+            MachineSideMode.INPUT,
+            MachineSideMode.ENERGY_OUTPUT
     };
 
     private final IIntArray dataAccess = new IIntArray() {
@@ -85,12 +71,46 @@ public class CoalGeneratorTileEntity extends TileEntity implements ITickableTile
         }
     };
 
-    private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
-    private LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> inventory);
     private int burnTicksRemaining;
 
     public CoalGeneratorTileEntity() {
-        super(ModTileEntities.COAL_GENERATOR.get());
+        super(ModTileEntities.COAL_GENERATOR.get(), CAPACITY, 0, MAX_OUTPUT_PER_TICK,
+                1, 0, 1, 1, 0);
+
+        setSideMode(Direction.UP, MachineSideMode.ENERGY_OUTPUT);
+        setSideMode(Direction.DOWN, MachineSideMode.ENERGY_OUTPUT);
+        setSideMode(Direction.NORTH, MachineSideMode.ENERGY_OUTPUT);
+        setSideMode(Direction.SOUTH, MachineSideMode.ENERGY_OUTPUT);
+        setSideMode(Direction.WEST, MachineSideMode.ENERGY_OUTPUT);
+        setSideMode(Direction.EAST, MachineSideMode.ENERGY_OUTPUT);
+    }
+
+    @Override
+    protected boolean isItemValidForSlot(int slot, ItemStack stack) {
+        return slot == 0 && isCoalFuel(stack);
+    }
+
+    @Override
+    protected MachineSideMode[] getAllowedSideModes() {
+        return ALLOWED_SIDE_MODES;
+    }
+
+    @Override
+    protected MachineSideMode getItemSideMode(Direction side, MachineSideMode mode) {
+        if (mode == MachineSideMode.ENERGY_OUTPUT) {
+            return MachineSideMode.INPUT;
+        }
+        return mode;
+    }
+
+    @Override
+    protected boolean canReceiveEnergyFrom(Direction side, MachineSideMode mode) {
+        return false;
+    }
+
+    @Override
+    protected boolean canExtractEnergyFrom(Direction side, MachineSideMode mode) {
+        return mode == MachineSideMode.ENERGY_OUTPUT;
     }
 
     @Override
@@ -148,6 +168,11 @@ public class CoalGeneratorTileEntity extends TileEntity implements ITickableTile
                 break;
             }
 
+            MachineSideMode mode = getSideMode(direction);
+            if (!canExtractEnergyFrom(direction, mode)) {
+                continue;
+            }
+
             TileEntity neighbor = level.getBlockEntity(worldPosition.relative(direction));
             if (neighbor == null) {
                 continue;
@@ -156,25 +181,27 @@ public class CoalGeneratorTileEntity extends TileEntity implements ITickableTile
             IEnergyStorage receiver = neighbor
                     .getCapability(CapabilityEnergy.ENERGY, direction.getOpposite())
                     .orElse(null);
-
             if (receiver == null || !receiver.canReceive()) {
                 continue;
             }
 
             int offer = Math.min(remainingOutput, energyStorage.getEnergyStored());
-            int accepted = receiver.receiveEnergy(offer, false);
-            if (accepted > 0) {
-                energyStorage.extractEnergy(accepted, false);
-                remainingOutput -= accepted;
-                transferred += accepted;
+            int accepted = receiver.receiveEnergy(offer, true);
+            if (accepted <= 0) {
+                continue;
             }
+
+            int extracted = energyStorage.extractEnergy(accepted, false);
+            int inserted = receiver.receiveEnergy(extracted, false);
+            if (inserted < extracted) {
+                energyStorage.addEnergy(extracted - inserted);
+            }
+
+            remainingOutput -= inserted;
+            transferred += inserted;
         }
 
         return transferred;
-    }
-
-    public ItemStackHandler getInventory() {
-        return inventory;
     }
 
     public IIntArray getDataAccess() {
@@ -203,36 +230,13 @@ public class CoalGeneratorTileEntity extends TileEntity implements ITickableTile
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
-        inventory.deserializeNBT(nbt.getCompound("Inventory"));
-        energyStorage.setEnergy(nbt.getInt("Energy"));
         burnTicksRemaining = nbt.getInt("BurnTicks");
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         super.save(nbt);
-        nbt.put("Inventory", inventory.serializeNBT());
-        nbt.putInt("Energy", energyStorage.getEnergyStored());
         nbt.putInt("BurnTicks", burnTicksRemaining);
         return nbt;
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY) {
-            return energyCapability.cast();
-        }
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return itemCapability.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        energyCapability.invalidate();
-        itemCapability.invalidate();
     }
 }
