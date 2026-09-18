@@ -38,23 +38,23 @@ public final class ItemRouteFilter {
         return samples.size();
     }
 
-    public ItemFilterSampleChange toggleSample(ItemStack stack) {
+    public RoutingFilterSampleChange toggleSample(ItemStack stack) {
         if (stack == null || stack.isEmpty()) {
-            return ItemFilterSampleChange.FULL;
+            return RoutingFilterSampleChange.FULL;
         }
 
         int existing = findExactSample(stack);
         if (existing >= 0) {
             samples.remove(existing);
-            return ItemFilterSampleChange.REMOVED;
+            return RoutingFilterSampleChange.REMOVED;
         }
 
         if (samples.size() >= MAX_SAMPLES) {
-            return ItemFilterSampleChange.FULL;
+            return RoutingFilterSampleChange.FULL;
         }
 
         addSample(stack);
-        return ItemFilterSampleChange.ADDED;
+        return RoutingFilterSampleChange.ADDED;
     }
 
     public boolean addSample(ItemStack stack) {

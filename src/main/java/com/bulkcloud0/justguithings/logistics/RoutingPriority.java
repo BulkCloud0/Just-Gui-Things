@@ -3,12 +3,12 @@ package com.bulkcloud0.justguithings.logistics;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public enum ItemRoutingPriority {
+public enum RoutingPriority {
     NORMAL,
     HIGH,
     LOW;
 
-    public ItemRoutingPriority next() {
+    public RoutingPriority next() {
         switch (this) {
             case NORMAL:
                 return HIGH;
@@ -24,8 +24,8 @@ public enum ItemRoutingPriority {
         return new TranslationTextComponent("routing.justguithings.priority." + name().toLowerCase(java.util.Locale.ROOT));
     }
 
-    public static ItemRoutingPriority fromOrdinal(int ordinal) {
-        ItemRoutingPriority[] values = values();
+    public static RoutingPriority fromOrdinal(int ordinal) {
+        RoutingPriority[] values = values();
         if (ordinal < 0 || ordinal >= values.length) {
             return NORMAL;
         }

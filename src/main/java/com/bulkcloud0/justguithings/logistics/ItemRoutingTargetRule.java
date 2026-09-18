@@ -4,9 +4,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 
 public final class ItemRoutingTargetRule {
-    private ItemRoutingPriority priority = ItemRoutingPriority.NORMAL;
+    private RoutingPriority priority = RoutingPriority.NORMAL;
     private ItemRouteFilter filter = new ItemRouteFilter();
-    private ItemRoutingRedstoneMode redstoneMode = ItemRoutingRedstoneMode.ALWAYS;
+    private RoutingRedstoneMode redstoneMode = RoutingRedstoneMode.ALWAYS;
 
     public ItemRoutingTargetRule() {
     }
@@ -17,15 +17,15 @@ public final class ItemRoutingTargetRule {
         redstoneMode = other.redstoneMode;
     }
 
-    public ItemRoutingPriority getPriority() {
+    public RoutingPriority getPriority() {
         return priority;
     }
 
-    public void setPriority(ItemRoutingPriority priority) {
-        this.priority = priority == null ? ItemRoutingPriority.NORMAL : priority;
+    public void setPriority(RoutingPriority priority) {
+        this.priority = priority == null ? RoutingPriority.NORMAL : priority;
     }
 
-    public ItemRoutingPriority cyclePriority() {
+    public RoutingPriority cyclePriority() {
         priority = priority.next();
         return priority;
     }
@@ -38,7 +38,7 @@ public final class ItemRoutingTargetRule {
         this.filter = filter == null ? new ItemRouteFilter() : new ItemRouteFilter(filter);
     }
 
-    public ItemFilterSampleChange toggleFilterSample(ItemStack stack) {
+    public RoutingFilterSampleChange toggleFilterSample(ItemStack stack) {
         return filter.toggleSample(stack);
     }
 
@@ -62,11 +62,11 @@ public final class ItemRoutingTargetRule {
         return filter.accepts(stack);
     }
 
-    public ItemRoutingRedstoneMode getRedstoneMode() {
+    public RoutingRedstoneMode getRedstoneMode() {
         return redstoneMode;
     }
 
-    public ItemRoutingRedstoneMode cycleRedstoneMode() {
+    public RoutingRedstoneMode cycleRedstoneMode() {
         redstoneMode = redstoneMode.next();
         return redstoneMode;
     }
@@ -87,13 +87,13 @@ public final class ItemRoutingTargetRule {
         ItemRoutingTargetRule rule = new ItemRoutingTargetRule();
 
         if (nbt.contains("Priority")) {
-            rule.priority = ItemRoutingPriority.fromOrdinal(nbt.getInt("Priority"));
+            rule.priority = RoutingPriority.fromOrdinal(nbt.getInt("Priority"));
         }
         if (nbt.contains("Filter")) {
             rule.filter = ItemRouteFilter.load(nbt.getCompound("Filter"));
         }
         if (nbt.contains("RedstoneMode")) {
-            rule.redstoneMode = ItemRoutingRedstoneMode.fromOrdinal(nbt.getInt("RedstoneMode"));
+            rule.redstoneMode = RoutingRedstoneMode.fromOrdinal(nbt.getInt("RedstoneMode"));
         }
 
         return rule;

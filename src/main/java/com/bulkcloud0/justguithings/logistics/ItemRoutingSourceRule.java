@@ -9,7 +9,7 @@ public final class ItemRoutingSourceRule {
 
     private ItemRouteFilter filter = new ItemRouteFilter();
     private int minStock;
-    private ItemRoutingRedstoneMode redstoneMode = ItemRoutingRedstoneMode.ALWAYS;
+    private RoutingRedstoneMode redstoneMode = RoutingRedstoneMode.ALWAYS;
 
     public ItemRoutingSourceRule() {
     }
@@ -24,7 +24,7 @@ public final class ItemRoutingSourceRule {
         return new ItemRouteFilter(filter);
     }
 
-    public ItemFilterSampleChange toggleFilterSample(ItemStack stack) {
+    public RoutingFilterSampleChange toggleFilterSample(ItemStack stack) {
         return filter.toggleSample(stack);
     }
 
@@ -60,11 +60,11 @@ public final class ItemRoutingSourceRule {
         return minStock;
     }
 
-    public ItemRoutingRedstoneMode getRedstoneMode() {
+    public RoutingRedstoneMode getRedstoneMode() {
         return redstoneMode;
     }
 
-    public ItemRoutingRedstoneMode cycleRedstoneMode() {
+    public RoutingRedstoneMode cycleRedstoneMode() {
         redstoneMode = redstoneMode.next();
         return redstoneMode;
     }
@@ -116,7 +116,7 @@ public final class ItemRoutingSourceRule {
             rule.minStock = normalizeMinStock(nbt.getInt("MinStock"));
         }
         if (nbt.contains("RedstoneMode")) {
-            rule.redstoneMode = ItemRoutingRedstoneMode.fromOrdinal(nbt.getInt("RedstoneMode"));
+            rule.redstoneMode = RoutingRedstoneMode.fromOrdinal(nbt.getInt("RedstoneMode"));
         }
 
         return rule;

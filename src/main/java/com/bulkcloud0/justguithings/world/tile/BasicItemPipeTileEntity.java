@@ -2,10 +2,10 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.logistics.RoutingFilterMode;
-import com.bulkcloud0.justguithings.logistics.ItemFilterSampleChange;
+import com.bulkcloud0.justguithings.logistics.RoutingFilterSampleChange;
 import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
-import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
-import com.bulkcloud0.justguithings.logistics.ItemRoutingRedstoneMode;
+import com.bulkcloud0.justguithings.logistics.RoutingPriority;
+import com.bulkcloud0.justguithings.logistics.RoutingRedstoneMode;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingSourceRule;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingTargetRule;
 import com.bulkcloud0.justguithings.logistics.ItemTransferHelper;
@@ -30,10 +30,10 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
     public static final int TRANSFER_RATE = 8;
     private static final int NETWORK_CACHE_TTL = 100;
     private static final int VISUAL_REFRESH_INTERVAL = 10;
-    private static final ItemRoutingPriority[] ROUTING_ORDER = {
-            ItemRoutingPriority.HIGH,
-            ItemRoutingPriority.NORMAL,
-            ItemRoutingPriority.LOW
+    private static final RoutingPriority[] ROUTING_ORDER = {
+            RoutingPriority.HIGH,
+            RoutingPriority.NORMAL,
+            RoutingPriority.LOW
     };
 
     private final EnumMap<Direction, ConduitTransferMode> sideModes = new EnumMap<>(Direction.class);
@@ -96,15 +96,15 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return new ItemRoutingSourceRule(getMutableSourceRule(direction));
     }
 
-    public ItemRoutingPriority cycleTargetPriority(Direction direction) {
-        ItemRoutingPriority next = getMutableTargetRule(direction).cyclePriority();
+    public RoutingPriority cycleTargetPriority(Direction direction) {
+        RoutingPriority next = getMutableTargetRule(direction).cyclePriority();
         setChanged();
         return next;
     }
 
-    public ItemFilterSampleChange toggleTargetFilterSample(Direction direction, ItemStack sample) {
-        ItemFilterSampleChange change = getMutableTargetRule(direction).toggleFilterSample(sample);
-        if (change != ItemFilterSampleChange.FULL) {
+    public RoutingFilterSampleChange toggleTargetFilterSample(Direction direction, ItemStack sample) {
+        RoutingFilterSampleChange change = getMutableTargetRule(direction).toggleFilterSample(sample);
+        if (change != RoutingFilterSampleChange.FULL) {
             setChanged();
         }
         return change;
@@ -131,15 +131,15 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return matchNbt;
     }
 
-    public ItemRoutingRedstoneMode cycleTargetRedstoneMode(Direction direction) {
-        ItemRoutingRedstoneMode next = getMutableTargetRule(direction).cycleRedstoneMode();
+    public RoutingRedstoneMode cycleTargetRedstoneMode(Direction direction) {
+        RoutingRedstoneMode next = getMutableTargetRule(direction).cycleRedstoneMode();
         setChanged();
         return next;
     }
 
-    public ItemFilterSampleChange toggleSourceFilterSample(Direction direction, ItemStack sample) {
-        ItemFilterSampleChange change = getMutableSourceRule(direction).toggleFilterSample(sample);
-        if (change != ItemFilterSampleChange.FULL) {
+    public RoutingFilterSampleChange toggleSourceFilterSample(Direction direction, ItemStack sample) {
+        RoutingFilterSampleChange change = getMutableSourceRule(direction).toggleFilterSample(sample);
+        if (change != RoutingFilterSampleChange.FULL) {
             setChanged();
         }
         return change;
@@ -172,8 +172,8 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return minStock;
     }
 
-    public ItemRoutingRedstoneMode cycleSourceRedstoneMode(Direction direction) {
-        ItemRoutingRedstoneMode next = getMutableSourceRule(direction).cycleRedstoneMode();
+    public RoutingRedstoneMode cycleSourceRedstoneMode(Direction direction) {
+        RoutingRedstoneMode next = getMutableSourceRule(direction).cycleRedstoneMode();
         setChanged();
         return next;
     }
@@ -245,7 +245,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                               List<TargetEndpoint> targets, int maxAmount) {
         int targetStart = Math.floorMod(targetCursor, targets.size());
 
-        for (ItemRoutingPriority priority : ROUTING_ORDER) {
+        for (RoutingPriority priority : ROUTING_ORDER) {
             for (int targetOffset = 0; targetOffset < targets.size(); targetOffset++) {
                 int targetIndex = (targetStart + targetOffset) % targets.size();
                 TargetEndpoint target = targets.get(targetIndex);
@@ -399,7 +399,7 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                 String legacyPriorityKey = "Priority" + direction.ordinal();
                 if (routing.contains(legacyPriorityKey)) {
                     migrated.setPriority(
-                            ItemRoutingPriority.fromOrdinal(routing.getInt(legacyPriorityKey)));
+                            RoutingPriority.fromOrdinal(routing.getInt(legacyPriorityKey)));
                 }
 
                 String legacyRuleKey = "Rule" + direction.ordinal();
