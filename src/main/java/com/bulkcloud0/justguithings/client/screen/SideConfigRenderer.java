@@ -59,6 +59,10 @@ public final class SideConfigRenderer {
                 return "E";
             case FLUID_INPUT:
                 return "F";
+            case ENERGY_OUTPUT:
+                return "EO";
+            case ENERGY_BOTH:
+                return "EB";
             case DISABLED:
             default:
                 return "-";
@@ -75,6 +79,9 @@ public final class SideConfigRenderer {
                 return ENERGY_COLOR;
             case FLUID_INPUT:
                 return FLUID_INPUT_COLOR;
+            case ENERGY_OUTPUT:
+            case ENERGY_BOTH:
+                return ENERGY_COLOR;
             case DISABLED:
             default:
                 return DISABLED_COLOR;

@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 
 public abstract class BaseMachineTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
-    private static final int SIDE_CONFIG_VERSION = 2;
+    private static final int SIDE_CONFIG_VERSION = 3;
     private static final MachineSideMode[] DEFAULT_SIDE_MODES = {
             MachineSideMode.DISABLED,
             MachineSideMode.INPUT,
@@ -55,6 +55,19 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
                                     int inputCount,
                                     int outputStart,
                                     int outputCount) {
+        this(tileEntityType, energyCapacity, maxReceive, 0,
+                inventorySize, inputStart, inputCount, outputStart, outputCount);
+    }
+
+    protected BaseMachineTileEntity(TileEntityType<?> tileEntityType,
+                                    int energyCapacity,
+                                    int maxReceive,
+                                    int maxExtract,
+                                    int inventorySize,
+                                    int inputStart,
+                                    int inputCount,
+                                    int outputStart,
+                                    int outputCount) {
         super(tileEntityType);
         this.baseEnergyCapacity = energyCapacity;
         this.inputStart = inputStart;
@@ -62,7 +75,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         this.outputStart = outputStart;
         this.outputCount = outputCount;
 
-        this.energyStorage = new ModEnergyStorage(energyCapacity, maxReceive, 0) {
+        this.energyStorage = new ModEnergyStorage(energyCapacity, maxReceive, maxExtract) {
             @Override
             public int receiveEnergy(int maxReceive, boolean simulate) {
                 int received = super.receiveEnergy(maxReceive, simulate);
@@ -177,13 +190,27 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
             final Direction side = direction;
             sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
                     inventory, inputStart, inputCount, outputStart, outputCount, () -> getSideMode(side))));
-            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new SidedEnergyInputHandler(
-                    energyStorage, () -> getSideMode(side) == MachineSideMode.ENERGY)));
+            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new MachineSidedEnergyHandler(
+                    energyStorage,
+                    () -> canReceiveEnergyFrom(side, getSideMode(side)),
+                    () -> canExtractEnergyFrom(side, getSideMode(side)))));
         }
     }
 
     protected MachineSideMode[] getAllowedSideModes() {
         return DEFAULT_SIDE_MODES;
+    }
+
+    protected boolean supportsItemCapability() {
+        return true;
+    }
+
+    protected boolean canReceiveEnergyFrom(Direction side, MachineSideMode mode) {
+        return mode == MachineSideMode.ENERGY;
+    }
+
+    protected boolean canExtractEnergyFrom(Direction side, MachineSideMode mode) {
+        return false;
     }
 
     protected MachineSideMode normalizeLoadedSideMode(Direction side, MachineSideMode mode, int configVersion) {
@@ -287,14 +314,15 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
             if (side == null) {
                 return energyCapability.cast();
             }
-            if (getSideMode(side) == MachineSideMode.ENERGY) {
+            MachineSideMode mode = getSideMode(side);
+            if (canReceiveEnergyFrom(side, mode) || canExtractEnergyFrom(side, mode)) {
                 LazyOptional<IEnergyStorage> sided = sidedEnergyCapabilities.get(side);
                 return sided == null ? LazyOptional.empty() : sided.cast();
             }
             return LazyOptional.empty();
         }
 
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && supportsItemCapability()) {
             if (side == null) {
                 return itemCapability.cast();
             }
