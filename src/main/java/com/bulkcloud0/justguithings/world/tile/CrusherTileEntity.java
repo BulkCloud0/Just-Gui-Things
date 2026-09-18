@@ -1,7 +1,7 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
-import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
+import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;

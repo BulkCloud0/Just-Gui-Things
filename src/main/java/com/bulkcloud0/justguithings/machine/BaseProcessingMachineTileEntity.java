@@ -1,6 +1,6 @@
 package com.bulkcloud0.justguithings.machine;
 
-import com.bulkcloud0.justguithings.recipe.MachineProcessingRecipe;
+import com.bulkcloud0.justguithings.api.recipe.MachineProcessingRecipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;

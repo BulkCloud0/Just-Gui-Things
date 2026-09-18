@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.recipe;
 
+import com.bulkcloud0.justguithings.api.recipe.MachineProcessingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;

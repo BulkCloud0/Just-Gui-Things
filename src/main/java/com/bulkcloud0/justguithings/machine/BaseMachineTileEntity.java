@@ -1,7 +1,7 @@
 package com.bulkcloud0.justguithings.machine;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
-import com.bulkcloud0.justguithings.machine.module.IMachineModule;
+import com.bulkcloud0.justguithings.api.machine.module.IMachineModule;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;

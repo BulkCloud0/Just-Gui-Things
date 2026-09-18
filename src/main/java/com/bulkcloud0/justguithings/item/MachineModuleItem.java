@@ -1,6 +1,6 @@
 package com.bulkcloud0.justguithings.item;
 
-import com.bulkcloud0.justguithings.machine.module.IMachineModule;
+import com.bulkcloud0.justguithings.api.machine.module.IMachineModule;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
