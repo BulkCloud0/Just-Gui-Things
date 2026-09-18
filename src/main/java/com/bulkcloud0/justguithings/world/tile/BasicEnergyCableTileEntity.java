@@ -1,6 +1,9 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
+import com.bulkcloud0.justguithings.logistics.EnergyRoutingTargetRule;
+import com.bulkcloud0.justguithings.logistics.RoutingPriority;
+import com.bulkcloud0.justguithings.logistics.RoutingRedstoneMode;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -15,6 +18,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +28,11 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     public static final int TRANSFER_RATE = 500;
     private static final int NETWORK_CACHE_TTL = 100;
     private static final int VISUAL_REFRESH_INTERVAL = 10;
+    private static final RoutingPriority[] ROUTING_ORDER = {
+            RoutingPriority.HIGH,
+            RoutingPriority.NORMAL,
+            RoutingPriority.LOW
+    };
 
     private final ModEnergyStorage energyStorage = new ModEnergyStorage(INTERNAL_BUFFER, TRANSFER_RATE, TRANSFER_RATE) {
         @Override
@@ -45,11 +54,15 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         }
     };
 
+    private final EnumMap<Direction, EnergyRoutingTargetRule> targetRules = new EnumMap<>(Direction.class);
     private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
     private int distributionCursor;
 
     public BasicEnergyCableTileEntity() {
         super(ModTileEntities.BASIC_ENERGY_CABLE.get(), NETWORK_CACHE_TTL);
+        for (Direction direction : Direction.values()) {
+            targetRules.put(direction, new EnergyRoutingTargetRule());
+        }
     }
 
     @Override
@@ -76,6 +89,31 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         distributeEnergy(getCachedNetwork());
     }
 
+    public RoutingPriority cycleTargetPriority(Direction direction) {
+        RoutingPriority next = getMutableTargetRule(direction).cyclePriority();
+        setChanged();
+        return next;
+    }
+
+    public RoutingRedstoneMode cycleTargetRedstoneMode(Direction direction) {
+        RoutingRedstoneMode next = getMutableTargetRule(direction).cycleRedstoneMode();
+        setChanged();
+        return next;
+    }
+
+    private EnergyRoutingTargetRule getTargetRule(Direction direction) {
+        return new EnergyRoutingTargetRule(getMutableTargetRule(direction));
+    }
+
+    private EnergyRoutingTargetRule getMutableTargetRule(Direction direction) {
+        EnergyRoutingTargetRule rule = targetRules.get(direction);
+        if (rule == null) {
+            rule = new EnergyRoutingTargetRule();
+            targetRules.put(direction, rule);
+        }
+        return rule;
+    }
+
     private void distributeEnergy(List<BasicEnergyCableTileEntity> network) {
         int available = getNetworkEnergy(network);
         int budget = Math.min(TRANSFER_RATE, available);
@@ -88,12 +126,60 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
             cablePositions.add(cable.getBlockPos());
         }
 
-        List<IEnergyStorage> receivers = new ArrayList<>();
-        Set<BlockPos> visitedConsumers = new HashSet<>();
+        List<EnergyTargetEndpoint> receivers = collectReceivers(network, cablePositions);
+        if (receivers.isEmpty()) {
+            return;
+        }
+
+        int start = Math.floorMod(distributionCursor, receivers.size());
+
+        for (RoutingPriority priority : ROUTING_ORDER) {
+            for (int offset = 0; offset < receivers.size() && budget > 0 && available > 0; offset++) {
+                int receiverIndex = (start + offset) % receivers.size();
+                EnergyTargetEndpoint target = receivers.get(receiverIndex);
+                if (target.rule.getPriority() != priority) {
+                    continue;
+                }
+
+                int offer = Math.min(budget, available);
+                int accepted = target.handler.receiveEnergy(offer, true);
+                if (accepted <= 0) {
+                    continue;
+                }
+
+                accepted = target.handler.receiveEnergy(Math.min(offer, accepted), false);
+                if (accepted <= 0) {
+                    continue;
+                }
+
+                drainNetworkEnergy(network, accepted);
+                available -= accepted;
+                budget -= accepted;
+                distributionCursor = (receiverIndex + 1) % receivers.size();
+            }
+        }
+
+        if (budget == Math.min(TRANSFER_RATE, getNetworkEnergy(network))) {
+            distributionCursor = (start + 1) % receivers.size();
+        }
+    }
+
+    private List<EnergyTargetEndpoint> collectReceivers(List<BasicEnergyCableTileEntity> network,
+                                                        Set<BlockPos> cablePositions) {
+        List<EnergyTargetEndpoint> receivers = new ArrayList<>();
+        Set<EndpointKey> visitedConsumers = new HashSet<>();
+
         for (BasicEnergyCableTileEntity cable : network) {
+            boolean cablePowered = level.hasNeighborSignal(cable.getBlockPos());
+
             for (Direction direction : Direction.values()) {
                 BlockPos neighborPos = cable.getBlockPos().relative(direction);
-                if (cablePositions.contains(neighborPos) || !visitedConsumers.add(neighborPos)) {
+                if (cablePositions.contains(neighborPos)) {
+                    continue;
+                }
+
+                EndpointKey key = new EndpointKey(neighborPos, direction.getOpposite());
+                if (!visitedConsumers.add(key)) {
                     continue;
                 }
 
@@ -105,29 +191,20 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                 IEnergyStorage receiver = neighbor
                         .getCapability(CapabilityEnergy.ENERGY, direction.getOpposite())
                         .orElse(null);
-                if (receiver != null && receiver.canReceive()) {
-                    receivers.add(receiver);
+                if (receiver == null || !receiver.canReceive()) {
+                    continue;
                 }
+
+                EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
+                if (!rule.allowsRedstone(cablePowered)) {
+                    continue;
+                }
+
+                receivers.add(new EnergyTargetEndpoint(neighborPos, receiver, rule));
             }
         }
 
-        if (receivers.isEmpty()) {
-            return;
-        }
-
-        int start = Math.floorMod(distributionCursor, receivers.size());
-        for (int offset = 0; offset < receivers.size() && budget > 0 && available > 0; offset++) {
-            IEnergyStorage receiver = receivers.get((start + offset) % receivers.size());
-            int offer = Math.min(budget, available);
-            int accepted = receiver.receiveEnergy(offer, false);
-            if (accepted > 0) {
-                drainNetworkEnergy(network, accepted);
-                available -= accepted;
-                budget -= accepted;
-            }
-        }
-
-        distributionCursor = (start + 1) % receivers.size();
+        return receivers;
     }
 
     private int getNetworkEnergy(List<BasicEnergyCableTileEntity> network) {
@@ -167,6 +244,22 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
         energyStorage.setEnergy(nbt.getInt("Energy"));
+
+        for (Direction direction : Direction.values()) {
+            targetRules.put(direction, new EnergyRoutingTargetRule());
+        }
+
+        if (nbt.contains("RoutingConfig")) {
+            CompoundNBT routing = nbt.getCompound("RoutingConfig");
+            for (Direction direction : Direction.values()) {
+                String key = "TargetRule" + direction.ordinal();
+                if (routing.contains(key)) {
+                    targetRules.put(direction,
+                            EnergyRoutingTargetRule.load(routing.getCompound(key)));
+                }
+            }
+        }
+
         invalidateNetworkCache();
     }
 
@@ -174,6 +267,13 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     public CompoundNBT save(CompoundNBT nbt) {
         super.save(nbt);
         nbt.putInt("Energy", energyStorage.getEnergyStored());
+
+        CompoundNBT routing = new CompoundNBT();
+        for (Direction direction : Direction.values()) {
+            routing.put("TargetRule" + direction.ordinal(), getMutableTargetRule(direction).save());
+        }
+        nbt.put("RoutingConfig", routing);
+
         return nbt;
     }
 
@@ -190,5 +290,45 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     public void setRemoved() {
         super.setRemoved();
         energyCapability.invalidate();
+    }
+
+    private static final class EnergyTargetEndpoint {
+        private final BlockPos blockPos;
+        private final IEnergyStorage handler;
+        private final EnergyRoutingTargetRule rule;
+
+        private EnergyTargetEndpoint(BlockPos blockPos, IEnergyStorage handler,
+                                     EnergyRoutingTargetRule rule) {
+            this.blockPos = blockPos.immutable();
+            this.handler = handler;
+            this.rule = new EnergyRoutingTargetRule(rule);
+        }
+    }
+
+    private static final class EndpointKey {
+        private final BlockPos pos;
+        private final Direction side;
+
+        private EndpointKey(BlockPos pos, Direction side) {
+            this.pos = pos.immutable();
+            this.side = side;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) {
+                return true;
+            }
+            if (!(other instanceof EndpointKey)) {
+                return false;
+            }
+            EndpointKey that = (EndpointKey) other;
+            return pos.equals(that.pos) && side == that.side;
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * pos.hashCode() + side.hashCode();
+        }
     }
 }
