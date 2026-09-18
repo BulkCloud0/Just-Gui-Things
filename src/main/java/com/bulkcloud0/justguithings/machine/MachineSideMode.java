@@ -4,7 +4,8 @@ public enum MachineSideMode {
     DISABLED,
     INPUT,
     OUTPUT,
-    ENERGY;
+    ENERGY,
+    FLUID_INPUT;
 
     public MachineSideMode next() {
         MachineSideMode[] values = values();

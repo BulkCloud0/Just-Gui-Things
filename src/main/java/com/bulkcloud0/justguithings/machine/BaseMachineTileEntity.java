@@ -24,6 +24,13 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 
 public abstract class BaseMachineTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+    private static final int SIDE_CONFIG_VERSION = 2;
+    private static final MachineSideMode[] DEFAULT_SIDE_MODES = {
+            MachineSideMode.DISABLED,
+            MachineSideMode.INPUT,
+            MachineSideMode.OUTPUT,
+            MachineSideMode.ENERGY
+    };
     private final int baseEnergyCapacity;
     private final int inputStart;
     private final int inputCount;
@@ -175,8 +182,28 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         }
     }
 
+    protected MachineSideMode[] getAllowedSideModes() {
+        return DEFAULT_SIDE_MODES;
+    }
+
+    protected MachineSideMode normalizeLoadedSideMode(Direction side, MachineSideMode mode, int configVersion) {
+        return isSideModeSupported(mode) ? mode : MachineSideMode.DISABLED;
+    }
+
+    public final boolean isSideModeSupported(MachineSideMode mode) {
+        if (mode == null) {
+            return false;
+        }
+        for (MachineSideMode allowed : getAllowedSideModes()) {
+            if (allowed == mode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected final void setSideMode(Direction side, MachineSideMode mode) {
-        sideModes.put(side, mode);
+        sideModes.put(side, isSideModeSupported(mode) ? mode : MachineSideMode.DISABLED);
     }
 
     public MachineSideMode getSideMode(Direction side) {
@@ -184,10 +211,26 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     }
 
     public MachineSideMode cycleSideMode(Direction side) {
-        MachineSideMode mode = getSideMode(side).next();
-        sideModes.put(side, mode);
+        MachineSideMode[] allowed = getAllowedSideModes();
+        if (allowed.length == 0) {
+            sideModes.put(side, MachineSideMode.DISABLED);
+            setChanged();
+            return MachineSideMode.DISABLED;
+        }
+
+        MachineSideMode current = getSideMode(side);
+        int currentIndex = -1;
+        for (int index = 0; index < allowed.length; index++) {
+            if (allowed[index] == current) {
+                currentIndex = index;
+                break;
+            }
+        }
+
+        MachineSideMode next = allowed[(currentIndex + 1) % allowed.length];
+        sideModes.put(side, next);
         setChanged();
-        return mode;
+        return next;
     }
 
     public ItemStackHandler getInventory() {
@@ -211,10 +254,12 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
         if (nbt.contains("SideConfig")) {
             CompoundNBT config = nbt.getCompound("SideConfig");
+            int configVersion = config.contains("Version") ? config.getInt("Version") : 1;
             for (Direction direction : Direction.values()) {
                 String key = "Side" + direction.ordinal();
                 if (config.contains(key)) {
-                    sideModes.put(direction, MachineSideMode.fromOrdinal(config.getInt(key)));
+                    MachineSideMode loaded = MachineSideMode.fromOrdinal(config.getInt(key));
+                    sideModes.put(direction, normalizeLoadedSideMode(direction, loaded, configVersion));
                 }
             }
         }
@@ -227,6 +272,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         nbt.putInt("Energy", energyStorage.getEnergyStored());
 
         CompoundNBT config = new CompoundNBT();
+        config.putInt("Version", SIDE_CONFIG_VERSION);
         for (Direction direction : Direction.values()) {
             config.putInt("Side" + direction.ordinal(), getSideMode(direction).ordinal());
         }

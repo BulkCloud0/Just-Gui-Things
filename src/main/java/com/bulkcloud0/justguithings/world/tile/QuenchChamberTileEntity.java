@@ -32,6 +32,13 @@ import java.util.EnumMap;
 import java.util.Optional;
 
 public class QuenchChamberTileEntity extends BaseProcessingMachineTileEntity<QuenchingRecipe> {
+    private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
+            MachineSideMode.DISABLED,
+            MachineSideMode.INPUT,
+            MachineSideMode.OUTPUT,
+            MachineSideMode.ENERGY,
+            MachineSideMode.FLUID_INPUT
+    };
     public static final int CAPACITY = 120_000;
     public static final int MAX_RECEIVE = 1_200;
     public static final int TANK_CAPACITY = 4_000;
@@ -124,7 +131,7 @@ public class QuenchChamberTileEntity extends BaseProcessingMachineTileEntity<Que
     public QuenchChamberTileEntity() {
         super(ModTileEntities.QUENCH_CHAMBER.get(), CAPACITY, MAX_RECEIVE, 2, 0, 1, 1, 1,
                 DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
-        setSideMode(Direction.WEST, MachineSideMode.INPUT);
+        setSideMode(Direction.WEST, MachineSideMode.FLUID_INPUT);
         initializeFluidCapabilities();
     }
 
@@ -133,11 +140,24 @@ public class QuenchChamberTileEntity extends BaseProcessingMachineTileEntity<Que
         return slot == 0 && canAcceptInput(stack);
     }
 
+    @Override
+    protected MachineSideMode[] getAllowedSideModes() {
+        return ALLOWED_SIDE_MODES;
+    }
+
+    @Override
+    protected MachineSideMode normalizeLoadedSideMode(Direction side, MachineSideMode mode, int configVersion) {
+        if (configVersion < 2 && side == Direction.WEST && mode == MachineSideMode.INPUT) {
+            return MachineSideMode.FLUID_INPUT;
+        }
+        return super.normalizeLoadedSideMode(side, mode, configVersion);
+    }
+
     private void initializeFluidCapabilities() {
         for (Direction direction : Direction.values()) {
             final Direction side = direction;
             sidedFluidCapabilities.put(side, LazyOptional.of(() -> new SidedFluidInputHandler(
-                    fluidInputHandler, () -> getSideMode(side) == MachineSideMode.INPUT)));
+                    fluidInputHandler, () -> getSideMode(side) == MachineSideMode.FLUID_INPUT)));
         }
     }
 
@@ -271,7 +291,7 @@ public class QuenchChamberTileEntity extends BaseProcessingMachineTileEntity<Que
             if (side == null) {
                 return fluidCapability.cast();
             }
-            if (getSideMode(side) == MachineSideMode.INPUT) {
+            if (getSideMode(side) == MachineSideMode.FLUID_INPUT) {
                 LazyOptional<IFluidHandler> sided = sidedFluidCapabilities.get(side);
                 return sided == null ? LazyOptional.empty() : sided.cast();
             }
