@@ -14,6 +14,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir and Fluid Pump
 - Endpoint routing for item and fluid pipes with filters, priorities, redstone conditions and source reserves
 - Shared conduit network/endpoint caching with loaded-chunk-safe topology scans and reactive endpoint invalidation when connection state changes
+- Multipart conduit arms with enlarged connector collars for clearer endpoint connections and easier face selection
 - Energy endpoint routing with consumer priority, source/target redstone control, fair distribution and Configurator-based per-face input/output modes
 - Shared machine core for energy, inventory, side configuration and processing state
 - Crusher with data-driven recipes and Speed/Efficiency/Buffer/Batch modules

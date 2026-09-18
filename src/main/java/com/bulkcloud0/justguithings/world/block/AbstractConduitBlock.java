@@ -27,12 +27,24 @@ public abstract class AbstractConduitBlock extends Block {
     public static final BooleanProperty DOWN = BooleanProperty.create("down");
 
     private static final VoxelShape CORE = Block.box(6.0D, 6.0D, 6.0D, 10.0D, 10.0D, 10.0D);
-    private static final VoxelShape NORTH_ARM = Block.box(6.0D, 6.0D, 0.0D, 10.0D, 10.0D, 6.0D);
-    private static final VoxelShape SOUTH_ARM = Block.box(6.0D, 6.0D, 10.0D, 10.0D, 10.0D, 16.0D);
-    private static final VoxelShape WEST_ARM = Block.box(0.0D, 6.0D, 6.0D, 6.0D, 10.0D, 10.0D);
-    private static final VoxelShape EAST_ARM = Block.box(10.0D, 6.0D, 6.0D, 16.0D, 10.0D, 10.0D);
-    private static final VoxelShape DOWN_ARM = Block.box(6.0D, 0.0D, 6.0D, 10.0D, 6.0D, 10.0D);
-    private static final VoxelShape UP_ARM = Block.box(6.0D, 10.0D, 6.0D, 10.0D, 16.0D, 10.0D);
+    private static final VoxelShape NORTH_ARM = VoxelShapes.or(
+            Block.box(6.0D, 6.0D, 0.0D, 10.0D, 10.0D, 6.0D),
+            Block.box(5.0D, 5.0D, 0.0D, 11.0D, 11.0D, 2.0D));
+    private static final VoxelShape SOUTH_ARM = VoxelShapes.or(
+            Block.box(6.0D, 6.0D, 10.0D, 10.0D, 10.0D, 16.0D),
+            Block.box(5.0D, 5.0D, 14.0D, 11.0D, 11.0D, 16.0D));
+    private static final VoxelShape WEST_ARM = VoxelShapes.or(
+            Block.box(0.0D, 6.0D, 6.0D, 6.0D, 10.0D, 10.0D),
+            Block.box(0.0D, 5.0D, 5.0D, 2.0D, 11.0D, 11.0D));
+    private static final VoxelShape EAST_ARM = VoxelShapes.or(
+            Block.box(10.0D, 6.0D, 6.0D, 16.0D, 10.0D, 10.0D),
+            Block.box(14.0D, 5.0D, 5.0D, 16.0D, 11.0D, 11.0D));
+    private static final VoxelShape DOWN_ARM = VoxelShapes.or(
+            Block.box(6.0D, 0.0D, 6.0D, 10.0D, 6.0D, 10.0D),
+            Block.box(5.0D, 0.0D, 5.0D, 11.0D, 2.0D, 11.0D));
+    private static final VoxelShape UP_ARM = VoxelShapes.or(
+            Block.box(6.0D, 10.0D, 6.0D, 10.0D, 16.0D, 10.0D),
+            Block.box(5.0D, 14.0D, 5.0D, 11.0D, 16.0D, 11.0D));
 
     protected AbstractConduitBlock(Properties properties) {
         super(properties);
