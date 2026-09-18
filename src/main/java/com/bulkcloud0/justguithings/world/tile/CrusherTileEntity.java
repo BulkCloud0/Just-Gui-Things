@@ -1,12 +1,11 @@
 package com.bulkcloud0.justguithings.world.tile;
 
-import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -21,7 +20,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class CrusherTileEntity extends BaseMachineTileEntity {
+public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRecipe> {
     public static final int CAPACITY = 100_000;
     public static final int BUFFER_CAPACITY_PER_MODULE = 100_000;
     public static final int MAX_RECEIVE = 1_000;
@@ -32,50 +31,22 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
     private final IIntArray dataAccess = new IIntArray() {
         @Override
         public int get(int index) {
+            if (index <= 4) {
+                return getProcessingData(index);
+            }
             switch (index) {
-                case 0:
-                    return progress;
-                case 1:
-                    return energyStorage.getEnergyStored() & 0xFFFF;
-                case 2:
-                    return (energyStorage.getEnergyStored() >>> 16) & 0xFFFF;
-                case 3:
-                    return currentProcessTicks;
-                case 4:
-                    return currentEnergyPerTick;
-                case 5:
-                    return getSpeedUpgradeCount();
-                case 6:
-                    return getEfficiencyUpgradeCount();
-                case 7:
-                    return getBufferUpgradeCount();
-                case 8:
-                    return getBatchUpgradeCount();
-                default:
-                    return 0;
+                case 5: return getSpeedUpgradeCount();
+                case 6: return getEfficiencyUpgradeCount();
+                case 7: return getBufferUpgradeCount();
+                case 8: return getBatchUpgradeCount();
+                default: return 0;
             }
         }
 
         @Override
         public void set(int index, int value) {
-            switch (index) {
-                case 0:
-                    progress = value;
-                    break;
-                case 1:
-                    energyStorage.setEnergy((energyStorage.getEnergyStored() & 0xFFFF0000) | (value & 0xFFFF));
-                    break;
-                case 2:
-                    energyStorage.setEnergy((energyStorage.getEnergyStored() & 0x0000FFFF) | ((value & 0xFFFF) << 16));
-                    break;
-                case 3:
-                    currentProcessTicks = value;
-                    break;
-                case 4:
-                    currentEnergyPerTick = value;
-                    break;
-                default:
-                    break;
+            if (index <= 4) {
+                setProcessingData(index, value);
             }
         }
 
@@ -85,14 +56,11 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
         }
     };
 
-    private int progress;
-    private int currentProcessTicks = DEFAULT_PROCESS_TICKS;
-    private int currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
     private int activeBatchSize = 1;
-    private ResourceLocation activeRecipeId;
 
     public CrusherTileEntity() {
-        super(ModTileEntities.CRUSHER.get(), CAPACITY, MAX_RECEIVE, 6, 0, 1, 1, 1);
+        super(ModTileEntities.CRUSHER.get(), CAPACITY, MAX_RECEIVE, 6, 0, 1, 1, 1,
+                DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
     }
 
     @Override
@@ -125,58 +93,52 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
-    public void tick() {
-        if (level == null || level.isClientSide) {
-            return;
-        }
-
-        Optional<CrusherRecipe> recipeOptional = findRecipe(inventory.getStackInSlot(0));
-        if (!recipeOptional.isPresent()) {
-            resetProcessing();
-            return;
-        }
-
-        CrusherRecipe recipe = recipeOptional.get();
-        if (activeRecipeId == null || !activeRecipeId.equals(recipe.getId())) {
-            progress = 0;
-            activeRecipeId = recipe.getId();
-            activeBatchSize = resolveBatchSize(recipe);
-        }
-
-        if (activeBatchSize <= 0 || !canProcess(recipe, activeBatchSize)) {
-            resetProcessing();
-            return;
-        }
-
-        currentProcessTicks = getEffectiveProcessingTime(recipe);
-        currentEnergyPerTick = getEffectiveEnergyPerTick(recipe, activeBatchSize);
-
-        if (energyStorage.getEnergyStored() < currentEnergyPerTick) {
-            return;
-        }
-
-        energyStorage.consumeEnergy(currentEnergyPerTick);
-        progress++;
-
-        if (progress >= currentProcessTicks) {
-            processItem(recipe, activeBatchSize);
-            progress = 0;
-            activeRecipeId = null;
-            activeBatchSize = 1;
-        }
-
-        setChanged();
+    protected Optional<CrusherRecipe> findCurrentRecipe() {
+        return findRecipe(inventory.getStackInSlot(0));
     }
 
-    private void resetProcessing() {
-        if (progress != 0 || activeRecipeId != null || activeBatchSize != 1) {
-            progress = 0;
-            activeRecipeId = null;
-            activeBatchSize = 1;
-            setChanged();
-        }
-        currentProcessTicks = DEFAULT_PROCESS_TICKS;
-        currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
+    @Override
+    protected ResourceLocation getRecipeId(CrusherRecipe recipe) {
+        return recipe.getId();
+    }
+
+    @Override
+    protected void onRecipeActivated(CrusherRecipe recipe) {
+        activeBatchSize = resolveBatchSize(recipe);
+    }
+
+    @Override
+    protected boolean canProcessRecipe(CrusherRecipe recipe) {
+        return activeBatchSize > 0 && canProcess(recipe, activeBatchSize);
+    }
+
+    @Override
+    protected int getProcessingTime(CrusherRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
+    }
+
+    @Override
+    protected int getEnergyPerTick(CrusherRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
+        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier * Math.max(1, activeBatchSize);
+        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+    }
+
+    @Override
+    protected void processRecipe(CrusherRecipe recipe) {
+        processItem(recipe, activeBatchSize);
+    }
+
+    @Override
+    protected void onProcessingReset() {
+        activeBatchSize = 1;
+    }
+
+    @Override
+    protected void onRecipeCompleted(CrusherRecipe recipe) {
+        activeBatchSize = 1;
     }
 
     private Optional<CrusherRecipe> findRecipe(ItemStack input) {
@@ -252,18 +214,6 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
         }
     }
 
-    private int getEffectiveProcessingTime(CrusherRecipe recipe) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
-    }
-
-    private int getEffectiveEnergyPerTick(CrusherRecipe recipe, int batchSize) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
-        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier * Math.max(1, batchSize);
-        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
-    }
-
     public int getSpeedUpgradeCount() {
         return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.SPEED));
     }
@@ -280,6 +230,7 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
         return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.BATCH));
     }
 
+    @Override
     public int getEnergyCapacity() {
         return CAPACITY + BUFFER_CAPACITY_PER_MODULE * getBufferUpgradeCount();
     }
@@ -293,6 +244,18 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
+    protected void loadAdditionalProcessingData(CompoundNBT nbt) {
+        activeBatchSize = hasActiveRecipe() ? Math.max(1, nbt.getInt("ActiveBatchSize")) : 1;
+    }
+
+    @Override
+    protected void saveAdditionalProcessingData(CompoundNBT nbt) {
+        if (hasActiveRecipe() && progress > 0) {
+            nbt.putInt("ActiveBatchSize", Math.max(1, activeBatchSize));
+        }
+    }
+
+    @Override
     public ITextComponent getDisplayName() {
         return new TranslationTextComponent("container.justguithings.crusher");
     }
@@ -302,43 +265,4 @@ public class CrusherTileEntity extends BaseMachineTileEntity {
     public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
         return new CrusherContainer(windowId, playerInventory, this);
     }
-
-    @Override
-    public void load(BlockState state, CompoundNBT nbt) {
-        super.load(state, nbt);
-        progress = Math.max(0, nbt.getInt("Progress"));
-        activeRecipeId = null;
-        activeBatchSize = 1;
-
-        String activeRecipe = nbt.getString("ActiveRecipe");
-        if (!activeRecipe.isEmpty()) {
-            try {
-                activeRecipeId = new ResourceLocation(activeRecipe);
-                activeBatchSize = Math.max(1, nbt.getInt("ActiveBatchSize"));
-            } catch (RuntimeException ignored) {
-                activeRecipeId = null;
-                progress = 0;
-                activeBatchSize = 1;
-            }
-        }
-
-        if (activeRecipeId == null) {
-            progress = 0;
-            activeBatchSize = 1;
-        }
-
-    }
-
-    @Override
-    public CompoundNBT save(CompoundNBT nbt) {
-        super.save(nbt);
-        nbt.putInt("Progress", progress);
-        if (activeRecipeId != null && progress > 0) {
-            nbt.putString("ActiveRecipe", activeRecipeId.toString());
-            nbt.putInt("ActiveBatchSize", Math.max(1, activeBatchSize));
-        }
-
-        return nbt;
-    }
-
 }

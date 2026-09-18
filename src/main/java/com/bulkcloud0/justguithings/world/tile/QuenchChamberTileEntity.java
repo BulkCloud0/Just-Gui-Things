@@ -1,6 +1,6 @@
 package com.bulkcloud0.justguithings.world.tile;
 
-import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.machine.SidedFluidInputHandler;
 import com.bulkcloud0.justguithings.recipe.QuenchingRecipe;
@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Optional;
 
-public class QuenchChamberTileEntity extends BaseMachineTileEntity {
+public class QuenchChamberTileEntity extends BaseProcessingMachineTileEntity<QuenchingRecipe> {
     public static final int CAPACITY = 120_000;
     public static final int MAX_RECEIVE = 1_200;
     public static final int TANK_CAPACITY = 4_000;
@@ -95,27 +95,20 @@ public class QuenchChamberTileEntity extends BaseMachineTileEntity {
     private final IIntArray dataAccess = new IIntArray() {
         @Override
         public int get(int index) {
-            switch (index) {
-                case 0: return progress;
-                case 1: return energyStorage.getEnergyStored() & 0xFFFF;
-                case 2: return (energyStorage.getEnergyStored() >>> 16) & 0xFFFF;
-                case 3: return currentProcessTicks;
-                case 4: return currentEnergyPerTick;
-                case 5: return level != null && level.isClientSide ? syncedFluidAmount : fluidTank.getFluidAmount();
-                default: return 0;
+            if (index <= 4) {
+                return getProcessingData(index);
             }
+            return index == 5
+                    ? (level != null && level.isClientSide ? syncedFluidAmount : fluidTank.getFluidAmount())
+                    : 0;
         }
 
         @Override
         public void set(int index, int value) {
-            switch (index) {
-                case 0: progress = value; break;
-                case 1: energyStorage.setEnergy((energyStorage.getEnergyStored() & 0xFFFF0000) | (value & 0xFFFF)); break;
-                case 2: energyStorage.setEnergy((energyStorage.getEnergyStored() & 0x0000FFFF) | ((value & 0xFFFF) << 16)); break;
-                case 3: currentProcessTicks = value; break;
-                case 4: currentEnergyPerTick = value; break;
-                case 5: syncedFluidAmount = value; break;
-                default: break;
+            if (index <= 4) {
+                setProcessingData(index, value);
+            } else if (index == 5) {
+                syncedFluidAmount = value;
             }
         }
 
@@ -126,15 +119,11 @@ public class QuenchChamberTileEntity extends BaseMachineTileEntity {
     };
 
     private LazyOptional<IFluidHandler> fluidCapability = LazyOptional.of(() -> fluidInputHandler);
-
-    private int progress;
-    private int currentProcessTicks = DEFAULT_PROCESS_TICKS;
-    private int currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
-    private ResourceLocation activeRecipeId;
     private int syncedFluidAmount;
 
     public QuenchChamberTileEntity() {
-        super(ModTileEntities.QUENCH_CHAMBER.get(), CAPACITY, MAX_RECEIVE, 2, 0, 1, 1, 1);
+        super(ModTileEntities.QUENCH_CHAMBER.get(), CAPACITY, MAX_RECEIVE, 2, 0, 1, 1, 1,
+                DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
         setSideMode(Direction.WEST, MachineSideMode.INPUT);
         initializeFluidCapabilities();
     }
@@ -153,57 +142,7 @@ public class QuenchChamberTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
-    public void tick() {
-        if (level == null || level.isClientSide) {
-            return;
-        }
-
-        Optional<QuenchingRecipe> recipeOptional = findRecipe();
-        if (!recipeOptional.isPresent()) {
-            resetProgress();
-            return;
-        }
-
-        QuenchingRecipe recipe = recipeOptional.get();
-        if (activeRecipeId == null || !activeRecipeId.equals(recipe.getId())) {
-            progress = 0;
-            activeRecipeId = recipe.getId();
-        }
-
-        currentProcessTicks = recipe.getProcessingTime();
-        currentEnergyPerTick = recipe.getEnergyPerTick();
-
-        if (!canProcess(recipe)) {
-            resetProgress();
-            return;
-        }
-        if (energyStorage.getEnergyStored() < currentEnergyPerTick) {
-            return;
-        }
-
-        energyStorage.consumeEnergy(currentEnergyPerTick);
-        progress++;
-
-        if (progress >= currentProcessTicks) {
-            process(recipe);
-            progress = 0;
-            activeRecipeId = null;
-        }
-
-        setChanged();
-    }
-
-    private void resetProgress() {
-        if (progress != 0 || activeRecipeId != null) {
-            progress = 0;
-            activeRecipeId = null;
-            setChanged();
-        }
-        currentProcessTicks = DEFAULT_PROCESS_TICKS;
-        currentEnergyPerTick = DEFAULT_ENERGY_PER_TICK;
-    }
-
-    private Optional<QuenchingRecipe> findRecipe() {
+    protected Optional<QuenchingRecipe> findCurrentRecipe() {
         if (level == null || inventory.getStackInSlot(0).isEmpty() || fluidTank.isEmpty()) {
             return Optional.empty();
         }
@@ -218,7 +157,13 @@ public class QuenchChamberTileEntity extends BaseMachineTileEntity {
         return Optional.empty();
     }
 
-    private boolean canProcess(QuenchingRecipe recipe) {
+    @Override
+    protected ResourceLocation getRecipeId(QuenchingRecipe recipe) {
+        return recipe.getId();
+    }
+
+    @Override
+    protected boolean canProcessRecipe(QuenchingRecipe recipe) {
         ItemStack result = recipe.getResultItem();
         if (result.isEmpty()) {
             return false;
@@ -234,7 +179,18 @@ public class QuenchChamberTileEntity extends BaseMachineTileEntity {
         return output.getCount() + result.getCount() <= output.getMaxStackSize();
     }
 
-    private void process(QuenchingRecipe recipe) {
+    @Override
+    protected int getProcessingTime(QuenchingRecipe recipe) {
+        return recipe.getProcessingTime();
+    }
+
+    @Override
+    protected int getEnergyPerTick(QuenchingRecipe recipe) {
+        return recipe.getEnergyPerTick();
+    }
+
+    @Override
+    protected void processRecipe(QuenchingRecipe recipe) {
         ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
         if (result.isEmpty()) {
             return;
@@ -299,33 +255,12 @@ public class QuenchChamberTileEntity extends BaseMachineTileEntity {
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
         fluidTank.readFromNBT(nbt.getCompound("Tank"));
-        progress = Math.max(0, nbt.getInt("Progress"));
-        activeRecipeId = null;
-
-        String activeRecipe = nbt.getString("ActiveRecipe");
-        if (!activeRecipe.isEmpty()) {
-            try {
-                activeRecipeId = new ResourceLocation(activeRecipe);
-            } catch (RuntimeException ignored) {
-                activeRecipeId = null;
-                progress = 0;
-            }
-        }
-        if (activeRecipeId == null) {
-            progress = 0;
-        }
-
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         super.save(nbt);
         nbt.put("Tank", fluidTank.writeToNBT(new CompoundNBT()));
-        nbt.putInt("Progress", progress);
-        if (activeRecipeId != null && progress > 0) {
-            nbt.putString("ActiveRecipe", activeRecipeId.toString());
-        }
-
         return nbt;
     }
 
