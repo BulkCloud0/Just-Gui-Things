@@ -8,6 +8,7 @@ import com.bulkcloud0.justguithings.world.block.CoalGeneratorBlock;
 import com.bulkcloud0.justguithings.world.block.CrusherBlock;
 import com.bulkcloud0.justguithings.world.block.EnergyCellBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialMixerBlock;
+import com.bulkcloud0.justguithings.world.block.FluidReservoirBlock;
 import com.bulkcloud0.justguithings.world.block.QuenchChamberBlock;
 import com.bulkcloud0.justguithings.world.block.StampingPressBlock;
 import net.minecraft.block.AbstractBlock;
@@ -57,6 +58,10 @@ public final class ModBlocks {
     public static final RegistryObject<Block> BASIC_FLUID_PIPE = BLOCKS.register("basic_fluid_pipe",
             () -> new BasicFluidPipeBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(1.5F).harvestTool(ToolType.PICKAXE).harvestLevel(0)));
+
+    public static final RegistryObject<Block> FLUID_RESERVOIR = BLOCKS.register("fluid_reservoir",
+            () -> new FluidReservoirBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
 
     private ModBlocks() {}
 }

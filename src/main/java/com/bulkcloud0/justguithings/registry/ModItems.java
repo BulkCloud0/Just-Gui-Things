@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.item.EnergyCellBlockItem;
+import com.bulkcloud0.justguithings.item.FluidReservoirBlockItem;
 import com.bulkcloud0.justguithings.item.MachineModuleItem;
 import com.bulkcloud0.justguithings.item.TooltipItem;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
@@ -34,6 +35,9 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.BASIC_ITEM_PIPE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> BASIC_FLUID_PIPE = ITEMS.register("basic_fluid_pipe",
             () -> new BlockItem(ModBlocks.BASIC_FLUID_PIPE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
+    public static final RegistryObject<Item> FLUID_RESERVOIR = ITEMS.register("fluid_reservoir",
+            () -> new FluidReservoirBlockItem(ModBlocks.FLUID_RESERVOIR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
 
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
