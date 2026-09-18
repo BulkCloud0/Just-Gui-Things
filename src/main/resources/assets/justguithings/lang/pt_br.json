@@ -160,5 +160,11 @@
   "message.justguithings.routing_controller.rule_copied": "Roteamento de %s copiado da face %s.",
   "message.justguithings.routing_controller.rule_pasted": "Roteamento de %s copiado aplicado à face %s.",
   "message.justguithings.routing_controller.rule_clipboard_empty": "Nenhuma regra de roteamento de %s foi copiada; a face %s não foi alterada.",
-  "message.justguithings.routing_controller.rule_clipboard_resource_mismatch": "A regra de %s copiada pertence a outro tipo de recurso; a face %s não foi alterada."
+  "message.justguithings.routing_controller.rule_clipboard_resource_mismatch": "A regra de %s copiada pertence a outro tipo de recurso; a face %s não foi alterada.",
+  "tooltip.justguithings.routing_controller.clipboard": "Área de transferência %s: %s",
+  "routing.justguithings.clipboard_resource.empty": "Vazia",
+  "routing.justguithings.clipboard_resource.item": "Item",
+  "routing.justguithings.clipboard_resource.fluid": "Fluido",
+  "routing.justguithings.clipboard_resource.energy": "Energia",
+  "routing.justguithings.clipboard_resource.unknown": "Desconhecida"
 }
