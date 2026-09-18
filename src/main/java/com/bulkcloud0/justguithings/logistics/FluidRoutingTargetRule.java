@@ -26,6 +26,10 @@ public final class FluidRoutingTargetRule {
         return priority;
     }
 
+    public FluidRouteFilter getFilter() {
+        return new FluidRouteFilter(filter);
+    }
+
     public RoutingFilterSampleChange toggleFilterSample(FluidStack stack) {
         return filter.toggleSample(stack);
     }
@@ -48,6 +52,10 @@ public final class FluidRoutingTargetRule {
 
     public boolean accepts(FluidStack stack) {
         return filter.accepts(stack);
+    }
+
+    public RoutingRedstoneMode getRedstoneMode() {
+        return redstoneMode;
     }
 
     public RoutingRedstoneMode cycleRedstoneMode() {

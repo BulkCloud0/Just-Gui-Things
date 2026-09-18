@@ -20,6 +20,10 @@ public final class FluidRoutingSourceRule {
         redstoneMode = other.redstoneMode;
     }
 
+    public FluidRouteFilter getFilter() {
+        return new FluidRouteFilter(filter);
+    }
+
     public RoutingFilterSampleChange toggleFilterSample(FluidStack stack) {
         return filter.toggleSample(stack);
     }
@@ -40,6 +44,10 @@ public final class FluidRoutingSourceRule {
         return filter.toggleMatchNbt();
     }
 
+    public int getMinStock() {
+        return minStock;
+    }
+
     public int cycleMinStock() {
         int currentIndex = 0;
         for (int index = 0; index < MIN_STOCK_VALUES.length; index++) {
@@ -50,6 +58,10 @@ public final class FluidRoutingSourceRule {
         }
         minStock = MIN_STOCK_VALUES[(currentIndex + 1) % MIN_STOCK_VALUES.length];
         return minStock;
+    }
+
+    public RoutingRedstoneMode getRedstoneMode() {
+        return redstoneMode;
     }
 
     public RoutingRedstoneMode cycleRedstoneMode() {

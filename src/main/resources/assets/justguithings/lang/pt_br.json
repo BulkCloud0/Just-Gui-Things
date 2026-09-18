@@ -75,7 +75,7 @@
   "message.justguithings.routing_controller.priority": "Prioridade do destino %s: %s",
   "message.justguithings.routing_controller.filter_cleared": "Whitelist %s removida.",
   "tooltip.justguithings.routing_controller.mode": "Clique com o botão direito no ar para alternar os modos válidos do escopo atual.",
-  "tooltip.justguithings.routing_controller.use": "Clique com o botão direito em uma face de endpoint compatível de itens/fluidos/energia para aplicar a regra selecionada.",
+  "tooltip.justguithings.routing_controller.use": "Clique com o botão direito em uma face de endpoint para editá-la. Shift+clique em uma face para inspecionar as regras atuais.",
   "tooltip.justguithings.routing_controller.current_mode": "Modo: %s",
   "routing.justguithings.controller_mode.priority": "Prioridade do Destino",
   "routing.justguithings.controller_mode.filter_sample": "Amostra do Filtro",
@@ -140,5 +140,17 @@
   "message.justguithings.routing_controller.energy_output_required": "A face %s precisa ser Saída ou Entrada + Saída antes de aplicar roteamento de consumidor.",
   "message.justguithings.routing_controller.energy_input_required": "A face %s precisa ser Entrada ou Entrada + Saída antes de aplicar roteamento de fonte.",
   "message.justguithings.routing_controller.energy_source_redstone": "Condição de redstone da fonte de energia %s: %s",
-  "message.justguithings.routing_controller.energy_source_mode_unsupported": "O modo de roteamento %s não se aplica a fontes de energia."
+  "message.justguithings.routing_controller.energy_source_mode_unsupported": "O modo de roteamento %s não se aplica a fontes de energia.",
+  "routing.justguithings.conduit_mode.both": "Puxar + Enviar",
+  "routing.justguithings.conduit_mode.pull": "Puxar",
+  "routing.justguithings.conduit_mode.push": "Enviar",
+  "routing.justguithings.conduit_mode.disabled": "Desativado",
+  "routing.justguithings.nbt_mode.exact": "Exato",
+  "routing.justguithings.nbt_mode.ignored": "Ignorado",
+  "message.justguithings.routing_controller.inspect_item_target": "%s Destino de Itens | E/S: %s | Prioridade: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s",
+  "message.justguithings.routing_controller.inspect_item_source": "%s Fonte de Itens | E/S: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Estoque mínimo: %s",
+  "message.justguithings.routing_controller.inspect_fluid_target": "%s Destino de Fluido | E/S: %s | Prioridade: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s",
+  "message.justguithings.routing_controller.inspect_fluid_source": "%s Fonte de Fluido | E/S: %s | Filtro: %s %s/%s | NBT: %s | Redstone: %s | Reserva mínima: %s mB",
+  "message.justguithings.routing_controller.inspect_energy_target": "%s Destino de Energia | E/S: %s | Prioridade: %s | Redstone: %s",
+  "message.justguithings.routing_controller.inspect_energy_source": "%s Fonte de Energia | E/S: %s | Redstone: %s"
 }

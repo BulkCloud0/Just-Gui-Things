@@ -145,8 +145,12 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         return getMutableSourceRule(direction).allowsRedstone(powered);
     }
 
-    private EnergyRoutingTargetRule getTargetRule(Direction direction) {
+    public EnergyRoutingTargetRule getTargetRule(Direction direction) {
         return new EnergyRoutingTargetRule(getMutableTargetRule(direction));
+    }
+
+    public EnergyRoutingSourceRule getSourceRule(Direction direction) {
+        return new EnergyRoutingSourceRule(getMutableSourceRule(direction));
     }
 
     private EnergyRoutingTargetRule getMutableTargetRule(Direction direction) {
