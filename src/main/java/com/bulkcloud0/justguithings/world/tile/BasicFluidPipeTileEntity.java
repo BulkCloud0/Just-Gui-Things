@@ -242,10 +242,12 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
                               List<TargetEndpoint> targets,
                               FluidStack simulatedDrain,
                               int maxAmount) {
+        int remaining = Math.max(0, Math.min(maxAmount, simulatedDrain.getAmount()));
+        int movedTotal = 0;
         int targetStart = Math.floorMod(targetCursor, targets.size());
 
         for (RoutingPriority priority : ROUTING_ORDER) {
-            for (int targetOffset = 0; targetOffset < targets.size(); targetOffset++) {
+            for (int targetOffset = 0; targetOffset < targets.size() && remaining > 0; targetOffset++) {
                 int targetIndex = (targetStart + targetOffset) % targets.size();
                 TargetEndpoint target = targets.get(targetIndex);
 
@@ -255,15 +257,26 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
                     continue;
                 }
 
-                int moved = moveFluid(network, source, target, simulatedDrain, maxAmount);
-                if (moved > 0) {
-                    targetCursor = (targetIndex + 1) % targets.size();
-                    return moved;
+                int moved = moveFluid(network, source, target, simulatedDrain, remaining);
+                if (moved <= 0) {
+                    continue;
                 }
+
+                movedTotal += moved;
+                remaining -= moved;
+                targetCursor = (targetIndex + 1) % targets.size();
+
+                if (hasRecovery(network)) {
+                    return movedTotal;
+                }
+            }
+
+            if (remaining <= 0) {
+                break;
             }
         }
 
-        return 0;
+        return movedTotal;
     }
 
     private void collectEndpoints(List<SourceEndpoint> sources,

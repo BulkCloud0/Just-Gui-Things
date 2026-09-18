@@ -234,10 +234,12 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
 
     private int routeToTarget(SourceEndpoint source, int sourceSlot,
                               List<TargetEndpoint> targets, int maxAmount) {
+        int remaining = Math.max(0, maxAmount);
+        int movedTotal = 0;
         int targetStart = Math.floorMod(targetCursor, targets.size());
 
         for (RoutingPriority priority : ROUTING_ORDER) {
-            for (int targetOffset = 0; targetOffset < targets.size(); targetOffset++) {
+            for (int targetOffset = 0; targetOffset < targets.size() && remaining > 0; targetOffset++) {
                 int targetIndex = (targetStart + targetOffset) % targets.size();
                 TargetEndpoint target = targets.get(targetIndex);
 
@@ -246,15 +248,22 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                     continue;
                 }
 
-                int moved = moveItem(source, sourceSlot, target, maxAmount);
-                if (moved > 0) {
-                    targetCursor = (targetIndex + 1) % targets.size();
-                    return moved;
+                int moved = moveItem(source, sourceSlot, target, remaining);
+                if (moved <= 0) {
+                    continue;
                 }
+
+                movedTotal += moved;
+                remaining -= moved;
+                targetCursor = (targetIndex + 1) % targets.size();
+            }
+
+            if (remaining <= 0) {
+                break;
             }
         }
 
-        return 0;
+        return movedTotal;
     }
 
     private void collectEndpoints(List<SourceEndpoint> sources,
