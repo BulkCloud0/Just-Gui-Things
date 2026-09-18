@@ -66,6 +66,10 @@ Machines do not progress through a Basic/Reinforced/Advanced/Elite ladder. Inste
 - Fluids, heat/pressure and advanced industrial processing
 - Proper custom cable/machine textures and models
 
+## Compatibility
+
+Compatibility is designed around Forge capabilities, shared tags, data-driven recipes and optional integration layers. See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for the supported extension points and soft-dependency rules.
+
 ## Environment
 
 - Minecraft 1.16.5
