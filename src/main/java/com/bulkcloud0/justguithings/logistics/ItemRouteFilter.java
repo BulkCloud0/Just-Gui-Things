@@ -109,6 +109,10 @@ public final class ItemRouteFilter {
         return mode == ItemFilterMode.WHITELIST ? matches : !matches;
     }
 
+    public boolean matchesIdentity(ItemStack first, ItemStack second) {
+        return matchesSample(first, second, matchNbt);
+    }
+
     private int findExactSample(ItemStack stack) {
         for (int index = 0; index < samples.size(); index++) {
             if (matchesSample(samples.get(index), stack, true)) {
