@@ -153,6 +153,20 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         return new EnergyRoutingSourceRule(getMutableSourceRule(direction));
     }
 
+    public void setTargetRule(Direction direction, EnergyRoutingTargetRule rule) {
+        targetRules.put(direction, rule == null
+                ? new EnergyRoutingTargetRule()
+                : new EnergyRoutingTargetRule(rule));
+        setChanged();
+    }
+
+    public void setSourceRule(Direction direction, EnergyRoutingSourceRule rule) {
+        sourceRules.put(direction, rule == null
+                ? new EnergyRoutingSourceRule()
+                : new EnergyRoutingSourceRule(rule));
+        setChanged();
+    }
+
     private EnergyRoutingTargetRule getMutableTargetRule(Direction direction) {
         EnergyRoutingTargetRule rule = targetRules.get(direction);
         if (rule == null) {

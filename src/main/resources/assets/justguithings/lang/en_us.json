@@ -154,5 +154,11 @@
   "message.justguithings.routing_controller.inspect_energy_target": "%s Energy Target | I/O: %s | Priority: %s | Redstone: %s | State: %s",
   "message.justguithings.routing_controller.inspect_energy_source": "%s Energy Source | I/O: %s | Redstone: %s | State: %s",
   "routing.justguithings.endpoint_state.active": "Active",
-  "routing.justguithings.endpoint_state.inactive": "Inactive"
+  "routing.justguithings.endpoint_state.inactive": "Inactive",
+  "routing.justguithings.controller_mode.copy_rule": "Copy Rule",
+  "routing.justguithings.controller_mode.paste_rule": "Paste Rule",
+  "message.justguithings.routing_controller.rule_copied": "Copied %s routing from %s.",
+  "message.justguithings.routing_controller.rule_pasted": "Applied copied %s routing to %s.",
+  "message.justguithings.routing_controller.rule_clipboard_empty": "No copied %s routing rule is stored; %s was not changed.",
+  "message.justguithings.routing_controller.rule_clipboard_resource_mismatch": "The copied %s rule belongs to a different conduit resource; %s was not changed."
 }

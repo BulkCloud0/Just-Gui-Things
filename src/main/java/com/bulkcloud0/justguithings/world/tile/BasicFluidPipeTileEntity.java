@@ -184,6 +184,20 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         return new FluidRoutingSourceRule(getMutableSourceRule(direction));
     }
 
+    public void setTargetRule(Direction direction, FluidRoutingTargetRule rule) {
+        targetRules.put(direction, rule == null
+                ? new FluidRoutingTargetRule()
+                : new FluidRoutingTargetRule(rule));
+        setChanged();
+    }
+
+    public void setSourceRule(Direction direction, FluidRoutingSourceRule rule) {
+        sourceRules.put(direction, rule == null
+                ? new FluidRoutingSourceRule()
+                : new FluidRoutingSourceRule(rule));
+        setChanged();
+    }
+
     private FluidRoutingTargetRule getMutableTargetRule(Direction direction) {
         FluidRoutingTargetRule rule = targetRules.get(direction);
         if (rule == null) {

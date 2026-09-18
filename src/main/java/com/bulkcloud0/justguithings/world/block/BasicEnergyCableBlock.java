@@ -125,7 +125,14 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
             RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
             String face = direction.toString().toUpperCase(Locale.ROOT);
 
-            if (scope == RoutingControllerScope.SOURCE) {
+            if (mode == RoutingControllerMode.COPY_RULE) {
+                RoutingControllerItem.copyEnergyRoutingRule(held, scope, cable, direction);
+                RoutingControllerItem.displayRuleCopied(player, scope, direction);
+            } else if (mode == RoutingControllerMode.PASTE_RULE) {
+                RoutingControllerItem.displayRulePasteResult(
+                        player, scope, direction,
+                        RoutingControllerItem.pasteEnergyRoutingRule(held, scope, cable, direction));
+            } else if (scope == RoutingControllerScope.SOURCE) {
                 applySourceRoutingController(cable, direction, player, mode, face);
             } else {
                 applyTargetRoutingController(cable, direction, player, mode, face);

@@ -154,5 +154,11 @@
   "message.justguithings.routing_controller.inspect_energy_target": "%s Destino de Energia | E/S: %s | Prioridade: %s | Redstone: %s | Estado: %s",
   "message.justguithings.routing_controller.inspect_energy_source": "%s Fonte de Energia | E/S: %s | Redstone: %s | Estado: %s",
   "routing.justguithings.endpoint_state.active": "Ativo",
-  "routing.justguithings.endpoint_state.inactive": "Inativo"
+  "routing.justguithings.endpoint_state.inactive": "Inativo",
+  "routing.justguithings.controller_mode.copy_rule": "Copiar Regra",
+  "routing.justguithings.controller_mode.paste_rule": "Colar Regra",
+  "message.justguithings.routing_controller.rule_copied": "Roteamento de %s copiado da face %s.",
+  "message.justguithings.routing_controller.rule_pasted": "Roteamento de %s copiado aplicado à face %s.",
+  "message.justguithings.routing_controller.rule_clipboard_empty": "Nenhuma regra de roteamento de %s foi copiada; a face %s não foi alterada.",
+  "message.justguithings.routing_controller.rule_clipboard_resource_mismatch": "A regra de %s copiada pertence a outro tipo de recurso; a face %s não foi alterada."
 }
