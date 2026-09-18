@@ -75,7 +75,7 @@ The Routing Controller has two editing scopes:
 - `TARGET`: rules applied when the face is used as a push destination;
 - `SOURCE`: rules applied when the face is used as a pull source.
 
-Shift-right-clicking in the air switches scope. Normal right-clicking in the air cycles only the modes supported by the current scope. On a supported conduit face, normal right-click applies the selected edit mode while shift-right-click performs a read-only inspection of the current scope. Inspection reports the face I/O mode and the routing fields relevant to that resource without changing pipe/cable NBT. The controller persists separate target/source modes in its own item NBT and reads the old single `RoutingMode` value as the target mode for compatibility.
+Shift-right-clicking in the air switches scope. Normal right-clicking in the air cycles only the modes supported by the current scope. On a supported conduit face, normal right-click applies the selected edit mode while shift-right-click performs a read-only inspection of the current scope. Inspection reports the face I/O mode and the routing fields relevant to that resource without changing pipe/cable NBT. Item and fluid inspections also list configured filter sample registry IDs, with tagged samples marked as `[NBT]`. The controller persists separate target/source modes in its own item NBT and reads the old single `RoutingMode` value as the target mode for compatibility.
 
 ### Target rules
 
