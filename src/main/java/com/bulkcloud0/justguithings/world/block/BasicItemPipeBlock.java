@@ -8,6 +8,7 @@ import com.bulkcloud0.justguithings.logistics.ItemRouteFilter;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingPriority;
 import com.bulkcloud0.justguithings.logistics.ItemRoutingRedstoneMode;
 import com.bulkcloud0.justguithings.logistics.RoutingControllerMode;
+import com.bulkcloud0.justguithings.logistics.RoutingControllerScope;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
 import net.minecraft.block.BlockState;
@@ -109,8 +110,14 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
 
         if (held.getItem() == ModItems.ROUTING_CONTROLLER.get()) {
             if (!world.isClientSide) {
-                applyRoutingController(
-                        pipe, faceDirection, player, hand, RoutingControllerItem.getMode(held));
+                RoutingControllerScope scope = RoutingControllerItem.getScope(held);
+                RoutingControllerMode mode = RoutingControllerItem.getMode(held, scope);
+
+                if (scope == RoutingControllerScope.SOURCE) {
+                    applySourceRoutingController(pipe, faceDirection, player, hand, mode);
+                } else {
+                    applyTargetRoutingController(pipe, faceDirection, player, hand, mode);
+                }
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
         }
@@ -118,50 +125,14 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
         return ActionResultType.PASS;
     }
 
-    private void applyRoutingController(BasicItemPipeTileEntity pipe, Direction direction,
-                                        PlayerEntity player, Hand controllerHand,
-                                        RoutingControllerMode controllerMode) {
+    private void applyTargetRoutingController(BasicItemPipeTileEntity pipe, Direction direction,
+                                              PlayerEntity player, Hand controllerHand,
+                                              RoutingControllerMode controllerMode) {
         String face = direction.toString().toUpperCase(Locale.ROOT);
 
         switch (controllerMode) {
             case FILTER_SAMPLE:
-                Hand sampleHand = controllerHand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
-                ItemStack sample = player.getItemInHand(sampleHand);
-                if (sample.isEmpty()) {
-                    pipe.clearTargetFilter(direction);
-                    player.displayClientMessage(
-                            new TranslationTextComponent(
-                                    "message.justguithings.routing_controller.filter_cleared", face),
-                            true);
-                } else {
-                    ItemFilterSampleChange change = pipe.toggleTargetFilterSample(direction, sample);
-                    int count = pipe.getTargetFilterSampleCount(direction);
-
-                    switch (change) {
-                        case ADDED:
-                            player.displayClientMessage(
-                                    new TranslationTextComponent(
-                                            "message.justguithings.routing_controller.filter_added",
-                                            face, sample.getHoverName(), count, ItemRouteFilter.MAX_SAMPLES),
-                                    true);
-                            break;
-                        case REMOVED:
-                            player.displayClientMessage(
-                                    new TranslationTextComponent(
-                                            "message.justguithings.routing_controller.filter_removed",
-                                            face, sample.getHoverName(), count, ItemRouteFilter.MAX_SAMPLES),
-                                    true);
-                            break;
-                        case FULL:
-                        default:
-                            player.displayClientMessage(
-                                    new TranslationTextComponent(
-                                            "message.justguithings.routing_controller.filter_full",
-                                            face, ItemRouteFilter.MAX_SAMPLES),
-                                    true);
-                            break;
-                    }
-                }
+                applyTargetFilterSample(pipe, direction, player, controllerHand, face);
                 break;
 
             case FILTER_MODE:
@@ -200,6 +171,128 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                         new TranslationTextComponent(
                                 "message.justguithings.routing_controller.priority",
                                 face, priority.getDisplayName()),
+                        true);
+                break;
+        }
+    }
+
+    private void applySourceRoutingController(BasicItemPipeTileEntity pipe, Direction direction,
+                                              PlayerEntity player, Hand controllerHand,
+                                              RoutingControllerMode controllerMode) {
+        String face = direction.toString().toUpperCase(Locale.ROOT);
+
+        switch (controllerMode) {
+            case FILTER_SAMPLE:
+                applySourceFilterSample(pipe, direction, player, controllerHand, face);
+                break;
+
+            case FILTER_MODE:
+                ItemFilterMode filterMode = pipe.cycleSourceFilterMode(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.routing_controller.source_filter_mode",
+                                face, filterMode.getDisplayName()),
+                        true);
+                break;
+
+            case NBT_MATCH:
+                boolean matchNbt = pipe.toggleSourceFilterNbt(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                matchNbt
+                                        ? "message.justguithings.routing_controller.source_nbt_exact"
+                                        : "message.justguithings.routing_controller.source_nbt_ignored",
+                                face),
+                        true);
+                break;
+
+            case REDSTONE:
+                ItemRoutingRedstoneMode redstoneMode = pipe.cycleSourceRedstoneMode(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.routing_controller.source_redstone",
+                                face, redstoneMode.getDisplayName()),
+                        true);
+                break;
+
+            case MIN_STOCK:
+            default:
+                int minStock = pipe.cycleSourceMinStock(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.routing_controller.min_stock",
+                                face, minStock),
+                        true);
+                break;
+        }
+    }
+
+    private void applyTargetFilterSample(BasicItemPipeTileEntity pipe, Direction direction,
+                                         PlayerEntity player, Hand controllerHand, String face) {
+        Hand sampleHand = controllerHand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        ItemStack sample = player.getItemInHand(sampleHand);
+
+        if (sample.isEmpty()) {
+            pipe.clearTargetFilter(direction);
+            player.displayClientMessage(
+                    new TranslationTextComponent(
+                            "message.justguithings.routing_controller.filter_cleared", face),
+                    true);
+            return;
+        }
+
+        ItemFilterSampleChange change = pipe.toggleTargetFilterSample(direction, sample);
+        int count = pipe.getTargetFilterSampleCount(direction);
+        displayFilterSampleChange(player, face, sample, count, change, false);
+    }
+
+    private void applySourceFilterSample(BasicItemPipeTileEntity pipe, Direction direction,
+                                         PlayerEntity player, Hand controllerHand, String face) {
+        Hand sampleHand = controllerHand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        ItemStack sample = player.getItemInHand(sampleHand);
+
+        if (sample.isEmpty()) {
+            pipe.clearSourceFilter(direction);
+            player.displayClientMessage(
+                    new TranslationTextComponent(
+                            "message.justguithings.routing_controller.source_filter_cleared", face),
+                    true);
+            return;
+        }
+
+        ItemFilterSampleChange change = pipe.toggleSourceFilterSample(direction, sample);
+        int count = pipe.getSourceFilterSampleCount(direction);
+        displayFilterSampleChange(player, face, sample, count, change, true);
+    }
+
+    private void displayFilterSampleChange(PlayerEntity player, String face, ItemStack sample,
+                                           int count, ItemFilterSampleChange change,
+                                           boolean source) {
+        String prefix = source
+                ? "message.justguithings.routing_controller.source_filter_"
+                : "message.justguithings.routing_controller.filter_";
+
+        switch (change) {
+            case ADDED:
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                prefix + "added",
+                                face, sample.getHoverName(), count, ItemRouteFilter.MAX_SAMPLES),
+                        true);
+                break;
+            case REMOVED:
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                prefix + "removed",
+                                face, sample.getHoverName(), count, ItemRouteFilter.MAX_SAMPLES),
+                        true);
+                break;
+            case FULL:
+            default:
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                prefix + "full",
+                                face, ItemRouteFilter.MAX_SAMPLES),
                         true);
                 break;
         }

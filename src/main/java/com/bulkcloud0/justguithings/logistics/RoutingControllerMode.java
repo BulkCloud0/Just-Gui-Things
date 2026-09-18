@@ -8,7 +8,8 @@ public enum RoutingControllerMode {
     FILTER_SAMPLE,
     FILTER_MODE,
     NBT_MATCH,
-    REDSTONE;
+    REDSTONE,
+    MIN_STOCK;
 
     public RoutingControllerMode next() {
         RoutingControllerMode[] values = values();
