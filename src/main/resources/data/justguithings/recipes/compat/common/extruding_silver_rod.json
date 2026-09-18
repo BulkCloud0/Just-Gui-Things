@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/silver"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/silver"
+      }
+    }
+  ],
+  "type": "justguithings:extruding",
+  "ingredient": {
+    "tag": "forge:ingots/silver"
+  },
+  "result": {
+    "tag": "forge:rods/silver",
+    "count": 2
+  },
+  "processing_time": 160,
+  "energy_per_tick": 55
+}

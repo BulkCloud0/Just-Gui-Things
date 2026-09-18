@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PDP",
+    "RCR",
+    "PHP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "D": { "tag": "justguithings:machine_components/extrusion_dies" },
+    "R": { "item": "minecraft:redstone" },
+    "C": { "item": "justguithings:basic_energy_cable" },
+    "H": { "item": "minecraft:piston" }
+  },
+  "result": {
+    "item": "justguithings:precision_extruder"
+  }
+}

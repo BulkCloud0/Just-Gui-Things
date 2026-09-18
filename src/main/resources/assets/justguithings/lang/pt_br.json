@@ -52,5 +52,11 @@
   "screen.justguithings.fluid_pump.source_missing": "Fonte de água: ausente",
   "block.justguithings.resistive_furnace": "Fornalha Resistiva",
   "container.justguithings.resistive_furnace": "Fornalha Resistiva",
-  "jei.justguithings.heating": "Aquecimento Resistivo"
+  "jei.justguithings.heating": "Aquecimento Resistivo",
+  "block.justguithings.precision_extruder": "Extrusora de Precisão",
+  "container.justguithings.precision_extruder": "Extrusora de Precisão",
+  "item.justguithings.hardened_extrusion_die": "Matriz de Extrusão Endurecida",
+  "item.justguithings.tempered_steel_rod": "Haste de Aço Temperado",
+  "tooltip.justguithings.hardened_extrusion_die": "Matriz específica para extrusão de precisão sob alta pressão.",
+  "jei.justguithings.extruding": "Extrusão de Precisão"
 }
