@@ -114,3 +114,22 @@ Existing routing data remains loadable:
 - current source rules are stored independently as `SourceRule*`.
 
 Filter evaluation remains a JGT-side policy layer. Connected inventories never need JGT-specific interfaces or integration code.
+
+
+## Fluid-pipe routing
+
+Basic Fluid Pipes reuse the same resource-neutral routing primitives as item pipes: `RoutingPriority`, `RoutingFilterMode`, `RoutingFilterSampleChange` and `RoutingRedstoneMode`.
+
+The existing Routing Controller configures fluid endpoints with the same TARGET/SOURCE scopes:
+
+- target: priority, up to 9 fluid samples, whitelist/blacklist, NBT matching and redstone condition;
+- source: up to 9 fluid samples, whitelist/blacklist, NBT matching, redstone condition and minimum fluid reserve;
+- fluid reserve presets are `0 -> 250 -> 1000 -> 4000 -> 8000 -> 16000 mB`.
+
+Fluid samples are resolved from the item in the other hand. JGT first queries Forge `IFluidHandlerItem`, so buckets and compatible portable tanks from other mods work without adapters. A fallback reads JGT's portable reservoir `BlockEntityTag/Tank` data.
+
+Minimum reserve is counted across all exposed tanks for the candidate fluid identity. With NBT matching enabled, tagged fluid variants reserve independently; with NBT matching disabled, the same fluid type shares one reserve.
+
+The pipe's recovery buffer obeys destination filter and priority rules when retrying a partial transfer. This prevents buffered fluid from bypassing endpoint routing policy.
+
+External blocks remain integrated only through Forge `IFluidHandler`.
