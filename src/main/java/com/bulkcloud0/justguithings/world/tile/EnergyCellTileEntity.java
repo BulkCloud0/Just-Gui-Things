@@ -134,7 +134,7 @@ public class EnergyCellTileEntity extends BaseMachineTileEntity {
                 break;
             }
 
-            TileEntity neighbor = level.getBlockEntity(worldPosition.relative(direction));
+            TileEntity neighbor = getLoadedBlockEntity(worldPosition.relative(direction));
             if (neighbor == null || neighbor instanceof EnergyCellTileEntity) {
                 continue;
             }

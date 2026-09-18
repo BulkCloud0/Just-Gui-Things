@@ -183,7 +183,7 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
                 continue;
             }
 
-            TileEntity neighbor = level.getBlockEntity(worldPosition.relative(direction));
+            TileEntity neighbor = getLoadedBlockEntity(worldPosition.relative(direction));
             if (neighbor == null) {
                 continue;
             }
