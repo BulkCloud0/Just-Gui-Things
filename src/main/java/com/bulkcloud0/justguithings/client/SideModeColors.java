@@ -41,6 +41,7 @@ public final class SideModeColors {
             case ENERGY:
             case ENERGY_OUTPUT:
             case ENERGY_BOTH:
+            case ITEM_INPUT_ENERGY_OUTPUT:
                 return ENERGY;
             case DISABLED:
             default:
