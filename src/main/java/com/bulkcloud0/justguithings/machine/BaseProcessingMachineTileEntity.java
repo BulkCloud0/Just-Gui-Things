@@ -1,12 +1,13 @@
 package com.bulkcloud0.justguithings.machine;
 
+import com.bulkcloud0.justguithings.recipe.MachineProcessingRecipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Optional;
 
-public abstract class BaseProcessingMachineTileEntity<R> extends BaseMachineTileEntity {
+public abstract class BaseProcessingMachineTileEntity<R extends MachineProcessingRecipe> extends BaseMachineTileEntity {
     private final int defaultProcessTicks;
     private final int defaultEnergyPerTick;
 
@@ -35,15 +36,17 @@ public abstract class BaseProcessingMachineTileEntity<R> extends BaseMachineTile
 
     protected abstract Optional<R> findCurrentRecipe();
 
-    protected abstract ResourceLocation getRecipeId(R recipe);
-
     protected abstract boolean canProcessRecipe(R recipe);
 
-    protected abstract int getProcessingTime(R recipe);
-
-    protected abstract int getEnergyPerTick(R recipe);
-
     protected abstract void processRecipe(R recipe);
+
+    protected int getEffectiveProcessingTime(R recipe) {
+        return recipe.getProcessingTime();
+    }
+
+    protected int getEffectiveEnergyPerTick(R recipe) {
+        return recipe.getEnergyPerTick();
+    }
 
     protected void onRecipeActivated(R recipe) {
     }
@@ -73,15 +76,15 @@ public abstract class BaseProcessingMachineTileEntity<R> extends BaseMachineTile
         }
 
         R recipe = recipeOptional.get();
-        ResourceLocation recipeId = getRecipeId(recipe);
+        ResourceLocation recipeId = recipe.getId();
         if (activeRecipeId == null || !activeRecipeId.equals(recipeId)) {
             progress = 0;
             activeRecipeId = recipeId;
             onRecipeActivated(recipe);
         }
 
-        currentProcessTicks = Math.max(1, getProcessingTime(recipe));
-        currentEnergyPerTick = Math.max(1, getEnergyPerTick(recipe));
+        currentProcessTicks = Math.max(1, getEffectiveProcessingTime(recipe));
+        currentEnergyPerTick = Math.max(1, getEffectiveEnergyPerTick(recipe));
 
         if (!canProcessRecipe(recipe)) {
             resetProcessing();

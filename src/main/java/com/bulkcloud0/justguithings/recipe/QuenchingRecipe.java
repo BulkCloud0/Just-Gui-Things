@@ -20,7 +20,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
-public class QuenchingRecipe implements IRecipe<IInventory> {
+public class QuenchingRecipe implements IRecipe<IInventory>, MachineProcessingRecipe {
     private final ResourceLocation id;
     private final Ingredient input;
     private final FluidIngredient fluid;

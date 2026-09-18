@@ -68,11 +68,6 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     }
 
     @Override
-    protected ResourceLocation getRecipeId(MixingRecipe recipe) {
-        return recipe.getId();
-    }
-
-    @Override
     protected boolean canProcessRecipe(MixingRecipe recipe) {
         ItemStack result = recipe.getResultItem();
         if (result.isEmpty()) {
@@ -87,16 +82,6 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             return false;
         }
         return output.getCount() + result.getCount() <= output.getMaxStackSize();
-    }
-
-    @Override
-    protected int getProcessingTime(MixingRecipe recipe) {
-        return recipe.getProcessingTime();
-    }
-
-    @Override
-    protected int getEnergyPerTick(MixingRecipe recipe) {
-        return recipe.getEnergyPerTick();
     }
 
     @Override
