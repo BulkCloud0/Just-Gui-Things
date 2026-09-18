@@ -73,7 +73,6 @@
   "routing.justguithings.priority.high": "High",
   "routing.justguithings.priority.low": "Low",
   "message.justguithings.routing_controller.priority": "%s target priority: %s",
-  "message.justguithings.routing_controller.filter_set": "%s whitelist: %s",
   "message.justguithings.routing_controller.filter_cleared": "%s whitelist cleared.",
   "tooltip.justguithings.routing_controller.mode": "Right-click in the air to cycle the editing mode.",
   "tooltip.justguithings.routing_controller.use": "Right-click an item-pipe endpoint face to apply the selected routing rule.",
@@ -87,5 +86,8 @@
   "message.justguithings.routing_controller.mode": "Routing Controller mode: %s",
   "message.justguithings.routing_controller.filter_mode": "%s filter mode: %s",
   "message.justguithings.routing_controller.nbt_exact": "%s filter now matches exact NBT.",
-  "message.justguithings.routing_controller.nbt_ignored": "%s filter now ignores NBT."
+  "message.justguithings.routing_controller.nbt_ignored": "%s filter now ignores NBT.",
+  "message.justguithings.routing_controller.filter_added": "%s filter added: %s (%s/%s)",
+  "message.justguithings.routing_controller.filter_removed": "%s filter removed: %s (%s/%s)",
+  "message.justguithings.routing_controller.filter_full": "%s filter is full (%s samples)."
 }

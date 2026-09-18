@@ -71,13 +71,13 @@ Basic Item Pipes keep Forge `IItemHandler` as the only inventory integration con
 The Routing Controller has four editing modes. Right-clicking in the air cycles the active mode:
 
 - `Target Priority`: cycles `NORMAL -> HIGH -> LOW -> NORMAL`;
-- `Filter Sample`: copies the item in the other hand as the endpoint sample, or clears the sample when the other hand is empty;
+- `Filter Sample`: toggles the item in the other hand in a per-face sample list (up to 9 entries), or clears the entire list when the other hand is empty;
 - `Whitelist / Blacklist`: toggles whether a matching sample is accepted or rejected;
 - `NBT Matching`: toggles exact item+NBT comparison versus item-only comparison.
 
 The controller stores its current editing mode in its own item NBT. Each pipe face stores its priority and filter rule independently.
 
-A missing filter sample means the endpoint accepts all items regardless of whitelist/blacklist mode. Existing v1 routing NBT is migrated as an exact-NBT whitelist.
+An empty filter list means the endpoint accepts all items regardless of whitelist/blacklist mode. Matching succeeds when any configured sample matches according to the NBT rule. Existing single-sample routing NBT is migrated into the new sample list automatically.
 
 The network always tries HIGH targets before NORMAL and LOW targets. Round-robin fairness is preserved between targets at the same priority. If a higher-priority target is full, rejects the current item, or fails its filter rule, routing falls through to the next target and then lower priorities.
 

@@ -73,7 +73,6 @@
   "routing.justguithings.priority.high": "Alta",
   "routing.justguithings.priority.low": "Baixa",
   "message.justguithings.routing_controller.priority": "Prioridade do destino %s: %s",
-  "message.justguithings.routing_controller.filter_set": "Whitelist %s: %s",
   "message.justguithings.routing_controller.filter_cleared": "Whitelist %s removida.",
   "tooltip.justguithings.routing_controller.mode": "Clique com o botão direito no ar para alternar o modo de edição.",
   "tooltip.justguithings.routing_controller.use": "Clique com o botão direito em uma face de destino do tubo de itens para aplicar a regra selecionada.",
@@ -87,5 +86,8 @@
   "message.justguithings.routing_controller.mode": "Modo do Controlador de Roteamento: %s",
   "message.justguithings.routing_controller.filter_mode": "Modo do filtro %s: %s",
   "message.justguithings.routing_controller.nbt_exact": "O filtro %s agora compara NBT exato.",
-  "message.justguithings.routing_controller.nbt_ignored": "O filtro %s agora ignora NBT."
+  "message.justguithings.routing_controller.nbt_ignored": "O filtro %s agora ignora NBT.",
+  "message.justguithings.routing_controller.filter_added": "Filtro %s adicionado: %s (%s/%s)",
+  "message.justguithings.routing_controller.filter_removed": "Filtro %s removido: %s (%s/%s)",
+  "message.justguithings.routing_controller.filter_full": "O filtro %s está cheio (%s amostras)."
 }
