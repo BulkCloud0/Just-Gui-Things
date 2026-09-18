@@ -13,55 +13,55 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
-public class PressingRecipe extends SingleInputProcessingRecipe {
-    public PressingRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
+public class HeatingRecipe extends SingleInputProcessingRecipe {
+    public HeatingRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
         super(id, input, result, processingTime, energyPerTick);
     }
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.PRESSING_SERIALIZER.get();
+        return ModRecipes.HEATING_SERIALIZER.get();
     }
 
     @Override
     public IRecipeType<?> getType() {
-        return ModRecipes.PRESSING_TYPE;
+        return ModRecipes.HEATING_TYPE;
     }
 
-    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<PressingRecipe> {
+    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<HeatingRecipe> {
         @Override
-        public PressingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        public HeatingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             if (!json.has("ingredient")) {
-                throw new JsonSyntaxException("Pressing recipe " + recipeId + " is missing ingredient");
+                throw new JsonSyntaxException("Heating recipe " + recipeId + " is missing ingredient");
             }
 
             Ingredient input = Ingredient.fromJson(json.get("ingredient"));
             RecipeOutput result = RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "result"));
-            int processingTime = JSONUtils.getAsInt(json, "processing_time", 120);
-            int energyPerTick = JSONUtils.getAsInt(json, "energy_per_tick", 30);
+            int processingTime = JSONUtils.getAsInt(json, "processing_time", 140);
+            int energyPerTick = JSONUtils.getAsInt(json, "energy_per_tick", 40);
 
             if (input.isEmpty()) {
-                throw new JsonSyntaxException("Pressing recipe " + recipeId + " has an empty ingredient");
+                throw new JsonSyntaxException("Heating recipe " + recipeId + " has an empty ingredient");
             }
             if (processingTime <= 0 || energyPerTick <= 0) {
-                throw new JsonSyntaxException("Pressing recipe time and FE/t must be greater than zero in " + recipeId);
+                throw new JsonSyntaxException("Heating recipe time and FE/t must be greater than zero in " + recipeId);
             }
 
-            return new PressingRecipe(recipeId, input, result, processingTime, energyPerTick);
+            return new HeatingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
         @Nullable
         @Override
-        public PressingRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public HeatingRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
-            return new PressingRecipe(recipeId, input, result, processingTime, energyPerTick);
+            return new HeatingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, PressingRecipe recipe) {
+        public void toNetwork(PacketBuffer buffer, HeatingRecipe recipe) {
             recipe.input.toNetwork(buffer);
             recipe.result.toNetwork(buffer);
             buffer.writeVarInt(recipe.processingTime);

@@ -8,6 +8,7 @@ import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
 import com.bulkcloud0.justguithings.client.screen.FluidReservoirScreen;
 import com.bulkcloud0.justguithings.client.screen.FluidPumpScreen;
 import com.bulkcloud0.justguithings.client.screen.QuenchChamberScreen;
+import com.bulkcloud0.justguithings.client.screen.ResistiveFurnaceScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import net.minecraft.client.gui.ScreenManager;
@@ -31,6 +32,7 @@ public final class ClientSetup {
             ScreenManager.register(ModContainers.ENERGY_CELL.get(), EnergyCellScreen::new);
             ScreenManager.register(ModContainers.FLUID_RESERVOIR.get(), FluidReservoirScreen::new);
             ScreenManager.register(ModContainers.FLUID_PUMP.get(), FluidPumpScreen::new);
+            ScreenManager.register(ModContainers.RESISTIVE_FURNACE.get(), ResistiveFurnaceScreen::new);
         });
     }
 }

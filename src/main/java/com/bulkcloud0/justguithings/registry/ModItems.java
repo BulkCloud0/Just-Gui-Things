@@ -42,6 +42,9 @@ public final class ModItems {
     public static final RegistryObject<Item> FLUID_PUMP = ITEMS.register("fluid_pump",
             () -> new BlockItem(ModBlocks.FLUID_PUMP.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
 
+    public static final RegistryObject<Item> RESISTIVE_FURNACE = ITEMS.register("resistive_furnace",
+            () -> new BlockItem(ModBlocks.RESISTIVE_FURNACE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+
     public static final RegistryObject<Item> CONFIGURATOR = ITEMS.register("configurator",
             () -> new TooltipItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
                     "tooltip.justguithings.configurator.use"));

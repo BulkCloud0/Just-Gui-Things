@@ -11,6 +11,7 @@ import com.bulkcloud0.justguithings.world.block.IndustrialMixerBlock;
 import com.bulkcloud0.justguithings.world.block.FluidReservoirBlock;
 import com.bulkcloud0.justguithings.world.block.FluidPumpBlock;
 import com.bulkcloud0.justguithings.world.block.QuenchChamberBlock;
+import com.bulkcloud0.justguithings.world.block.ResistiveFurnaceBlock;
 import com.bulkcloud0.justguithings.world.block.StampingPressBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -66,6 +67,10 @@ public final class ModBlocks {
 
     public static final RegistryObject<Block> FLUID_PUMP = BLOCKS.register("fluid_pump",
             () -> new FluidPumpBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+
+    public static final RegistryObject<Block> RESISTIVE_FURNACE = BLOCKS.register("resistive_furnace",
+            () -> new ResistiveFurnaceBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
 
     private ModBlocks() {}

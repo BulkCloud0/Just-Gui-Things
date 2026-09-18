@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.registry;
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
+import com.bulkcloud0.justguithings.recipe.HeatingRecipe;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
 import com.bulkcloud0.justguithings.recipe.QuenchingRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -23,6 +24,8 @@ public final class ModRecipes {
             IRecipeType.register(JustGuiThings.MOD_ID + ":mixing");
     public static final IRecipeType<QuenchingRecipe> QUENCHING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":quenching");
+    public static final IRecipeType<HeatingRecipe> HEATING_TYPE =
+            IRecipeType.register(JustGuiThings.MOD_ID + ":heating");
 
     public static final RegistryObject<IRecipeSerializer<CrusherRecipe>> CRUSHING_SERIALIZER =
             RECIPE_SERIALIZERS.register("crushing", CrusherRecipe.Serializer::new);
@@ -32,6 +35,8 @@ public final class ModRecipes {
             RECIPE_SERIALIZERS.register("mixing", MixingRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<QuenchingRecipe>> QUENCHING_SERIALIZER =
             RECIPE_SERIALIZERS.register("quenching", QuenchingRecipe.Serializer::new);
+    public static final RegistryObject<IRecipeSerializer<HeatingRecipe>> HEATING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("heating", HeatingRecipe.Serializer::new);
 
     private ModRecipes() {}
 }
