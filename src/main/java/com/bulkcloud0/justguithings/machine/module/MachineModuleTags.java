@@ -25,27 +25,26 @@ public final class MachineModuleTags {
 
         Item item = stack.getItem();
         ResourceLocation match = null;
+        int matchCount = 0;
 
-        match = mergeMatch(match, item, SPEED, MachineModuleTypes.SPEED);
-        match = mergeMatch(match, item, EFFICIENCY, MachineModuleTypes.EFFICIENCY);
-        match = mergeMatch(match, item, BUFFER, MachineModuleTypes.BUFFER);
-        match = mergeMatch(match, item, BATCH, MachineModuleTypes.BATCH);
-
-        return match;
-    }
-
-    @Nullable
-    private static ResourceLocation mergeMatch(@Nullable ResourceLocation current,
-                                               Item item,
-                                               Tags.IOptionalNamedTag<Item> tag,
-                                               ResourceLocation candidate) {
-        if (!tag.contains(item)) {
-            return current;
+        if (SPEED.contains(item)) {
+            match = MachineModuleTypes.SPEED;
+            matchCount++;
         }
-        if (current != null && !current.equals(candidate)) {
-            return null;
+        if (EFFICIENCY.contains(item)) {
+            match = MachineModuleTypes.EFFICIENCY;
+            matchCount++;
         }
-        return candidate;
+        if (BUFFER.contains(item)) {
+            match = MachineModuleTypes.BUFFER;
+            matchCount++;
+        }
+        if (BATCH.contains(item)) {
+            match = MachineModuleTypes.BATCH;
+            matchCount++;
+        }
+
+        return matchCount == 1 ? match : null;
     }
 
     private static Tags.IOptionalNamedTag<Item> tag(String path) {
