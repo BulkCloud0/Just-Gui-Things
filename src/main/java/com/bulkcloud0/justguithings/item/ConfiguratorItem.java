@@ -22,7 +22,8 @@ public class ConfiguratorItem extends TooltipItem {
     public ConfiguratorItem(Properties properties) {
         super(properties,
                 "tooltip.justguithings.configurator.use",
-                "tooltip.justguithings.configurator.inspect");
+                "tooltip.justguithings.configurator.inspect",
+                "tooltip.justguithings.configurator.overlay");
     }
 
     @Override
