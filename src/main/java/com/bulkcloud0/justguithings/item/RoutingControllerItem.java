@@ -133,7 +133,8 @@ public class RoutingControllerItem extends TooltipItem {
         if (!context.getLevel().isClientSide) {
             RoutingControllerScope scope = getScope(context.getItemInHand());
             Direction direction = context.getClickedFace();
-            ITextComponent inspection = getInspectionText(tile, direction, scope);
+            boolean powered = context.getLevel().hasNeighborSignal(context.getClickedPos());
+            ITextComponent inspection = getInspectionText(tile, direction, scope, powered);
             if (inspection != null) {
                 player.displayClientMessage(inspection, false);
             }
@@ -144,21 +145,21 @@ public class RoutingControllerItem extends TooltipItem {
 
     @Nullable
     private ITextComponent getInspectionText(TileEntity tile, Direction direction,
-                                             RoutingControllerScope scope) {
+                                             RoutingControllerScope scope, boolean powered) {
         if (tile instanceof BasicItemPipeTileEntity) {
-            return getItemInspection((BasicItemPipeTileEntity) tile, direction, scope);
+            return getItemInspection((BasicItemPipeTileEntity) tile, direction, scope, powered);
         }
         if (tile instanceof BasicFluidPipeTileEntity) {
-            return getFluidInspection((BasicFluidPipeTileEntity) tile, direction, scope);
+            return getFluidInspection((BasicFluidPipeTileEntity) tile, direction, scope, powered);
         }
         if (tile instanceof BasicEnergyCableTileEntity) {
-            return getEnergyInspection((BasicEnergyCableTileEntity) tile, direction, scope);
+            return getEnergyInspection((BasicEnergyCableTileEntity) tile, direction, scope, powered);
         }
         return null;
     }
 
     private ITextComponent getItemInspection(BasicItemPipeTileEntity pipe, Direction direction,
-                                             RoutingControllerScope scope) {
+                                             RoutingControllerScope scope, boolean powered) {
         String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
 
         if (scope == RoutingControllerScope.SOURCE) {
@@ -172,7 +173,9 @@ public class RoutingControllerItem extends TooltipItem {
                     getNbtModeName(filter.isMatchNbt()),
                     rule.getRedstoneMode().getDisplayName(),
                     rule.getMinStock(),
-                    getItemSampleIds(filter));
+                    getItemSampleIds(filter),
+                    getEndpointStateName(pipe.getSideMode(direction).canPull()
+                            && rule.allowsRedstone(powered)));
         }
 
         ItemRoutingTargetRule rule = pipe.getTargetRule(direction);
@@ -185,11 +188,13 @@ public class RoutingControllerItem extends TooltipItem {
                 filter.getSampleCount(), ItemRouteFilter.MAX_SAMPLES,
                 getNbtModeName(filter.isMatchNbt()),
                 rule.getRedstoneMode().getDisplayName(),
-                getItemSampleIds(filter));
+                getItemSampleIds(filter),
+                getEndpointStateName(pipe.getSideMode(direction).canPush()
+                        && rule.allowsRedstone(powered)));
     }
 
     private ITextComponent getFluidInspection(BasicFluidPipeTileEntity pipe, Direction direction,
-                                              RoutingControllerScope scope) {
+                                              RoutingControllerScope scope, boolean powered) {
         String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
 
         if (scope == RoutingControllerScope.SOURCE) {
@@ -203,7 +208,9 @@ public class RoutingControllerItem extends TooltipItem {
                     getNbtModeName(filter.isMatchNbt()),
                     rule.getRedstoneMode().getDisplayName(),
                     rule.getMinStock(),
-                    getFluidSampleIds(filter));
+                    getFluidSampleIds(filter),
+                    getEndpointStateName(pipe.getSideMode(direction).canPull()
+                            && rule.allowsRedstone(powered)));
         }
 
         FluidRoutingTargetRule rule = pipe.getTargetRule(direction);
@@ -216,11 +223,13 @@ public class RoutingControllerItem extends TooltipItem {
                 filter.getSampleCount(), FluidRouteFilter.MAX_SAMPLES,
                 getNbtModeName(filter.isMatchNbt()),
                 rule.getRedstoneMode().getDisplayName(),
-                getFluidSampleIds(filter));
+                getFluidSampleIds(filter),
+                getEndpointStateName(pipe.getSideMode(direction).canPush()
+                        && rule.allowsRedstone(powered)));
     }
 
     private ITextComponent getEnergyInspection(BasicEnergyCableTileEntity cable, Direction direction,
-                                               RoutingControllerScope scope) {
+                                               RoutingControllerScope scope, boolean powered) {
         String face = direction.toString().toUpperCase(java.util.Locale.ROOT);
         ITextComponent sideMode = getEnergySideModeName(cable.getSideMode(direction));
 
@@ -228,7 +237,9 @@ public class RoutingControllerItem extends TooltipItem {
             EnergyRoutingSourceRule rule = cable.getSourceRule(direction);
             return new TranslationTextComponent(
                     "message.justguithings.routing_controller.inspect_energy_source",
-                    face, sideMode, rule.getRedstoneMode().getDisplayName());
+                    face, sideMode, rule.getRedstoneMode().getDisplayName(),
+                    getEndpointStateName(cable.getSideMode(direction).canPull()
+                            && rule.allowsRedstone(powered)));
         }
 
         EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
@@ -236,7 +247,9 @@ public class RoutingControllerItem extends TooltipItem {
                 "message.justguithings.routing_controller.inspect_energy_target",
                 face, sideMode,
                 rule.getPriority().getDisplayName(),
-                rule.getRedstoneMode().getDisplayName());
+                rule.getRedstoneMode().getDisplayName(),
+                getEndpointStateName(cable.getSideMode(direction).canPush()
+                        && rule.allowsRedstone(powered)));
     }
 
     private String getItemSampleIds(ItemRouteFilter filter) {
@@ -257,6 +270,13 @@ public class RoutingControllerItem extends TooltipItem {
         }
         String value = ids.toString();
         return value.isEmpty() ? "-" : value;
+    }
+
+    private ITextComponent getEndpointStateName(boolean active) {
+        return new TranslationTextComponent(
+                active
+                        ? "routing.justguithings.endpoint_state.active"
+                        : "routing.justguithings.endpoint_state.inactive");
     }
 
     private ITextComponent getNbtModeName(boolean matchNbt) {
