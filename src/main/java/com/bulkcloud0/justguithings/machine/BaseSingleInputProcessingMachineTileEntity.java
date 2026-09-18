@@ -36,9 +36,23 @@ public abstract class BaseSingleInputProcessingMachineTileEntity<R extends Singl
                                                          int maxReceive,
                                                          int defaultProcessTicks,
                                                          int defaultEnergyPerTick) {
-        super(tileEntityType, energyCapacity, maxReceive,
-                2, 0, 1, 1, 1,
+        this(tileEntityType, recipeType, energyCapacity, maxReceive, 2,
                 defaultProcessTicks, defaultEnergyPerTick);
+    }
+
+    protected BaseSingleInputProcessingMachineTileEntity(TileEntityType<?> tileEntityType,
+                                                         IRecipeType<R> recipeType,
+                                                         int energyCapacity,
+                                                         int maxReceive,
+                                                         int inventorySize,
+                                                         int defaultProcessTicks,
+                                                         int defaultEnergyPerTick) {
+        super(tileEntityType, energyCapacity, maxReceive,
+                inventorySize, 0, 1, 1, 1,
+                defaultProcessTicks, defaultEnergyPerTick);
+        if (inventorySize < 2) {
+            throw new IllegalArgumentException("Single-input processing machines require at least 2 inventory slots");
+        }
         this.recipeType = recipeType;
     }
 

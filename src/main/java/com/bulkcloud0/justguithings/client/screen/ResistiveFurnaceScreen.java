@@ -44,6 +44,7 @@ public class ResistiveFurnaceScreen extends ContainerScreen<ResistiveFurnaceCont
 
         drawSlot(matrixStack, left + 43, top + 34);
         drawSlot(matrixStack, left + 115, top + 34);
+        drawSlot(matrixStack, left + 79, top + 55);
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -83,5 +84,6 @@ public class ResistiveFurnaceScreen extends ContainerScreen<ResistiveFurnaceCont
         font.draw(matrixStack,
                 menu.getCurrentEnergyPerTick() + " FE/t",
                 8.0F, 55.0F, TEXT);
+        font.draw(matrixStack, "IC", 101.0F, 59.0F, TEXT);
     }
 }
