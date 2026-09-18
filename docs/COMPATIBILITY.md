@@ -55,7 +55,7 @@ The built-in components are `Precision Roller Assembly` and `Tensioning Spindle`
 - `FLUID_INPUT` and `FLUID_OUTPUT` expose directional fluid handlers.
 - `ENERGY`, `ENERGY_OUTPUT`, and `ENERGY_BOTH` expose energy according to direction.
 
-Each machine exposes only the side modes it supports. Side-configuration NBT remains versioned.
+Each machine exposes only the side modes it supports. Side-configuration NBT remains versioned. The Configurator presents localized player-facing names for those modes: Item Input/Output, Fluid Input/Output, Energy Input/Output/Input + Output, and Disabled. Enum values and persisted ordinals remain internal implementation details.
 
 ## Optional-mod recipes
 

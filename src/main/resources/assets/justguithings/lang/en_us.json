@@ -168,5 +168,14 @@
   "routing.justguithings.clipboard_resource.energy": "Energy",
   "routing.justguithings.clipboard_resource.unknown": "Unknown",
   "message.justguithings.item_pipe.side_mode": "%s item pipe mode: %s",
-  "message.justguithings.fluid_pipe.side_mode": "%s fluid pipe mode: %s"
+  "message.justguithings.fluid_pipe.side_mode": "%s fluid pipe mode: %s",
+  "machine_side_mode.justguithings.disabled": "Disabled",
+  "machine_side_mode.justguithings.input": "Item Input",
+  "machine_side_mode.justguithings.output": "Item Output",
+  "machine_side_mode.justguithings.energy": "Energy Input",
+  "machine_side_mode.justguithings.fluid_input": "Fluid Input",
+  "machine_side_mode.justguithings.energy_output": "Energy Output",
+  "machine_side_mode.justguithings.energy_both": "Energy Input + Output",
+  "machine_side_mode.justguithings.fluid_output": "Fluid Output",
+  "message.justguithings.machine.side_mode": "%s machine side mode: %s"
 }
