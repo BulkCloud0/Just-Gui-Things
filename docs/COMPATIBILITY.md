@@ -87,7 +87,7 @@ Each destination face stores one `ItemRoutingTargetRule` with:
 - exact-NBT or item-only matching;
 - redstone condition: `ALWAYS`, `REQUIRE_SIGNAL`, or `REQUIRE_NO_SIGNAL`.
 
-The network always tries HIGH targets before NORMAL and LOW targets. Round-robin fairness is preserved between targets at the same priority. If a higher-priority target is full, rejects the current item, or fails its filter/redstone rule, routing falls through to the next target and then lower priorities.
+The network always tries HIGH targets before NORMAL and LOW targets. Round-robin fairness is preserved between targets at the same priority. If a higher-priority target is full, rejects the current item, or fails its filter/redstone rule, routing falls through to the next target and then lower priorities. If a destination accepts only part of the current per-tick item budget, the remaining budget continues through other eligible destinations in the same tick before falling to lower priorities.
 
 ### Source rules
 
@@ -129,6 +129,8 @@ The existing Routing Controller configures fluid endpoints with the same TARGET/
 Fluid samples are resolved from the item in the other hand. JGT first queries Forge `IFluidHandlerItem`, so buckets and compatible portable tanks from other mods work without adapters. A fallback reads JGT's portable reservoir `BlockEntityTag/Tank` data.
 
 Minimum reserve is counted across all exposed tanks for the candidate fluid identity. With NBT matching enabled, tagged fluid variants reserve independently; with NBT matching disabled, the same fluid type shares one reserve.
+
+If a destination accepts only part of the current per-tick fluid budget, the remaining budget continues through other eligible destinations in the same tick before falling to lower priorities.
 
 The pipe's recovery buffer obeys destination filter and priority rules when retrying a partial transfer. This prevents buffered fluid from bypassing endpoint routing policy.
 
