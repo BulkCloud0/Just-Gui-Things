@@ -6,9 +6,15 @@
     "S  "
   ],
   "key": {
-    "R": { "item": "minecraft:redstone" },
-    "I": { "item": "minecraft:iron_ingot" },
-    "S": { "item": "minecraft:stick" }
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    }
   },
   "result": {
     "item": "justguithings:configurator"
