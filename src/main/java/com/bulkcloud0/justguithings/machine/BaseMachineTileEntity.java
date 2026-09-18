@@ -202,7 +202,8 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         for (Direction direction : Direction.values()) {
             final Direction side = direction;
             sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
-                    inventory, inputStart, inputCount, outputStart, outputCount, () -> getSideMode(side))));
+                    inventory, inputStart, inputCount, outputStart, outputCount,
+                    () -> getItemSideMode(side, getSideMode(side)))));
             sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new MachineSidedEnergyHandler(
                     energyStorage,
                     () -> canReceiveEnergyFrom(side, getSideMode(side)),
@@ -216,6 +217,10 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
     protected boolean supportsItemCapability() {
         return true;
+    }
+
+    protected MachineSideMode getItemSideMode(Direction side, MachineSideMode mode) {
+        return mode;
     }
 
     protected boolean canReceiveEnergyFrom(Direction side, MachineSideMode mode) {
@@ -339,7 +344,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
             if (side == null) {
                 return itemCapability.cast();
             }
-            MachineSideMode mode = getSideMode(side);
+            MachineSideMode mode = getItemSideMode(side, getSideMode(side));
             if (mode == MachineSideMode.INPUT || mode == MachineSideMode.OUTPUT) {
                 LazyOptional<IItemHandler> sided = sidedItemCapabilities.get(side);
                 return sided == null ? LazyOptional.empty() : sided.cast();

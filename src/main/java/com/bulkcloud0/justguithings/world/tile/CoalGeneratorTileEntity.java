@@ -77,7 +77,7 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
         super(ModTileEntities.COAL_GENERATOR.get(), CAPACITY, 0, MAX_OUTPUT_PER_TICK,
                 1, 0, 1, 1, 0);
 
-        setSideMode(Direction.UP, MachineSideMode.INPUT);
+        setSideMode(Direction.UP, MachineSideMode.ENERGY_OUTPUT);
         setSideMode(Direction.DOWN, MachineSideMode.ENERGY_OUTPUT);
         setSideMode(Direction.NORTH, MachineSideMode.ENERGY_OUTPUT);
         setSideMode(Direction.SOUTH, MachineSideMode.ENERGY_OUTPUT);
@@ -93,6 +93,14 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
     @Override
     protected MachineSideMode[] getAllowedSideModes() {
         return ALLOWED_SIDE_MODES;
+    }
+
+    @Override
+    protected MachineSideMode getItemSideMode(Direction side, MachineSideMode mode) {
+        if (mode == MachineSideMode.ENERGY_OUTPUT) {
+            return MachineSideMode.INPUT;
+        }
+        return mode;
     }
 
     @Override
