@@ -5,6 +5,7 @@ import com.bulkcloud0.justguithings.client.screen.CoalGeneratorScreen;
 import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
 import com.bulkcloud0.justguithings.client.screen.EnergyCellScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
+import com.bulkcloud0.justguithings.client.screen.FluidReservoirScreen;
 import com.bulkcloud0.justguithings.client.screen.QuenchChamberScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
 import com.bulkcloud0.justguithings.registry.ModContainers;
@@ -27,6 +28,7 @@ public final class ClientSetup {
             ScreenManager.register(ModContainers.INDUSTRIAL_MIXER.get(), IndustrialMixerScreen::new);
             ScreenManager.register(ModContainers.QUENCH_CHAMBER.get(), QuenchChamberScreen::new);
             ScreenManager.register(ModContainers.ENERGY_CELL.get(), EnergyCellScreen::new);
+            ScreenManager.register(ModContainers.FLUID_RESERVOIR.get(), FluidReservoirScreen::new);
         });
     }
 }

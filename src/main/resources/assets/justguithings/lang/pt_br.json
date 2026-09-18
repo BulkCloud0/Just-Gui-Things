@@ -41,5 +41,9 @@
   "jei.justguithings.mixing": "Mistura Industrial",
   "jei.justguithings.quenching": "Têmpera",
   "block.justguithings.basic_item_pipe": "Tubo de Itens Básico",
-  "block.justguithings.basic_fluid_pipe": "Tubo de Fluidos Básico"
+  "block.justguithings.basic_fluid_pipe": "Tubo de Fluidos Básico",
+  "block.justguithings.fluid_reservoir": "Reservatório de Fluidos",
+  "container.justguithings.fluid_reservoir": "Reservatório de Fluidos",
+  "tooltip.justguithings.fluid_reservoir.amount": "Fluido armazenado: %s / %s mB",
+  "tooltip.justguithings.fluid_reservoir.portable": "Mantém o fluido armazenado ao ser quebrado."
 }

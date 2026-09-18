@@ -5,6 +5,7 @@ import com.bulkcloud0.justguithings.world.container.CoalGeneratorContainer;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
 import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
+import com.bulkcloud0.justguithings.world.container.FluidReservoirContainer;
 import com.bulkcloud0.justguithings.world.container.QuenchChamberContainer;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
 import net.minecraft.inventory.container.ContainerType;
@@ -29,6 +30,9 @@ public final class ModContainers {
             CONTAINERS.register("quench_chamber", () -> IForgeContainerType.create(QuenchChamberContainer::new));
     public static final RegistryObject<ContainerType<EnergyCellContainer>> ENERGY_CELL =
             CONTAINERS.register("energy_cell", () -> IForgeContainerType.create(EnergyCellContainer::new));
+
+    public static final RegistryObject<ContainerType<FluidReservoirContainer>> FLUID_RESERVOIR =
+            CONTAINERS.register("fluid_reservoir", () -> IForgeContainerType.create(FluidReservoirContainer::new));
 
     private ModContainers() {}
 }

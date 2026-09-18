@@ -8,6 +8,7 @@ import com.bulkcloud0.justguithings.world.tile.CoalGeneratorTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
 import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
 import com.bulkcloud0.justguithings.world.tile.IndustrialMixerTileEntity;
+import com.bulkcloud0.justguithings.world.tile.FluidReservoirTileEntity;
 import com.bulkcloud0.justguithings.world.tile.QuenchChamberTileEntity;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -36,6 +37,9 @@ public final class ModTileEntities {
             "basic_item_pipe", () -> TileEntityType.Builder.of(BasicItemPipeTileEntity::new, ModBlocks.BASIC_ITEM_PIPE.get()).build(null));
     public static final RegistryObject<TileEntityType<BasicFluidPipeTileEntity>> BASIC_FLUID_PIPE = TILE_ENTITIES.register(
             "basic_fluid_pipe", () -> TileEntityType.Builder.of(BasicFluidPipeTileEntity::new, ModBlocks.BASIC_FLUID_PIPE.get()).build(null));
+
+    public static final RegistryObject<TileEntityType<FluidReservoirTileEntity>> FLUID_RESERVOIR = TILE_ENTITIES.register(
+            "fluid_reservoir", () -> TileEntityType.Builder.of(FluidReservoirTileEntity::new, ModBlocks.FLUID_RESERVOIR.get()).build(null));
 
     private ModTileEntities() {}
 }

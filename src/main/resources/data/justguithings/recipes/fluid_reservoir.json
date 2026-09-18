@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PGP",
+    "GBG",
+    "PGP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "G": { "item": "minecraft:glass" },
+    "B": { "item": "minecraft:bucket" }
+  },
+  "result": {
+    "item": "justguithings:fluid_reservoir"
+  }
+}
