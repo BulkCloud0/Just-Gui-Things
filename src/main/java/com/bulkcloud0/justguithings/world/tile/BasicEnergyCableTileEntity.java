@@ -328,7 +328,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
             }
 
             boolean cablePowered = level.hasNeighborSignal(cable.getBlockPos());
-            EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
+            EnergyRoutingTargetRule rule = cable.getMutableTargetRule(direction);
             if (!rule.allowsRedstone(cablePowered)) {
                 continue;
             }

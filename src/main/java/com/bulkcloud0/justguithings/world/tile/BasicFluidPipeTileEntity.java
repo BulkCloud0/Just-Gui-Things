@@ -313,8 +313,8 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
             }
 
             boolean pipePowered = level.hasNeighborSignal(pipe.getBlockPos());
-            FluidRoutingSourceRule sourceRule = mode.canPull() ? pipe.getSourceRule(direction) : null;
-            FluidRoutingTargetRule targetRule = mode.canPush() ? pipe.getTargetRule(direction) : null;
+            FluidRoutingSourceRule sourceRule = mode.canPull() ? pipe.getMutableSourceRule(direction) : null;
+            FluidRoutingTargetRule targetRule = mode.canPush() ? pipe.getMutableTargetRule(direction) : null;
             boolean sourceAllowed = sourceRule != null && sourceRule.allowsRedstone(pipePowered);
             boolean targetAllowed = targetRule != null && targetRule.allowsRedstone(pipePowered);
             if (!sourceAllowed && !targetAllowed) {
