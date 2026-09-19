@@ -4,10 +4,8 @@ import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -17,8 +15,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.Arrays;
-import java.util.Collections;
 
 public final class CrusherRecipeCategory implements IRecipeCategory<CrusherRecipe> {
     public static final ResourceLocation UID = new ResourceLocation(JustGuiThings.MOD_ID, "crushing");
@@ -64,17 +60,12 @@ public final class CrusherRecipeCategory implements IRecipeCategory<CrusherRecip
 
     @Override
     public void setIngredients(CrusherRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputIngredients(Collections.singletonList(recipe.getInput()));
-        ingredients.setOutputs(VanillaTypes.ITEM, recipe.getResultDisplayStacks());
+        SingleInputRecipeJeiHelper.setIngredients(recipe, ingredients);
     }
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, CrusherRecipe recipe, IIngredients ingredients) {
-        IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
-        itemStacks.init(0, true, 8, 17);
-        itemStacks.init(1, false, 94, 17);
-        itemStacks.set(0, Arrays.asList(recipe.getInput().getItems()));
-        itemStacks.set(1, recipe.getResultDisplayStacks());
+        SingleInputRecipeJeiHelper.setRecipe(recipeLayout, recipe);
     }
 
     @Override

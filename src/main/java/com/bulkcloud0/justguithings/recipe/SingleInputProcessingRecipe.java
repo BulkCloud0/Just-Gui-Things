@@ -7,8 +7,12 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class SingleInputProcessingRecipe implements IRecipe<IInventory>, MachineProcessingRecipe {
     protected final ResourceLocation id;
@@ -36,7 +40,7 @@ public abstract class SingleInputProcessingRecipe implements IRecipe<IInventory>
 
     @Override
     public ItemStack assemble(IInventory inventory) {
-        return result.resolve(inventory.getItem(0));
+        return getResultForInput(inventory.getItem(0));
     }
 
     @Override
@@ -65,8 +69,28 @@ public abstract class SingleInputProcessingRecipe implements IRecipe<IInventory>
         return input;
     }
 
+    public ItemStack getResultForInput(ItemStack inputStack) {
+        return result.resolve(inputStack);
+    }
+
+    public List<ItemStack> getInputDisplayStacks() {
+        return Arrays.stream(input.getItems())
+                .filter(stack -> !stack.isEmpty())
+                .sorted(Comparator.comparing(SingleInputProcessingRecipe::getRegistryName))
+                .map(ItemStack::copy)
+                .collect(Collectors.toList());
+    }
+
     public List<ItemStack> getResultDisplayStacks() {
-        return result.getDisplayStacks();
+        return getInputDisplayStacks().stream()
+                .map(this::getResultForInput)
+                .filter(stack -> !stack.isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    private static String getRegistryName(ItemStack stack) {
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        return id == null ? "" : id.toString();
     }
 
     @Override
