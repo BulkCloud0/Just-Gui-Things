@@ -96,7 +96,7 @@ tasks.register('validateCompatRecipes') {
             String relativePath = compatDir.toPath()
                     .relativize(recipeFile.toPath())
                     .toString()
-                    .replace('\\\\', '/')
+                    .replace('\\', '/')
             String compatScope = relativePath.contains('/')
                     ? relativePath.substring(0, relativePath.indexOf('/'))
                     : ''
