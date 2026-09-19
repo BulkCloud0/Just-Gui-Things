@@ -258,10 +258,111 @@ tasks.register('validateCompatRecipes') {
         }
     }
 }
+tasks.register('validateOptionalIntegrationBoundaries') {
+    group = 'verification'
+    description = 'Validates that optional mod APIs stay isolated behind dedicated integration packages.'
+
+    doLast {
+        File javaRoot = file('src/main/java/com/bulkcloud0/justguithings')
+        File modsTomlFile = file('src/main/resources/META-INF/mods.toml')
+
+        Map<String, Map<String, String>> optionalApis = [
+                'mezz.jei.'                  : [path: 'integration/jei/', modId: 'jei', side: 'CLIENT'],
+                'mekanism.'                  : [path: 'integration/mekanism/', modId: 'mekanism'],
+                'cofh.'                      : [path: 'integration/thermal/', modId: 'thermal'],
+                'com.allthemods.alltheores.' : [path: 'integration/alltheores/', modId: 'alltheores']
+        ]
+
+        Set<String> referencedOptionalMods = [] as Set<String>
+
+        if (javaRoot.exists()) {
+            fileTree(javaRoot).matching { include '**/*.java' }.files.sort().each { File sourceFile ->
+                String relativePath = javaRoot.toPath()
+                        .relativize(sourceFile.toPath())
+                        .toString()
+                        .replace('\\', '/')
+                String source = sourceFile.getText('UTF-8')
+
+                if (!relativePath.startsWith('integration/')
+                        && source.contains('com.bulkcloud0.justguithings.integration.')) {
+                    throw new GradleException('Core source ' + relativePath
+                            + ' references an optional integration package directly')
+                }
+
+                optionalApis.each { String apiPrefix, Map<String, String> rule ->
+                    if (source.contains(apiPrefix)) {
+                        referencedOptionalMods.add(rule.modId)
+                        if (!relativePath.startsWith(rule.path)) {
+                            throw new GradleException('Optional API ' + apiPrefix
+                                    + ' is referenced from ' + relativePath
+                                    + '; allowed only under ' + rule.path)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!modsTomlFile.exists()) {
+            throw new GradleException('Missing src/main/resources/META-INF/mods.toml')
+        }
+
+        List<Map<String, String>> dependencyBlocks = []
+        Map<String, String> currentDependency = null
+
+        modsTomlFile.readLines('UTF-8').each { String rawLine ->
+            String line = rawLine.trim()
+            if (line == '[[dependencies.justguithings]]') {
+                if (currentDependency != null) {
+                    dependencyBlocks.add(currentDependency)
+                }
+                currentDependency = [:]
+            } else if (line.startsWith('[[')) {
+                if (currentDependency != null) {
+                    dependencyBlocks.add(currentDependency)
+                    currentDependency = null
+                }
+            } else if (currentDependency != null && line.contains('=')) {
+                int separator = line.indexOf('=')
+                String key = line.substring(0, separator).trim()
+                String value = line.substring(separator + 1).trim()
+                if (value.length() >= 2 && value.startsWith('"') && value.endsWith('"')) {
+                    value = value.substring(1, value.length() - 1)
+                }
+                currentDependency.put(key, value)
+            }
+        }
+        if (currentDependency != null) {
+            dependencyBlocks.add(currentDependency)
+        }
+
+        referencedOptionalMods.each { String modId ->
+            List<Map<String, String>> matches = dependencyBlocks.findAll { it.modId == modId }
+            if (matches.size() != 1) {
+                throw new GradleException('Optional integration ' + modId
+                        + ' must have exactly one [[dependencies.justguithings]] entry in mods.toml')
+            }
+
+            Map<String, String> dependency = matches[0]
+            if (dependency.mandatory != 'false') {
+                throw new GradleException('Optional integration ' + modId
+                        + ' must remain mandatory=false in mods.toml')
+            }
+
+            Map<String, String> rule = optionalApis.values().find { it.modId == modId }
+            if (rule?.side != null && dependency.side != rule.side) {
+                throw new GradleException('Optional integration ' + modId
+                        + ' must use side=' + rule.side + ' in mods.toml')
+            }
+        }
+    }
+}
+
 tasks.named('processResources').configure {
     dependsOn tasks.named('validateCompatRecipes')
+    dependsOn tasks.named('validateOptionalIntegrationBoundaries')
 }
 
 tasks.named('check').configure {
     dependsOn tasks.named('validateCompatRecipes')
+    dependsOn tasks.named('validateOptionalIntegrationBoundaries')
 }
