@@ -75,7 +75,7 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.register('validateCompatRecipes') {
     group = 'verification'
-    description = 'Validates that optional-mod compatibility recipes are safely guarded.'
+    description = 'Validates data-driven compatibility recipe boundaries and optional-mod guards.'
 
     doLast {
         File compatDir = file('src/main/resources/data/justguithings/recipes/compat')
@@ -84,21 +84,53 @@ tasks.register('validateCompatRecipes') {
         }
 
         def parser = new groovy.json.JsonSlurper()
+        Set<String> sharedTagNamespaces = ['minecraft', 'forge', 'justguithings'] as Set<String>
+        Set<String> coreItemNamespaces = ['minecraft', 'justguithings'] as Set<String>
+
+        Closure<String> namespaceOf = { String id ->
+            int separator = id.indexOf(':')
+            separator > 0 ? id.substring(0, separator) : ''
+        }
+
         fileTree(compatDir).matching { include '**/*.json' }.files.sort().each { File recipeFile ->
+            String relativePath = compatDir.toPath()
+                    .relativize(recipeFile.toPath())
+                    .toString()
+                    .replace('\\\\', '/')
+            String compatScope = relativePath.contains('/')
+                    ? relativePath.substring(0, relativePath.indexOf('/'))
+                    : ''
+            boolean commonRecipe = compatScope == 'common'
+
+            if (compatScope.isEmpty()) {
+                throw new GradleException('Compatibility recipe must live under compat/common or compat/<modid>: ' + relativePath)
+            }
+
             def recipe
             try {
                 recipe = parser.parse(recipeFile)
             } catch (Exception error) {
-                throw new GradleException("Invalid compatibility recipe JSON: ${recipeFile}", error)
+                throw new GradleException('Invalid compatibility recipe JSON: ' + relativePath, error)
             }
 
             List conditions = recipe.conditions instanceof List ? recipe.conditions : []
             Set<String> loadedMods = conditions.findAll {
                 it instanceof Map && it.type == 'forge:mod_loaded' && it.modid instanceof String
             }.collect { it.modid as String } as Set<String>
+            Set<String> existingItems = conditions.findAll {
+                it instanceof Map && it.type == 'forge:item_exists' && it.item instanceof String
+            }.collect { it.item as String } as Set<String>
+            Set<String> nonEmptyTags = conditions.findAll {
+                it instanceof Map
+                        && it.type == 'forge:not'
+                        && it.value instanceof Map
+                        && it.value.type == 'forge:tag_empty'
+                        && it.value.tag instanceof String
+            }.collect { it.value.tag as String } as Set<String>
 
             Set<String> referencedItems = [] as Set<String>
             Set<String> referencedFluids = [] as Set<String>
+            Set<String> referencedTags = [] as Set<String>
 
             Closure scan
             scan = { value ->
@@ -111,6 +143,8 @@ tasks.register('validateCompatRecipes') {
                             referencedItems.add(nested as String)
                         } else if (key == 'fluid' && nested instanceof String) {
                             referencedFluids.add(nested as String)
+                        } else if (key == 'tag' && nested instanceof String) {
+                            referencedTags.add(nested as String)
                         } else {
                             scan(nested)
                         }
@@ -121,34 +155,109 @@ tasks.register('validateCompatRecipes') {
             }
             scan(recipe)
 
-            referencedItems.findAll {
-                it.contains(':') && !it.startsWith('minecraft:') && !it.startsWith('justguithings:')
-            }.each { String itemId ->
-                String modId = itemId.substring(0, itemId.indexOf(':'))
-                if (!loadedMods.contains(modId)) {
-                    throw new GradleException("Compatibility recipe ${recipeFile} references ${itemId} without forge:mod_loaded for ${modId}")
+            Set<String> resultTags = [] as Set<String>
+            if (recipe.result instanceof Map && recipe.result.tag instanceof String) {
+                resultTags.add(recipe.result.tag as String)
+            }
+
+            resultTags.each { String tagId ->
+                if (!nonEmptyTags.contains(tagId)) {
+                    throw new GradleException('Compatibility recipe ' + relativePath
+                            + ' has tag output ' + tagId
+                            + ' without forge:not + forge:tag_empty')
+                }
+            }
+
+            if (commonRecipe) {
+                if (!loadedMods.isEmpty()) {
+                    throw new GradleException('compat/common recipe ' + relativePath
+                            + ' must not depend on forge:mod_loaded: ' + loadedMods)
                 }
 
-                boolean guarded = conditions.any {
-                    it instanceof Map && it.type == 'forge:item_exists' && it.item == itemId
+                referencedItems.each { String itemId ->
+                    String namespace = namespaceOf(itemId)
+                    if (!namespace.isEmpty() && !coreItemNamespaces.contains(namespace)) {
+                        throw new GradleException('compat/common recipe ' + relativePath
+                                + ' references mod-specific item ' + itemId)
+                    }
                 }
-                if (!guarded) {
-                    throw new GradleException("Compatibility recipe ${recipeFile} references ${itemId} without forge:item_exists")
+
+                referencedFluids.each { String fluidId ->
+                    String namespace = namespaceOf(fluidId)
+                    if (!namespace.isEmpty() && !coreItemNamespaces.contains(namespace)) {
+                        throw new GradleException('compat/common recipe ' + relativePath
+                                + ' references mod-specific fluid ' + fluidId)
+                    }
+                }
+
+                referencedTags.each { String tagId ->
+                    String namespace = namespaceOf(tagId)
+                    if (!namespace.isEmpty() && !sharedTagNamespaces.contains(namespace)) {
+                        throw new GradleException('compat/common recipe ' + relativePath
+                                + ' references mod-specific tag ' + tagId)
+                    }
+                    if (namespace == 'forge' && !nonEmptyTags.contains(tagId)) {
+                        throw new GradleException('compat/common recipe ' + relativePath
+                                + ' references ' + tagId
+                                + ' without forge:not + forge:tag_empty')
+                    }
+                }
+
+                return
+            }
+
+            if (!loadedMods.contains(compatScope)) {
+                throw new GradleException('Compatibility recipe ' + relativePath
+                        + ' must declare forge:mod_loaded for its scope ' + compatScope)
+            }
+
+            referencedItems.findAll {
+                String namespace = namespaceOf(it)
+                !namespace.isEmpty() && !coreItemNamespaces.contains(namespace)
+            }.each { String itemId ->
+                String modId = namespaceOf(itemId)
+                if (!loadedMods.contains(modId)) {
+                    throw new GradleException('Compatibility recipe ' + relativePath
+                            + ' references ' + itemId
+                            + ' without forge:mod_loaded for ' + modId)
+                }
+                if (!existingItems.contains(itemId)) {
+                    throw new GradleException('Compatibility recipe ' + relativePath
+                            + ' references ' + itemId
+                            + ' without forge:item_exists')
                 }
             }
 
             referencedFluids.findAll {
-                it.contains(':') && !it.startsWith('minecraft:') && !it.startsWith('justguithings:')
+                String namespace = namespaceOf(it)
+                !namespace.isEmpty() && !coreItemNamespaces.contains(namespace)
             }.each { String fluidId ->
-                String modId = fluidId.substring(0, fluidId.indexOf(':'))
+                String modId = namespaceOf(fluidId)
                 if (!loadedMods.contains(modId)) {
-                    throw new GradleException("Compatibility recipe ${recipeFile} references fluid ${fluidId} without forge:mod_loaded for ${modId}")
+                    throw new GradleException('Compatibility recipe ' + relativePath
+                            + ' references fluid ' + fluidId
+                            + ' without forge:mod_loaded for ' + modId)
+                }
+            }
+
+            referencedTags.each { String tagId ->
+                String namespace = namespaceOf(tagId)
+                if (!namespace.isEmpty() && !sharedTagNamespaces.contains(namespace)) {
+                    if (!loadedMods.contains(namespace)) {
+                        throw new GradleException('Compatibility recipe ' + relativePath
+                                + ' references tag ' + tagId
+                                + ' without forge:mod_loaded for ' + namespace)
+                    }
+                    if (!nonEmptyTags.contains(tagId)) {
+                        throw new GradleException('Compatibility recipe ' + relativePath
+                                + ' references optional tag ' + tagId
+                                + ' without forge:not + forge:tag_empty')
+                    }
                 }
             }
         }
     }
 }
-
 tasks.named('processResources').configure {
     dependsOn tasks.named('validateCompatRecipes')
 }
