@@ -56,9 +56,6 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
 
-    private LazyOptional<IEnergyStorage> energyCapability;
-    private LazyOptional<IItemHandler> itemCapability;
-
     protected BaseMachineTileEntity(TileEntityType<?> tileEntityType,
                                     int energyCapacity,
                                     int maxReceive,
@@ -219,9 +216,6 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     }
 
     private void initializeCapabilities() {
-        energyCapability = LazyOptional.of(() -> energyStorage);
-        itemCapability = LazyOptional.of(() -> inventory);
-
         for (Direction direction : Direction.values()) {
             sidedItemCapabilities.put(direction, createSidedItemCapability(direction));
             sidedEnergyCapabilities.put(direction, createSidedEnergyCapability(direction));
@@ -553,7 +547,8 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
             if (side == null) {
-                return energyCapability.cast();
+                // Side-configurable block capabilities require a concrete face.
+                return LazyOptional.empty();
             }
             MachineSideMode mode = getSideMode(side);
             if (canReceiveEnergyFrom(side, mode) || canExtractEnergyFrom(side, mode)) {
@@ -565,7 +560,8 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && supportsItemCapability()) {
             if (side == null) {
-                return itemCapability.cast();
+                // Side-configurable block capabilities require a concrete face.
+                return LazyOptional.empty();
             }
             MachineSideMode mode = getItemSideMode(side, getSideMode(side));
             if (mode == MachineSideMode.INPUT || mode == MachineSideMode.OUTPUT) {
@@ -589,9 +585,6 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     @Override
     protected void invalidateCaps() {
         super.invalidateCaps();
-        energyCapability.invalidate();
-        itemCapability.invalidate();
-
         for (LazyOptional<IItemHandler> capability : sidedItemCapabilities.values()) {
             capability.invalidate();
         }
