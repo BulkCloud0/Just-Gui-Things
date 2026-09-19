@@ -5,7 +5,7 @@
   "block.justguithings.steam_generator": "Steam Generator",
   "container.justguithings.steam_generator": "Steam Generator",
   "screen.justguithings.steam_generator.water": "Water: %s mB",
-  "screen.justguithings.steam_generator.generation": "Generation: %s FE/t",
+  "screen.justguithings.steam_generator.generation": "Output: %s FE/t",
   "block.justguithings.crusher": "Crusher",
   "container.justguithings.crusher": "Crusher",
   "block.justguithings.stamping_press": "Stamping Press",
