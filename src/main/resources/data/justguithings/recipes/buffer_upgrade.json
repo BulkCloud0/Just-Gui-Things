@@ -6,9 +6,9 @@
     "RTR"
   ],
   "key": {
-    "R": { "item": "minecraft:redstone" },
+    "R": { "tag": "forge:dusts/redstone" },
     "T": { "tag": "forge:ingots/steel" },
-    "B": { "item": "minecraft:redstone_block" }
+    "B": { "tag": "forge:storage_blocks/redstone" }
   },
   "result": {
     "item": "justguithings:buffer_upgrade"

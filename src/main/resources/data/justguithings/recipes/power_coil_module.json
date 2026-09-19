@@ -10,7 +10,7 @@
       "tag": "forge:wires/gold"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "tag": "forge:dusts/redstone"
     },
     "W": {
       "tag": "forge:wires/steel"

@@ -8,7 +8,7 @@
   "key": {
     "P": { "tag": "forge:plates/iron" },
     "F": { "item": "minecraft:furnace" },
-    "R": { "item": "minecraft:redstone" },
+    "R": { "tag": "forge:dusts/redstone" },
     "G": { "tag": "forge:plates/gold" },
     "C": { "item": "justguithings:basic_energy_cable" }
   },

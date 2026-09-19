@@ -8,7 +8,7 @@
   "key": {
     "I": { "tag": "forge:ingots/iron" },
     "P": { "item": "minecraft:piston" },
-    "R": { "item": "minecraft:redstone" },
+    "R": { "tag": "forge:dusts/redstone" },
     "F": { "item": "minecraft:furnace" }
   },
   "result": {

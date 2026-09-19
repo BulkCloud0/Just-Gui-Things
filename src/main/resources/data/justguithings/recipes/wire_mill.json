@@ -8,7 +8,7 @@
   "key": {
     "P": { "tag": "forge:plates/iron" },
     "S": { "tag": "justguithings:machine_components/tensioning_spindles" },
-    "R": { "item": "minecraft:redstone" },
+    "R": { "tag": "forge:dusts/redstone" },
     "C": { "item": "minecraft:comparator" },
     "E": { "item": "justguithings:basic_energy_cable" }
   },

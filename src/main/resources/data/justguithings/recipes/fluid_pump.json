@@ -8,7 +8,7 @@
   "key": {
     "P": { "tag": "forge:plates/iron" },
     "F": { "item": "justguithings:basic_fluid_pipe" },
-    "R": { "item": "minecraft:redstone" },
+    "R": { "tag": "forge:dusts/redstone" },
     "B": { "item": "minecraft:bucket" },
     "I": { "tag": "forge:ingots/iron" }
   },

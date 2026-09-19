@@ -13,7 +13,7 @@
       "item": "minecraft:furnace"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "tag": "forge:dusts/redstone"
     }
   },
   "result": {
