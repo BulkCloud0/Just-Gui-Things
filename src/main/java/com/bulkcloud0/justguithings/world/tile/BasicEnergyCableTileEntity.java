@@ -64,7 +64,6 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities =
             new EnumMap<>(Direction.class);
 
-    private LazyOptional<IEnergyStorage> unsidedEnergyCapability = LazyOptional.of(() -> energyStorage);
     private int distributionCursor;
 
     public BasicEnergyCableTileEntity() {
@@ -481,7 +480,8 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
             if (side == null) {
-                return unsidedEnergyCapability.cast();
+                // Side-configurable block capabilities require a concrete face.
+                return LazyOptional.empty();
             }
 
             ConduitTransferMode mode = getSideMode(side);
@@ -498,7 +498,6 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     @Override
     protected void invalidateCaps() {
         super.invalidateCaps();
-        unsidedEnergyCapability.invalidate();
         for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
             capability.invalidate();
         }
