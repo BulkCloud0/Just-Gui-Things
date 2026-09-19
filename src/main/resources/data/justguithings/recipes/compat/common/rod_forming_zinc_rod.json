@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/zinc"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/zinc"
+      }
+    }
+  ],
+  "type": "justguithings:rod_forming",
+  "ingredient": {
+    "tag": "forge:ingots/zinc"
+  },
+  "result": {
+    "tag": "forge:rods/zinc",
+    "count": 2
+  },
+  "processing_time": 160,
+  "energy_per_tick": 55
+}

@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/iridium"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/iridium"
+      }
+    }
+  ],
+  "type": "justguithings:heating",
+  "ingredient": {
+    "tag": "forge:dusts/iridium"
+  },
+  "result": {
+    "tag": "forge:ingots/iridium",
+    "count": 1
+  },
+  "processing_time": 140,
+  "energy_per_tick": 45
+}
