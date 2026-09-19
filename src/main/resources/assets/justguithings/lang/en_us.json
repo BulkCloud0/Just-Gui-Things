@@ -23,7 +23,7 @@
   "item.justguithings.steel_blend": "Steel Blend",
   "item.justguithings.steel_ingot": "Steel Ingot",
   "tooltip.justguithings.energy_cell.energy": "Stored Energy: %s / %s FE",
-  "tooltip.justguithings.energy_cell.portable": "Retains stored FE and side configuration when broken.",
+  "tooltip.justguithings.energy_cell.portable": "Retains stored FE/side config and exposes Forge Energy while carried.",
   "tooltip.justguithings.configurator.use": "Right-click configurable faces to cycle supported I/O modes.",
   "tooltip.justguithings.speed_module.effect": "+50% process speed multiplier per module; FE/t scales with speed.",
   "tooltip.justguithings.speed_module.compatibility": "Compatible: Crusher, Stamping Press",
