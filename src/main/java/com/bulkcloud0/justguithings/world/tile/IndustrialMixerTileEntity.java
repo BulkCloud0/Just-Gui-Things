@@ -69,7 +69,12 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
 
     @Override
     protected boolean canProcessRecipe(MixingRecipe recipe) {
-        ItemStack result = recipe.getResultItem();
+        if (inventory.getStackInSlot(0).getCount() < recipe.getPrimaryCount()
+                || inventory.getStackInSlot(1).getCount() < recipe.getSecondaryCount()) {
+            return false;
+        }
+
+        ItemStack result = recipe.getResultForPrimary(inventory.getStackInSlot(0));
         if (result.isEmpty()) {
             return false;
         }
@@ -86,13 +91,13 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
 
     @Override
     protected void processRecipe(MixingRecipe recipe) {
-        ItemStack result = recipe.getResultItem().copy();
+        ItemStack result = recipe.getResultForPrimary(inventory.getStackInSlot(0));
         if (result.isEmpty()) {
             return;
         }
 
-        inventory.extractItem(0, 1, false);
-        inventory.extractItem(1, 1, false);
+        inventory.extractItem(0, recipe.getPrimaryCount(), false);
+        inventory.extractItem(1, recipe.getSecondaryCount(), false);
 
         ItemStack output = inventory.getStackInSlot(2);
         if (output.isEmpty()) {
