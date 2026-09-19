@@ -277,6 +277,12 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
         super.setRemoved();
     }
 
+    @Override
+    public void onChunkUnloaded() {
+        invalidateNetworkCache();
+        super.onChunkUnloaded();
+    }
+
     protected static final class ExternalEndpoint<N extends AbstractConduitNetworkTileEntity<N>> {
         private final N conduit;
         private final Direction conduitSide;
