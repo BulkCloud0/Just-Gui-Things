@@ -10,6 +10,7 @@ import com.bulkcloud0.justguithings.world.container.FluidPumpContainer;
 import com.bulkcloud0.justguithings.world.container.ResistiveFurnaceContainer;
 import com.bulkcloud0.justguithings.world.container.RodMillContainer;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
+import com.bulkcloud0.justguithings.world.container.SteamGeneratorContainer;
 import com.bulkcloud0.justguithings.world.container.WireMillContainer;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
@@ -23,6 +24,8 @@ public final class ModContainers {
 
     public static final RegistryObject<ContainerType<CoalGeneratorContainer>> COAL_GENERATOR =
             CONTAINERS.register("coal_generator", () -> IForgeContainerType.create(CoalGeneratorContainer::new));
+    public static final RegistryObject<ContainerType<SteamGeneratorContainer>> STEAM_GENERATOR =
+            CONTAINERS.register("steam_generator", () -> IForgeContainerType.create(SteamGeneratorContainer::new));
     public static final RegistryObject<ContainerType<CrusherContainer>> CRUSHER =
             CONTAINERS.register("crusher", () -> IForgeContainerType.create(CrusherContainer::new));
     public static final RegistryObject<ContainerType<StampingPressContainer>> STAMPING_PRESS =
