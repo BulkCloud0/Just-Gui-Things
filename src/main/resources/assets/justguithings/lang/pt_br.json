@@ -28,7 +28,7 @@
   "tooltip.justguithings.configurator.use": "Clique com o botão direito em faces configuráveis para alternar os modos de E/S suportados.",
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
   "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem",
-  "tooltip.justguithings.efficiency_module.effect": "-20% no custo de FE de processamento por módulo, até 20% do valor base.",
+  "tooltip.justguithings.efficiency_module.effect": "-15% FE/t e +10% no tempo de processamento por módulo; até 4 módulos.",
   "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem",
   "tooltip.justguithings.buffer_module.effect": "+100.000 FE de capacidade no Triturador por módulo.",
   "tooltip.justguithings.buffer_module.compatibility": "Compatível: Triturador",
