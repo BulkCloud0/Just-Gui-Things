@@ -24,7 +24,9 @@ Built-in module types:
 - `justguithings:batch`
 - `justguithings:power_coil`
 
-Supported module tags mirror those IDs under `justguithings:machine_modules/<type>`. A compatible item can implement `IMachineModule` or join exactly one module tag. Machines still decide which module types they support.
+Supported module tags mirror those IDs under `justguithings:machine_modules/<type>`. Data-only integrations should prefer those tags. A Java addon that needs an explicit code contract may implement `com.bulkcloud0.justguithings.api.machine.module.IMachineModule`; the standard identifiers are exposed by `com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes`. Machines still decide which module types they support.
+
+Only contracts below `com.bulkcloud0.justguithings.api` are intended as stable Java addon surfaces. The older `machine.module.IMachineModule` and `machine.module.MachineModuleTypes` names remain as deprecated source/binary compatibility bridges, not as the preferred API. Processing recipes remain datapack-first; JGT recipe implementation classes are not currently part of the public Java API.
 
 The Resistive Furnace supports one `power_coil` module. It doubles processing speed while increasing FE/t to 2.5x, making it a throughput-versus-energy tradeoff rather than a tier.
 
