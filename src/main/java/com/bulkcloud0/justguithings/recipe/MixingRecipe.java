@@ -131,13 +131,6 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
         return result.getDisplayStacks();
     }
 
-    public List<ItemStack> getPairedResultDisplayStacks() {
-        return getPrimaryDisplayStacks().stream()
-                .map(this::getResultForPrimary)
-                .filter(stack -> !stack.isEmpty())
-                .collect(Collectors.toList());
-    }
-
     @Override
     public int getProcessingTime() {
         return processingTime;
@@ -187,9 +180,6 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             }
             if (primaryCount <= 0 || secondaryCount <= 0) {
                 throw new JsonSyntaxException("Mixing recipe ingredient counts must be greater than zero in " + recipeId);
-            }
-            if (result.resolve().isEmpty()) {
-                throw new JsonSyntaxException("Mixing recipe " + recipeId + " has an empty result");
             }
             if (processingTime <= 0 || energyPerTick <= 0) {
                 throw new JsonSyntaxException("Mixing recipe time and FE/t must be greater than zero in " + recipeId);
