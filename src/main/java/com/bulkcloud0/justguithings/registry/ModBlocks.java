@@ -13,6 +13,7 @@ import com.bulkcloud0.justguithings.world.block.FluidPumpBlock;
 import com.bulkcloud0.justguithings.world.block.ResistiveFurnaceBlock;
 import com.bulkcloud0.justguithings.world.block.RodMillBlock;
 import com.bulkcloud0.justguithings.world.block.StampingPressBlock;
+import com.bulkcloud0.justguithings.world.block.SteamGeneratorBlock;
 import com.bulkcloud0.justguithings.world.block.WireMillBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -28,6 +29,9 @@ public final class ModBlocks {
     public static final RegistryObject<Block> COAL_GENERATOR = BLOCKS.register("coal_generator",
             () -> new CoalGeneratorBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(3.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+    public static final RegistryObject<Block> STEAM_GENERATOR = BLOCKS.register("steam_generator",
+            () -> new SteamGeneratorBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> CRUSHER = BLOCKS.register("crusher",
             () -> new CrusherBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
