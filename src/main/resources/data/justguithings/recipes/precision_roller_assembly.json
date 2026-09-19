@@ -13,7 +13,7 @@
       "tag": "forge:plates/gold"
     },
     "D": {
-      "item": "minecraft:diamond"
+      "tag": "forge:gems/diamond"
     }
   },
   "result": {
