@@ -357,12 +357,57 @@ tasks.register('validateOptionalIntegrationBoundaries') {
     }
 }
 
+tasks.register('validateClientBoundaries') {
+    group = 'verification'
+    description = 'Validates that dedicated-server-safe code does not reference client runtime/rendering classes.'
+
+    doLast {
+        File javaRoot = file('src/main/java/com/bulkcloud0/justguithings')
+        if (!javaRoot.exists()) {
+            return
+        }
+
+        List<String> clientRuntimeReferences = [
+                'net.minecraft.client.Minecraft',
+                'net.minecraft.client.gui.',
+                'net.minecraft.client.renderer.',
+                'net.minecraft.client.world.',
+                'net.minecraft.client.entity.player.ClientPlayerEntity',
+                'com.mojang.blaze3d.',
+                'com.bulkcloud0.justguithings.client.'
+        ]
+
+        fileTree(javaRoot).matching { include '**/*.java' }.files.sort().each { File sourceFile ->
+            String relativePath = javaRoot.toPath()
+                    .relativize(sourceFile.toPath())
+                    .toString()
+                    .replace('\\', '/')
+
+            boolean clientOnlySource = relativePath.startsWith('client/')
+                    || relativePath.startsWith('integration/jei/')
+            if (clientOnlySource) {
+                return
+            }
+
+            String source = sourceFile.getText('UTF-8')
+            clientRuntimeReferences.each { String clientReference ->
+                if (source.contains(clientReference)) {
+                    throw new GradleException('Dedicated-server-safe source ' + relativePath
+                            + ' references client-only runtime type/package ' + clientReference)
+                }
+            }
+        }
+    }
+}
+
 tasks.named('processResources').configure {
     dependsOn tasks.named('validateCompatRecipes')
     dependsOn tasks.named('validateOptionalIntegrationBoundaries')
+    dependsOn tasks.named('validateClientBoundaries')
 }
 
 tasks.named('check').configure {
     dependsOn tasks.named('validateCompatRecipes')
     dependsOn tasks.named('validateOptionalIntegrationBoundaries')
+    dependsOn tasks.named('validateClientBoundaries')
 }
