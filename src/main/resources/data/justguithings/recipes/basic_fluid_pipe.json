@@ -7,7 +7,7 @@
   ],
   "key": {
     "G": {
-      "item": "minecraft:glass"
+      "tag": "forge:glass/colorless"
     },
     "I": {
       "tag": "forge:nuggets/iron"
