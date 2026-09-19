@@ -4,10 +4,8 @@ import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.recipe.WireDrawingRecipe;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -17,8 +15,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.Arrays;
-import java.util.Collections;
 
 public final class WireDrawingRecipeCategory implements IRecipeCategory<WireDrawingRecipe> {
     public static final ResourceLocation UID = new ResourceLocation(JustGuiThings.MOD_ID, "wire_drawing");
@@ -64,17 +60,12 @@ public final class WireDrawingRecipeCategory implements IRecipeCategory<WireDraw
 
     @Override
     public void setIngredients(WireDrawingRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputIngredients(Collections.singletonList(recipe.getInput()));
-        ingredients.setOutputs(VanillaTypes.ITEM, recipe.getResultDisplayStacks());
+        SingleInputRecipeJeiHelper.setIngredients(recipe, ingredients);
     }
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, WireDrawingRecipe recipe, IIngredients ingredients) {
-        IGuiItemStackGroup stacks = recipeLayout.getItemStacks();
-        stacks.init(0, true, 8, 17);
-        stacks.init(1, false, 94, 17);
-        stacks.set(0, Arrays.asList(recipe.getInput().getItems()));
-        stacks.set(1, recipe.getResultDisplayStacks());
+        SingleInputRecipeJeiHelper.setRecipe(recipeLayout, recipe);
     }
 
     @Override
