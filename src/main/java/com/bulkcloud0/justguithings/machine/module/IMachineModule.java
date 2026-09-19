@@ -1,7 +1,10 @@
 package com.bulkcloud0.justguithings.machine.module;
 
-import net.minecraft.util.ResourceLocation;
-
-public interface IMachineModule {
-    ResourceLocation getMachineModuleType();
+/**
+ * @deprecated Addons should implement
+ * {@link com.bulkcloud0.justguithings.api.machine.module.IMachineModule}.
+ */
+@Deprecated
+public interface IMachineModule
+        extends com.bulkcloud0.justguithings.api.machine.module.IMachineModule {
 }
