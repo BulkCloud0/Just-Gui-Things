@@ -2,7 +2,7 @@ package com.bulkcloud0.justguithings.machine;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.logistics.FairShareAllocator;
-import com.bulkcloud0.justguithings.machine.module.IMachineModule;
+import com.bulkcloud0.justguithings.api.machine.module.IMachineModule;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.container.INamedContainerProvider;
