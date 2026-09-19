@@ -114,14 +114,26 @@ public class EnergyCellTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
+    protected boolean canPushEnergyToNeighbor(Direction direction,
+                                              MachineSideMode mode,
+                                              net.minecraft.tileentity.TileEntity neighbor) {
+        if (!(neighbor instanceof EnergyCellTileEntity)) {
+            return true;
+        }
+
+        EnergyCellTileEntity other = (EnergyCellTileEntity) neighbor;
+        MachineSideMode otherMode = other.getSideMode(direction.getOpposite());
+        return mode != MachineSideMode.ENERGY_BOTH
+                || otherMode != MachineSideMode.ENERGY_BOTH;
+    }
+
+    @Override
     public void tick() {
         if (level == null || level.isClientSide) {
             return;
         }
 
-        pushEnergyToNeighborsFairly(
-                MAX_TRANSFER,
-                neighbor -> !(neighbor instanceof EnergyCellTileEntity));
+        pushEnergyToNeighborsFairly(MAX_TRANSFER);
     }
 
     public IIntArray getDataAccess() {
