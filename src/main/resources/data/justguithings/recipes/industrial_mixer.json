@@ -7,7 +7,7 @@
   ],
   "key": {
     "P": { "tag": "forge:plates/iron" },
-    "R": { "item": "minecraft:redstone" },
+    "R": { "tag": "forge:dusts/redstone" },
     "F": { "item": "minecraft:furnace" }
   },
   "result": { "item": "justguithings:industrial_mixer" }

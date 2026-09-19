@@ -7,7 +7,7 @@
   ],
   "key": {
     "S": { "item": "minecraft:sugar" },
-    "R": { "item": "minecraft:redstone" },
+    "R": { "tag": "forge:dusts/redstone" },
     "I": { "tag": "forge:plates/iron" }
   },
   "result": {

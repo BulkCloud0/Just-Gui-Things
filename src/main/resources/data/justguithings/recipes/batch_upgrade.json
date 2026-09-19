@@ -7,7 +7,7 @@
   ],
   "key": {
     "I": { "tag": "forge:plates/iron" },
-    "R": { "item": "minecraft:redstone" },
+    "R": { "tag": "forge:dusts/redstone" },
     "H": { "item": "minecraft:hopper" }
   },
   "result": {

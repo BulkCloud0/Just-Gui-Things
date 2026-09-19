@@ -10,7 +10,7 @@
       "item": "minecraft:quartz"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "tag": "forge:dusts/redstone"
     },
     "G": {
       "tag": "forge:plates/gold"
