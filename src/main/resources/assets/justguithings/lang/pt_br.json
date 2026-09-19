@@ -1,4 +1,5 @@
 {
+  "jei.justguithings.output_matches_input_provider": "Quando disponível, a saída usa o item correspondente do mesmo mod da entrada.",
   "block.justguithings.coal_generator": "Gerador a Carvão",
   "container.justguithings.coal_generator": "Gerador a Carvão",
   "block.justguithings.crusher": "Triturador",

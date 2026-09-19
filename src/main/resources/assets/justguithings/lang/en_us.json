@@ -1,4 +1,5 @@
 {
+  "jei.justguithings.output_matches_input_provider": "When available, the output uses the matching item from the input's mod.",
   "block.justguithings.coal_generator": "Coal Generator",
   "container.justguithings.coal_generator": "Coal Generator",
   "block.justguithings.crusher": "Crusher",
