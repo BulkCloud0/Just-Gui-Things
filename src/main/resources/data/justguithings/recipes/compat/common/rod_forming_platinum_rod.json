@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/platinum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/platinum"
+      }
+    }
+  ],
+  "type": "justguithings:rod_forming",
+  "ingredient": {
+    "tag": "forge:ingots/platinum"
+  },
+  "result": {
+    "tag": "forge:rods/platinum",
+    "count": 2
+  },
+  "processing_time": 160,
+  "energy_per_tick": 55
+}
