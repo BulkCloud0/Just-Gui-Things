@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.text.ITextComponent;
@@ -116,7 +117,7 @@ public class EnergyCellTileEntity extends BaseMachineTileEntity {
     @Override
     protected boolean canPushEnergyToNeighbor(Direction direction,
                                               MachineSideMode mode,
-                                              net.minecraft.tileentity.TileEntity neighbor) {
+                                              TileEntity neighbor) {
         if (!(neighbor instanceof EnergyCellTileEntity)) {
             return true;
         }
