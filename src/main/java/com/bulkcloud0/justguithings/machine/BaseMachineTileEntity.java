@@ -373,7 +373,9 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
             }
 
             TileEntity neighbor = getLoadedBlockEntity(worldPosition.relative(direction));
-            if (neighbor == null || (neighborFilter != null && !neighborFilter.test(neighbor))) {
+            if (neighbor == null
+                    || !canPushEnergyToNeighbor(direction, mode, neighbor)
+                    || (neighborFilter != null && !neighborFilter.test(neighbor))) {
                 continue;
             }
 
@@ -432,6 +434,12 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         }
 
         return transferred;
+    }
+
+    protected boolean canPushEnergyToNeighbor(Direction direction,
+                                              MachineSideMode mode,
+                                              TileEntity neighbor) {
+        return true;
     }
 
     public int getEnergyCapacity() {
