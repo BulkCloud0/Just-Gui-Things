@@ -1,0 +1,11 @@
+{
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:ingots/gold"
+  },
+  "result": {
+    "item": "justguithings:gold_plate"
+  },
+  "processing_time": 120,
+  "energy_per_tick": 30
+}

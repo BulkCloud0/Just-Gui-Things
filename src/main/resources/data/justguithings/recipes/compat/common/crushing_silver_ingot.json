@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/silver"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/silver"
+      }
+    }
+  ],
+  "type": "justguithings:crushing",
+  "ingredient": {
+    "tag": "forge:ingots/silver"
+  },
+  "result": {
+    "tag": "forge:dusts/silver",
+    "count": 1
+  },
+  "processing_time": 80,
+  "energy_per_tick": 15
+}

@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/aluminum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/aluminum"
+      }
+    }
+  ],
+  "type": "justguithings:crushing",
+  "ingredient": {
+    "tag": "forge:ingots/aluminum"
+  },
+  "result": {
+    "tag": "forge:dusts/aluminum",
+    "count": 1
+  },
+  "processing_time": 80,
+  "energy_per_tick": 15
+}

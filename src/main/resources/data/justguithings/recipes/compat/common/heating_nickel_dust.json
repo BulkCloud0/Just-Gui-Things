@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/nickel"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/nickel"
+      }
+    }
+  ],
+  "type": "justguithings:heating",
+  "ingredient": {
+    "tag": "forge:dusts/nickel"
+  },
+  "result": {
+    "tag": "forge:ingots/nickel",
+    "count": 1
+  },
+  "processing_time": 140,
+  "energy_per_tick": 45
+}

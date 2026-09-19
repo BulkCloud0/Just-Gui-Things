@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/copper"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/copper"
+      }
+    }
+  ],
+  "type": "justguithings:rod_forming",
+  "ingredient": {
+    "tag": "forge:ingots/copper"
+  },
+  "result": {
+    "tag": "forge:rods/copper",
+    "count": 2
+  },
+  "processing_time": 160,
+  "energy_per_tick": 55
+}

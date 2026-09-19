@@ -1,24 +1,69 @@
 # Just Gui Things
 
-Industrial technology mod for Minecraft 1.16.5 built with Minecraft Forge.
+A technology-focused Minecraft Forge mod for **Minecraft 1.16.5**.
 
-## Direction
+## Current milestone: Core Industrial
 
-The project aims for a progression-driven tech experience inspired by large industrial mods while keeping its own systems and architecture.
+The project is building a reusable industrial foundation with broad Forge interoperability and no fixed machine tier ladder.
 
-Initial milestone:
+### Implemented
 
-- Forge Energy (FE) infrastructure
-- reusable machine base
-- generator and processing machine
-- machine menus/screens
-- custom processing recipes
-- future-ready upgrade/side configuration hooks
+- Forge Energy storage and transport through standard capabilities
+- Coal Generator, Basic Energy Cable and Energy Cell
+- Item and fluid transport through Forge capabilities
+- Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir and Fluid Pump
+- Endpoint routing for item and fluid pipes with filters, priorities, redstone conditions and source reserves
+- Shared conduit network/endpoint caching with loaded-chunk-safe topology scans and reactive endpoint invalidation when connection state changes
+- Multipart conduit arms with enlarged connector collars for clearer endpoint connections and easier face selection
+- Energy endpoint routing with consumer priority, source/target redstone control, fair distribution and Configurator-based per-face input/output modes
+- Shared machine core for energy, inventory, side configuration and processing state
+- Crusher with data-driven recipes and Speed/Efficiency/Buffer/Batch modules
+- Industrial Mixer, Stamping Press and Resistive Furnace
+- Rod Mill for tag-driven ingot-to-rod forming
+- Wire Mill for tag-driven rod-to-wire processing
+- Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
+- Machine specialization through modules such as the Resistive Furnace Power Coil
+- Configurator-based per-face automation
+- Data-driven recipes loaded through Minecraft's Recipe Manager
+- Forge tag compatibility for shared dusts, ingots, plates, rods and wires
+- Optional-mod recipes guarded by Forge conditions
+- JEI categories for JGT processing recipes
+- English and Brazilian Portuguese translations
+- GitHub Actions build validation
 
-## Development target
+### Progression direction
+
+Machines do not progress through a Basic/Reinforced/Advanced/Elite ladder. Progression is based on production roles, machine-specific components, specialization modules, material forms, logistics and automation.
+
+Ingots are treated as normal material forms. JGT does not use temperature states, pressure states or a tempered-ingot progression.
+
+### Compatibility
+
+Compatibility is architectural rather than based on mandatory mod-specific patches:
+
+- Forge Energy via `IEnergyStorage`
+- Item automation via `IItemHandler`
+- Fluid automation via `IFluidHandler`
+- Forge/Minecraft tags for shared materials
+- Datapack-driven processing recipes
+- Optional integration layers only when another mod exposes behavior that standard Forge APIs cannot represent
+
+See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for extension points and soft-dependency rules.
+
+### Next
+
+- Add additional machine-specific specialization modules only where they create a distinct production tradeoff
+- Continue production chains only when they add a clear industrial role
+- Continue profiling large conduit networks and improve connection visuals
+- Improve machine/cable/pipe textures and models
+- Continue broad compatibility through tags, capabilities and optional adapters
+
+## Environment
 
 - Minecraft 1.16.5
-- Forge 36.2.39
-- Java 8
+- Forge 36.2.42
+- Java 8 target
+- ForgeGradle 6
+- Gradle 8.4 toolchain
 
-> The public mod name is provisional. The repository name comes from the author's nickname.
+Development work happens on feature branches and is merged through pull requests.

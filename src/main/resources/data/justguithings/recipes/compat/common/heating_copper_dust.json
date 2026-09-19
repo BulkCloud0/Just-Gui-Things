@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/copper"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/copper"
+      }
+    }
+  ],
+  "type": "justguithings:heating",
+  "ingredient": {
+    "tag": "forge:dusts/copper"
+  },
+  "result": {
+    "tag": "forge:ingots/copper",
+    "count": 1
+  },
+  "processing_time": 140,
+  "energy_per_tick": 45
+}

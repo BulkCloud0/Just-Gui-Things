@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "PFP",
+    "IRI"
+  ],
+  "key": {
+    "I": { "tag": "forge:plates/iron" },
+    "R": { "tag": "forge:dusts/redstone" },
+    "P": { "item": "minecraft:piston" },
+    "F": { "item": "minecraft:furnace" }
+  },
+  "result": {
+    "item": "justguithings:crusher"
+  }
+}

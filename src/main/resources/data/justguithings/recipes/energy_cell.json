@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SRS",
+    "RGR",
+    "SRS"
+  ],
+  "key": {
+    "S": { "tag": "forge:ingots/steel" },
+    "R": { "tag": "forge:dusts/redstone" },
+    "G": { "tag": "forge:plates/gold" }
+  },
+  "result": {
+    "item": "justguithings:energy_cell"
+  }
+}

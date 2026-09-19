@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "RHR",
+    "IRI"
+  ],
+  "key": {
+    "I": { "tag": "forge:plates/iron" },
+    "R": { "tag": "forge:dusts/redstone" },
+    "H": { "item": "minecraft:hopper" }
+  },
+  "result": {
+    "item": "justguithings:batch_upgrade"
+  }
+}

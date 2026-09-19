@@ -1,0 +1,12 @@
+{
+  "type": "justguithings:wire_drawing",
+  "ingredient": {
+    "tag": "forge:rods/iron"
+  },
+  "result": {
+    "tag": "forge:wires/iron",
+    "count": 2
+  },
+  "processing_time": 140,
+  "energy_per_tick": 45
+}

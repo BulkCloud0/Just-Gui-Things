@@ -1,0 +1,8 @@
+{
+  "type": "justguithings:mixing",
+  "primary": { "tag": "forge:dusts/iron" },
+  "secondary": { "tag": "forge:dusts/coal" },
+  "result": { "item": "justguithings:steel_blend", "count": 2 },
+  "processing_time": 160,
+  "energy_per_tick": 45
+}

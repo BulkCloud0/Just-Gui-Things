@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/signalum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/signalum"
+      }
+    }
+  ],
+  "type": "justguithings:heating",
+  "ingredient": {
+    "tag": "forge:dusts/signalum"
+  },
+  "result": {
+    "tag": "forge:ingots/signalum",
+    "count": 1
+  },
+  "processing_time": 140,
+  "energy_per_tick": 45
+}
