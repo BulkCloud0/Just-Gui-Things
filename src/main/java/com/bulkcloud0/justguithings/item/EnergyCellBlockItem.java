@@ -5,12 +5,17 @@ import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -19,16 +24,29 @@ public class EnergyCellBlockItem extends BlockItem {
         super(block, properties);
     }
 
+    @Nullable
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable net.minecraft.nbt.CompoundNBT nbt) {
+        return new ICapabilityProvider() {
+            private final LazyOptional<IEnergyStorage> energyCapability =
+                    LazyOptional.of(() -> new EnergyCellItemEnergyStorage(stack));
+
+            @Nonnull
+            @Override
+            public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable net.minecraft.util.Direction side) {
+                if (cap == CapabilityEnergy.ENERGY) {
+                    return energyCapability.cast();
+                }
+                return LazyOptional.empty();
+            }
+        };
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
 
-        int storedEnergy = 0;
-        CompoundNBT root = stack.getTag();
-        if (root != null && root.contains("BlockEntityTag", 10)) {
-            CompoundNBT blockEntityTag = root.getCompound("BlockEntityTag");
-            storedEnergy = Math.max(0, Math.min(EnergyCellTileEntity.CAPACITY, blockEntityTag.getInt("Energy")));
-        }
+        int storedEnergy = EnergyCellItemEnergyStorage.getStoredEnergy(stack);
 
         tooltip.add(new TranslationTextComponent(
                 "tooltip.justguithings.energy_cell.energy",

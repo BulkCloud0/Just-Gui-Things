@@ -23,7 +23,7 @@
   "item.justguithings.steel_blend": "Mistura de Aço",
   "item.justguithings.steel_ingot": "Lingote de Aço",
   "tooltip.justguithings.energy_cell.energy": "Energia armazenada: %s / %s FE",
-  "tooltip.justguithings.energy_cell.portable": "Mantém FE armazenado e configuração das faces ao ser quebrada.",
+  "tooltip.justguithings.energy_cell.portable": "Mantém FE/configuração das faces e expõe Forge Energy enquanto está como item.",
   "tooltip.justguithings.configurator.use": "Clique com o botão direito em faces configuráveis para alternar os modos de E/S suportados.",
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
   "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem",
