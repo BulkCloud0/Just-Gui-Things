@@ -74,12 +74,28 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
             targetRules.put(direction, new EnergyRoutingTargetRule());
             sourceRules.put(direction, new EnergyRoutingSourceRule());
 
-            final Direction side = direction;
-            sidedEnergyCapabilities.put(side, LazyOptional.of(() ->
-                    new SidedEnergyConduitHandler(
-                            energyStorage,
-                            () -> canReceiveFromExternal(side),
-                            () -> getSideMode(side).canPush())));
+            sidedEnergyCapabilities.put(direction, createSidedEnergyCapability(direction));
+        }
+    }
+
+    private LazyOptional<IEnergyStorage> createSidedEnergyCapability(Direction side) {
+        return LazyOptional.of(() ->
+                new SidedEnergyConduitHandler(
+                        energyStorage,
+                        () -> canReceiveFromExternal(side),
+                        () -> getSideMode(side).canPush()));
+    }
+
+    private void refreshSidedEnergyCapability(Direction side) {
+        LazyOptional<IEnergyStorage> old = sidedEnergyCapabilities.put(
+                side, createSidedEnergyCapability(side));
+        if (old != null) {
+            old.invalidate();
+        }
+
+        if (level != null && !level.isClientSide) {
+            BlockState state = level.getBlockState(worldPosition);
+            level.updateNeighborsAt(worldPosition, state.getBlock());
         }
     }
 
@@ -112,8 +128,12 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     }
 
     public ConduitTransferMode cycleSideMode(Direction direction) {
-        ConduitTransferMode next = getSideMode(direction).next();
+        ConduitTransferMode current = getSideMode(direction);
+        ConduitTransferMode next = current.next();
         sideModes.put(direction, next);
+        if (next != current) {
+            refreshSidedEnergyCapability(direction);
+        }
         setChanged();
         syncToClient();
         return next;

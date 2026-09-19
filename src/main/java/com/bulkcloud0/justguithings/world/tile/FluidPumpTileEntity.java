@@ -144,11 +144,23 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
 
     private void initializeFluidCapabilities() {
         for (Direction direction : Direction.values()) {
-            final Direction side = direction;
-            sidedFluidCapabilities.put(side, LazyOptional.of(() ->
-                    new SidedFluidOutputHandler(
-                            fluidTank,
-                            () -> getSideMode(side) == MachineSideMode.FLUID_OUTPUT)));
+            sidedFluidCapabilities.put(direction, createSidedFluidCapability(direction));
+        }
+    }
+
+    private LazyOptional<IFluidHandler> createSidedFluidCapability(Direction side) {
+        return LazyOptional.of(() ->
+                new SidedFluidOutputHandler(
+                        fluidTank,
+                        () -> getSideMode(side) == MachineSideMode.FLUID_OUTPUT));
+    }
+
+    @Override
+    protected void refreshAdditionalSidedCapabilities(Direction side) {
+        LazyOptional<IFluidHandler> old = sidedFluidCapabilities.put(
+                side, createSidedFluidCapability(side));
+        if (old != null) {
+            old.invalidate();
         }
     }
 

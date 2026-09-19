@@ -62,6 +62,8 @@ Owned JGT TileEntity capabilities follow the Forge lifecycle: custom `LazyOption
 
 For configurable machines and conduits, a capability query with `side == null` is intentionally the unsided/internal view and does not correspond to any physical face. Face configuration governs directional capability queries; JGT neighbor automation and routing always query the concrete opposite face. This preserves Forge interoperability without treating an unsided lookup as a hidden seventh side.
 
+When a configurable face changes mode at runtime, JGT replaces that face's owned sided `LazyOptional` views, invalidates the previous handles, and notifies block neighbors on the server. Standard external automation can therefore drop cached capability references and rediscover newly enabled/disabled I/O without requiring a block replacement.
+
 Machine FE extraction with a non-zero output limit now shares one per-game-tick budget across active push logic, sided capability extraction and unsided capability extraction. Simulations do not consume the budget, and active-push refunds restore budget when an executed receiver accepts less than simulated. This makes Coal Generator `MAX_OUTPUT_PER_TICK` and Energy Cell outbound transfer limits aggregate rather than per-call.
 
 Active machine energy push is also fair across eligible loaded neighbors: the shared machine helper simulates each receiver's demand and uses the same resource-neutral `FairShareAllocator` as conduit energy routing. Energy Cell keeps its direct Energy Cell exclusion to avoid cell-to-cell ping-pong, while Coal Generator uses the generic path. Partial execute acceptance is refunded and can be redistributed in bounded follow-up rounds.
