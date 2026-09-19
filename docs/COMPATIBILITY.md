@@ -147,7 +147,7 @@ The existing Routing Controller configures fluid endpoints with the same TARGET/
 - source: up to 9 fluid samples, whitelist/blacklist, NBT matching, redstone condition and minimum fluid reserve;
 - fluid reserve presets are `0 -> 250 -> 1000 -> 4000 -> 8000 -> 16000 mB`.
 
-Fluid samples are resolved from the item in the other hand. JGT first queries Forge `IFluidHandlerItem`, so buckets and compatible portable tanks from other mods work without adapters. A fallback reads JGT's portable reservoir `BlockEntityTag/Tank` data.
+Fluid samples are resolved from the item in the other hand. JGT first queries Forge `IFluidHandlerItem`, so buckets and compatible portable tanks from other mods work without adapters. The portable JGT Fluid Reservoir now exposes that standard item capability directly, backed by the same `BlockEntityTag/Tank` data used when the block is placed. The NBT fallback remains for compatibility with legacy stacks or environments where an item capability is unavailable.
 
 Minimum reserve is counted across all exposed tanks for the candidate fluid identity. With NBT matching enabled, tagged fluid variants reserve independently; with NBT matching disabled, the same fluid type shares one reserve. Fluid source endpoints are traversed round-robin, with the next scan starting after the last source that actually contributed.
 
