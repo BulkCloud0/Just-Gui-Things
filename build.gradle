@@ -261,3 +261,7 @@ tasks.register('validateCompatRecipes') {
 tasks.named('processResources').configure {
     dependsOn tasks.named('validateCompatRecipes')
 }
+
+tasks.named('check').configure {
+    dependsOn tasks.named('validateCompatRecipes')
+}
