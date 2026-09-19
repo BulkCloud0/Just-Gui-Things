@@ -53,9 +53,6 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
         }
     };
 
-    private final IFluidHandler fluidOutputHandler =
-            new SidedFluidOutputHandler(fluidTank, () -> true);
-
     private final EnumMap<Direction, LazyOptional<IFluidHandler>> sidedFluidCapabilities =
             new EnumMap<>(Direction.class);
 
@@ -107,7 +104,6 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
         }
     };
 
-    private LazyOptional<IFluidHandler> fluidCapability = LazyOptional.of(() -> fluidOutputHandler);
     private int progress;
     private int syncedProgress;
     private int syncedFluidAmount;
@@ -244,7 +240,8 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             if (side == null) {
-                return fluidCapability.cast();
+                // Side-configurable block capabilities require a concrete face.
+                return LazyOptional.empty();
             }
             if (getSideMode(side) == MachineSideMode.FLUID_OUTPUT) {
                 LazyOptional<IFluidHandler> sided = sidedFluidCapabilities.get(side);
@@ -258,7 +255,6 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
     @Override
     protected void invalidateCaps() {
         super.invalidateCaps();
-        fluidCapability.invalidate();
         for (LazyOptional<IFluidHandler> capability : sidedFluidCapabilities.values()) {
             capability.invalidate();
         }
