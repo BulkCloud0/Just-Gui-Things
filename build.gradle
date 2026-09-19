@@ -357,12 +357,74 @@ tasks.register('validateOptionalIntegrationBoundaries') {
     }
 }
 
+tasks.register('validateDedicatedServerBoundaries') {
+    group = 'verification'
+    description = 'Validates that client-only Minecraft and JGT classes cannot leak into common/server code.'
+
+    doLast {
+        File javaRoot = file('src/main/java/com/bulkcloud0/justguithings')
+        if (!javaRoot.exists()) {
+            return
+        }
+
+        Set<String> clientOnlyRoots = [
+                'client/',
+                'integration/jei/'
+        ] as Set<String>
+
+        fileTree(javaRoot).matching { include '**/*.java' }.files.sort().each { File sourceFile ->
+            String relativePath = javaRoot.toPath()
+                    .relativize(sourceFile.toPath())
+                    .toString()
+                    .replace('\\', '/')
+            boolean clientOnlySource = clientOnlyRoots.any { relativePath.startsWith(it) }
+            if (clientOnlySource) {
+                return
+            }
+
+            String source = sourceFile.getText('UTF-8')
+            if (source.contains('net.minecraft.client.')) {
+                throw new GradleException('Common/server source ' + relativePath
+                        + ' references net.minecraft.client.*')
+            }
+            if (source.contains('com.bulkcloud0.justguithings.client.')) {
+                throw new GradleException('Common/server source ' + relativePath
+                        + ' references the JGT client package')
+            }
+        }
+
+        File clientSetup = file('src/main/java/com/bulkcloud0/justguithings/client/ClientSetup.java')
+        if (!clientSetup.exists()) {
+            throw new GradleException('Missing client-only setup entrypoint: client/ClientSetup.java')
+        }
+
+        String clientSetupSource = clientSetup.getText('UTF-8')
+        if (!clientSetupSource.contains('@Mod.EventBusSubscriber')
+                || !clientSetupSource.contains('value = Dist.CLIENT')) {
+            throw new GradleException('ClientSetup must remain guarded by @Mod.EventBusSubscriber(... value = Dist.CLIENT)')
+        }
+
+        File modEntrypoint = file('src/main/java/com/bulkcloud0/justguithings/JustGuiThings.java')
+        if (!modEntrypoint.exists()) {
+            throw new GradleException('Missing common mod entrypoint: JustGuiThings.java')
+        }
+
+        String modEntrypointSource = modEntrypoint.getText('UTF-8')
+        if (modEntrypointSource.contains('com.bulkcloud0.justguithings.client.')
+                || modEntrypointSource.contains('com.bulkcloud0.justguithings.integration.')) {
+            throw new GradleException('Common mod entrypoint must not reference client or optional integration packages')
+        }
+    }
+}
+
 tasks.named('processResources').configure {
     dependsOn tasks.named('validateCompatRecipes')
     dependsOn tasks.named('validateOptionalIntegrationBoundaries')
+    dependsOn tasks.named('validateDedicatedServerBoundaries')
 }
 
 tasks.named('check').configure {
     dependsOn tasks.named('validateCompatRecipes')
     dependsOn tasks.named('validateOptionalIntegrationBoundaries')
+    dependsOn tasks.named('validateDedicatedServerBoundaries')
 }
