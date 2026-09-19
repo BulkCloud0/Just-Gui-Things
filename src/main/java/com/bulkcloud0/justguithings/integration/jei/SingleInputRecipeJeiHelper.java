@@ -7,6 +7,8 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +31,16 @@ final class SingleInputRecipeJeiHelper {
         DisplayPairs pairs = getDisplayPairs(recipe, recipeLayout.getFocus(VanillaTypes.ITEM));
         itemStacks.set(0, pairs.inputs);
         itemStacks.set(1, pairs.outputs);
+
+        if (hasMultipleOutputVariants(recipe)) {
+            itemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+                if (slotIndex == 1 && !input) {
+                    tooltip.add(new TranslationTextComponent(
+                            "jei.justguithings.output_matches_input_provider")
+                            .withStyle(TextFormatting.GRAY));
+                }
+            });
+        }
     }
 
     private static DisplayPairs getDisplayPairs(SingleInputProcessingRecipe recipe,
@@ -82,6 +94,18 @@ final class SingleInputRecipeJeiHelper {
 
     private static boolean sameStackIdentity(ItemStack first, ItemStack second) {
         return ItemStack.isSame(first, second) && ItemStack.tagMatches(first, second);
+    }
+
+    private static boolean hasMultipleOutputVariants(SingleInputProcessingRecipe recipe) {
+        List<ItemStack> outputs = recipe.getResultDisplayStacks();
+        for (int i = 0; i < outputs.size(); i++) {
+            for (int j = i + 1; j < outputs.size(); j++) {
+                if (!sameStackIdentity(outputs.get(i), outputs.get(j))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static final class DisplayPairs {
