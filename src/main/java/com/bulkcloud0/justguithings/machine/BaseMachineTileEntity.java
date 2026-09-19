@@ -223,15 +223,50 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         itemCapability = LazyOptional.of(() -> inventory);
 
         for (Direction direction : Direction.values()) {
-            final Direction side = direction;
-            sidedItemCapabilities.put(side, LazyOptional.of(() -> new MachineSidedItemHandler(
-                    inventory, inputStart, inputCount, outputStart, outputCount,
-                    () -> getItemSideMode(side, getSideMode(side)))));
-            sidedEnergyCapabilities.put(side, LazyOptional.of(() -> new MachineSidedEnergyHandler(
-                    energyStorage,
-                    () -> canReceiveEnergyFrom(side, getSideMode(side)),
-                    () -> canExtractEnergyFrom(side, getSideMode(side)))));
+            sidedItemCapabilities.put(direction, createSidedItemCapability(direction));
+            sidedEnergyCapabilities.put(direction, createSidedEnergyCapability(direction));
         }
+    }
+
+    private LazyOptional<IItemHandler> createSidedItemCapability(Direction side) {
+        return LazyOptional.of(() -> new MachineSidedItemHandler(
+                inventory, inputStart, inputCount, outputStart, outputCount,
+                () -> getItemSideMode(side, getSideMode(side))));
+    }
+
+    private LazyOptional<IEnergyStorage> createSidedEnergyCapability(Direction side) {
+        return LazyOptional.of(() -> new MachineSidedEnergyHandler(
+                energyStorage,
+                () -> canReceiveEnergyFrom(side, getSideMode(side)),
+                () -> canExtractEnergyFrom(side, getSideMode(side))));
+    }
+
+    private void refreshSidedCapabilities(Direction side) {
+        LazyOptional<IItemHandler> oldItem = sidedItemCapabilities.put(
+                side, createSidedItemCapability(side));
+        LazyOptional<IEnergyStorage> oldEnergy = sidedEnergyCapabilities.put(
+                side, createSidedEnergyCapability(side));
+
+        if (oldItem != null) {
+            oldItem.invalidate();
+        }
+        if (oldEnergy != null) {
+            oldEnergy.invalidate();
+        }
+
+        refreshAdditionalSidedCapabilities(side);
+        notifyCapabilityNeighbors();
+    }
+
+    protected void refreshAdditionalSidedCapabilities(Direction side) {
+    }
+
+    private void notifyCapabilityNeighbors() {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        BlockState state = level.getBlockState(worldPosition);
+        level.updateNeighborsAt(worldPosition, state.getBlock());
     }
 
     protected MachineSideMode[] getAllowedSideModes() {
@@ -279,15 +314,18 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     }
 
     public MachineSideMode cycleSideMode(Direction side) {
+        MachineSideMode current = getSideMode(side);
         MachineSideMode[] allowed = getAllowedSideModes();
         if (allowed.length == 0) {
             sideModes.put(side, MachineSideMode.DISABLED);
+            if (current != MachineSideMode.DISABLED) {
+                refreshSidedCapabilities(side);
+            }
             setChanged();
             syncToClient();
             return MachineSideMode.DISABLED;
         }
 
-        MachineSideMode current = getSideMode(side);
         int currentIndex = -1;
         for (int index = 0; index < allowed.length; index++) {
             if (allowed[index] == current) {
@@ -298,6 +336,9 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
         MachineSideMode next = allowed[(currentIndex + 1) % allowed.length];
         sideModes.put(side, next);
+        if (next != current) {
+            refreshSidedCapabilities(side);
+        }
         setChanged();
         syncToClient();
         return next;
