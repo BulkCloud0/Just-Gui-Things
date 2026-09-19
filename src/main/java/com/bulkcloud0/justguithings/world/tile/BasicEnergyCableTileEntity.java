@@ -327,6 +327,12 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                 continue;
             }
 
+            boolean cablePowered = level.hasNeighborSignal(cable.getBlockPos());
+            EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
+            if (!rule.allowsRedstone(cablePowered)) {
+                continue;
+            }
+
             TileEntity neighbor = getLoadedBlockEntity(endpoint.getNeighborPos());
             if (neighbor == null) {
                 continue;
@@ -336,12 +342,6 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                     .getCapability(CapabilityEnergy.ENERGY, endpoint.getNeighborSide())
                     .orElse(null);
             if (receiver == null || !receiver.canReceive()) {
-                continue;
-            }
-
-            boolean cablePowered = level.hasNeighborSignal(cable.getBlockPos());
-            EnergyRoutingTargetRule rule = cable.getTargetRule(direction);
-            if (!rule.allowsRedstone(cablePowered)) {
                 continue;
             }
 
