@@ -13,6 +13,7 @@ import com.bulkcloud0.justguithings.world.tile.FluidPumpTileEntity;
 import com.bulkcloud0.justguithings.world.tile.ResistiveFurnaceTileEntity;
 import com.bulkcloud0.justguithings.world.tile.RodMillTileEntity;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
+import com.bulkcloud0.justguithings.world.tile.SteamGeneratorTileEntity;
 import com.bulkcloud0.justguithings.world.tile.WireMillTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
@@ -25,6 +26,8 @@ public final class ModTileEntities {
 
     public static final RegistryObject<TileEntityType<CoalGeneratorTileEntity>> COAL_GENERATOR = TILE_ENTITIES.register(
             "coal_generator", () -> TileEntityType.Builder.of(CoalGeneratorTileEntity::new, ModBlocks.COAL_GENERATOR.get()).build(null));
+    public static final RegistryObject<TileEntityType<SteamGeneratorTileEntity>> STEAM_GENERATOR = TILE_ENTITIES.register(
+            "steam_generator", () -> TileEntityType.Builder.of(SteamGeneratorTileEntity::new, ModBlocks.STEAM_GENERATOR.get()).build(null));
     public static final RegistryObject<TileEntityType<CrusherTileEntity>> CRUSHER = TILE_ENTITIES.register(
             "crusher", () -> TileEntityType.Builder.of(CrusherTileEntity::new, ModBlocks.CRUSHER.get()).build(null));
     public static final RegistryObject<TileEntityType<StampingPressTileEntity>> STAMPING_PRESS = TILE_ENTITIES.register(
