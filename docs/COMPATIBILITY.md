@@ -32,7 +32,7 @@ The Resistive Furnace supports one `power_coil` module. It doubles processing sp
 
 ## Materials and processing recipes
 
-JGT uses shared Forge tags where conventions exist, including dusts, plates, steel ingots, rods, and wires. Current built-in families include:
+JGT uses shared Forge tags where conventions exist, including ores, dusts, ingots, plates, rods, and wires. JGT-owned material forms currently contribute to:
 
 - `forge:dusts/iron`, `forge:dusts/gold`, `forge:dusts/coal`
 - `forge:plates/iron`, `forge:plates/gold`
@@ -40,7 +40,9 @@ JGT uses shared Forge tags where conventions exist, including dusts, plates, ste
 - `forge:rods/iron`, `forge:rods/gold`, `forge:rods/steel`
 - `forge:wires/iron`, `forge:wires/gold`, `forge:wires/steel`
 
-Processing recipe inputs use Minecraft `Ingredient`. Tag-based outputs use `RecipeOutput`, allowing compatible families such as `forge:ingots/<metal>`, `forge:rods/<metal>`, and `forge:wires/<metal>`.
+The generic compatibility datapack under `data/justguithings/recipes/compat/common` adds processing only when the required Forge tags are populated. Current common metal families include aluminum, copper, iridium, lead, nickel, osmium, platinum, silver, tin, uranium, and zinc. Steel is supported where compatible forms exist. Common alloy processing also covers bronze, constantan, electrum, invar, signalum, lumium, and enderium for the dust/ingot/plate forms exposed through Forge tags.
+
+Processing recipe inputs use Minecraft `Ingredient`. Tag-based outputs use `RecipeOutput`. When resolving a tagged output, JGT first prefers a compatible result from the same registry namespace as the input when one exists; otherwise candidates are ordered deterministically by registry name. This keeps recipes data-driven while avoiding dependence on a particular material provider.
 
 ## Machine-specific components
 
@@ -80,7 +82,13 @@ Normal Configurator right-click continues to cycle the supported mode for the cl
 
 ## Optional-mod recipes
 
-Recipes for optional material families use Forge tags and conditions so absent materials do not create invalid recipes. Direct references to another mod's items must remain guarded by appropriate Forge recipe conditions.
+Compatibility data is split by coupling level:
+
+- `recipes/compat/common`: recipes expressed entirely through shared Minecraft/Forge tags. These must not reference a specific optional mod ID or item ID. Each recipe must guard every required optional input/output family with Forge conditions such as `forge:tag_empty`.
+- `recipes/compat/<modid>`: reserved for datapack integration that genuinely needs another mod's registry IDs or recipe conventions. Direct references must be guarded with `forge:mod_loaded` and any relevant tag/availability conditions.
+- `integration/<modid>`: reserved for Java adapters only when tags, recipes, and standard Forge capabilities cannot represent the required behavior. Core machine classes must not import optional-mod APIs.
+
+Thermal, Mekanism, AllTheOres, and similar material providers should therefore work through `compat/common` whenever they publish standard Forge tags. A dedicated integration layer should be added only for behavior that cannot be expressed through those shared contracts.
 
 A missing optional mod must never prevent JGT from loading.
 
