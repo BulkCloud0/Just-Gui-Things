@@ -298,6 +298,15 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                 continue;
             }
 
+            boolean pipePowered = level.hasNeighborSignal(pipe.getBlockPos());
+            ItemRoutingSourceRule sourceRule = mode.canPull() ? pipe.getSourceRule(direction) : null;
+            ItemRoutingTargetRule targetRule = mode.canPush() ? pipe.getTargetRule(direction) : null;
+            boolean sourceAllowed = sourceRule != null && sourceRule.allowsRedstone(pipePowered);
+            boolean targetAllowed = targetRule != null && targetRule.allowsRedstone(pipePowered);
+            if (!sourceAllowed && !targetAllowed) {
+                continue;
+            }
+
             TileEntity neighbor = getLoadedBlockEntity(endpoint.getNeighborPos());
             if (neighbor == null) {
                 continue;
@@ -310,21 +319,12 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
                 continue;
             }
 
-            boolean pipePowered = level.hasNeighborSignal(pipe.getBlockPos());
             EndpointKey key = new EndpointKey(endpoint.getNeighborPos(), endpoint.getNeighborSide());
-
-            if (mode.canPull() && sourceKeys.add(key)) {
-                ItemRoutingSourceRule sourceRule = pipe.getSourceRule(direction);
-                if (sourceRule.allowsRedstone(pipePowered)) {
-                    sources.add(new SourceEndpoint(endpoint.getNeighborPos(), handler, sourceRule));
-                }
+            if (sourceAllowed && sourceKeys.add(key)) {
+                sources.add(new SourceEndpoint(endpoint.getNeighborPos(), handler, sourceRule));
             }
-
-            if (mode.canPush() && targetKeys.add(key)) {
-                ItemRoutingTargetRule targetRule = pipe.getTargetRule(direction);
-                if (targetRule.allowsRedstone(pipePowered)) {
-                    targets.add(new TargetEndpoint(endpoint.getNeighborPos(), handler, targetRule));
-                }
+            if (targetAllowed && targetKeys.add(key)) {
+                targets.add(new TargetEndpoint(endpoint.getNeighborPos(), handler, targetRule));
             }
         }
     }
