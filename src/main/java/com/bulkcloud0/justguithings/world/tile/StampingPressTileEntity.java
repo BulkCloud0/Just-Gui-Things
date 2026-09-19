@@ -102,13 +102,15 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
     @Override
     protected int getEffectiveProcessingTime(PressingRecipe recipe) {
         int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        return Math.max(20, (recipe.getProcessingTime() * 100 + speedMultiplier - 1) / speedMultiplier);
+        int efficiencyTimeMultiplier = 100 + 10 * getEfficiencyUpgradeCount();
+        long scaled = (long) recipe.getProcessingTime() * efficiencyTimeMultiplier;
+        return Math.max(20, (int) ((scaled + speedMultiplier - 1L) / speedMultiplier));
     }
 
     @Override
     protected int getEffectiveEnergyPerTick(PressingRecipe recipe) {
         int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        int efficiencyMultiplier = Math.max(20, 100 - 20 * getEfficiencyUpgradeCount());
+        int efficiencyMultiplier = Math.max(40, 100 - 15 * getEfficiencyUpgradeCount());
         long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
         return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
     }
