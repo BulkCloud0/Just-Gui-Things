@@ -259,4 +259,10 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
             capability.invalidate();
         }
     }
+
+    @Override
+    protected void reviveCaps() {
+        super.reviveCaps();
+        initializeFluidCapabilities();
+    }
 }
