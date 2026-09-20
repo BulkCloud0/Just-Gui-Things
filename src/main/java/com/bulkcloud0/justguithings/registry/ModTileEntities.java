@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
+import com.bulkcloud0.justguithings.world.tile.ChargingStationTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CoalGeneratorTileEntity;
 import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
 import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
@@ -28,6 +29,8 @@ public final class ModTileEntities {
             "coal_generator", () -> TileEntityType.Builder.of(CoalGeneratorTileEntity::new, ModBlocks.COAL_GENERATOR.get()).build(null));
     public static final RegistryObject<TileEntityType<SteamGeneratorTileEntity>> STEAM_GENERATOR = TILE_ENTITIES.register(
             "steam_generator", () -> TileEntityType.Builder.of(SteamGeneratorTileEntity::new, ModBlocks.STEAM_GENERATOR.get()).build(null));
+    public static final RegistryObject<TileEntityType<ChargingStationTileEntity>> CHARGING_STATION = TILE_ENTITIES.register(
+            "charging_station", () -> TileEntityType.Builder.of(ChargingStationTileEntity::new, ModBlocks.CHARGING_STATION.get()).build(null));
     public static final RegistryObject<TileEntityType<CrusherTileEntity>> CRUSHER = TILE_ENTITIES.register(
             "crusher", () -> TileEntityType.Builder.of(CrusherTileEntity::new, ModBlocks.CRUSHER.get()).build(null));
     public static final RegistryObject<TileEntityType<StampingPressTileEntity>> STAMPING_PRESS = TILE_ENTITIES.register(
