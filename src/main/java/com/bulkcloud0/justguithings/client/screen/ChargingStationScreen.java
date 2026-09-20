@@ -71,9 +71,9 @@ public class ChargingStationScreen extends ContainerScreen<ChargingStationContai
         this.font.draw(matrixStack, this.inventory.getDisplayName(), 8.0F, this.inventoryLabelY, TEXT_COLOR);
         this.font.draw(matrixStack,
                 "FE: " + this.menu.getEnergyStored() + " / " + ChargingStationTileEntity.CAPACITY,
-                74.0F, 6.0F, TEXT_COLOR);
+                70.0F, 55.0F, TEXT_COLOR);
         this.font.draw(matrixStack,
                 ChargingStationTileEntity.CHARGE_RATE + " FE/t",
-                76.0F, 55.0F, TEXT_COLOR);
+                104.0F, 64.0F, TEXT_COLOR);
     }
 }
