@@ -4,6 +4,8 @@
   "container.justguithings.coal_generator": "Coal Generator",
   "block.justguithings.steam_generator": "Steam Generator",
   "container.justguithings.steam_generator": "Steam Generator",
+  "block.justguithings.charging_station": "Charging Station",
+  "container.justguithings.charging_station": "Charging Station",
   "screen.justguithings.steam_generator.water": "Water: %s mB",
   "screen.justguithings.steam_generator.generation": "Output: %s FE/t",
   "block.justguithings.crusher": "Crusher",
