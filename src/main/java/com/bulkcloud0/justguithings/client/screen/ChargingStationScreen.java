@@ -43,12 +43,6 @@ public class ChargingStationScreen extends ContainerScreen<ChargingStationContai
         drawSlot(matrixStack, left + 52, top + 34);
         drawSlot(matrixStack, left + 106, top + 34);
 
-        AbstractGui.fill(matrixStack, left + 78, top + 40, left + 101, top + 48, ENERGY_BG_COLOR);
-        int transferWidth = this.menu.getEnergyStored() > 0 ? 21 : 0;
-        if (transferWidth > 0) {
-            AbstractGui.fill(matrixStack, left + 79, top + 41, left + 79 + transferWidth, top + 47, ENERGY_COLOR);
-        }
-
         int energyHeight = this.menu.getEnergyScaled(48);
         AbstractGui.fill(matrixStack, left + 147, top + 24, left + 158, top + 74, ENERGY_BG_COLOR);
         if (energyHeight > 0) {
