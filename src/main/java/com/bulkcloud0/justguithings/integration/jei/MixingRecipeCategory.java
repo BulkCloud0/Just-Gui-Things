@@ -14,13 +14,13 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
     private final IDrawable icon;
 
     public MixingRecipeCategory(IGuiHelper guiHelper) {
-        this.background = guiHelper.createBlankDrawable(120, 52);
+        this.background = guiHelper.createBlankDrawable(120, 58);
         this.icon = guiHelper.createDrawableIngredient(new ItemStack(ModItems.INDUSTRIAL_MIXER.get()));
     }
 
@@ -68,25 +68,33 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
 
     @Override
     public void setIngredients(MixingRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputIngredients(Arrays.asList(recipe.getPrimary(), recipe.getSecondary()));
+        List<Ingredient> inputs = new ArrayList<>();
+        inputs.add(recipe.getPrimary());
+        inputs.add(recipe.getSecondary());
+        if (recipe.hasTertiary() && recipe.getTertiary() != null) {
+            inputs.add(recipe.getTertiary());
+        }
+        ingredients.setInputIngredients(inputs);
         ingredients.setOutputs(VanillaTypes.ITEM, recipe.getResultDisplayStacks());
     }
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, MixingRecipe recipe, IIngredients ingredients) {
         IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
-        itemStacks.init(0, true, 8, 7);
-        itemStacks.init(1, true, 8, 28);
-        itemStacks.init(2, false, 94, 17);
+        itemStacks.init(0, true, 8, 1);
+        itemStacks.init(1, true, 8, 20);
+        itemStacks.init(2, true, 8, 39);
+        itemStacks.init(3, false, 94, 20);
 
         DisplayVariants variants = getDisplayVariants(recipe, recipeLayout.getFocus(VanillaTypes.ITEM));
         itemStacks.set(0, variants.primaryInputs);
         itemStacks.set(1, variants.secondaryInputs);
-        itemStacks.set(2, variants.outputs);
+        itemStacks.set(2, variants.tertiaryInputs);
+        itemStacks.set(3, variants.outputs);
 
         if (hasMultipleOutputVariants(recipe)) {
             itemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-                if (slotIndex == 2 && !input) {
+                if (slotIndex == 3 && !input) {
                     tooltip.add(new TranslationTextComponent(
                             "jei.justguithings.output_matches_input_provider")
                             .withStyle(TextFormatting.GRAY));
@@ -110,6 +118,7 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
                     return new DisplayVariants(
                             Collections.singletonList(primary),
                             recipe.getSecondaryDisplayStacks(),
+                            recipe.getTertiaryDisplayStacks(),
                             Collections.singletonList(output));
                 }
             }
@@ -118,6 +127,16 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
                 return new DisplayVariants(
                         allVariants.primaryInputs,
                         Collections.singletonList(withCount(focused, recipe.getSecondaryCount())),
+                        allVariants.tertiaryInputs,
+                        allVariants.outputs);
+            }
+
+            Ingredient tertiary = recipe.getTertiary();
+            if (tertiary != null && tertiary.test(focused)) {
+                return new DisplayVariants(
+                        allVariants.primaryInputs,
+                        allVariants.secondaryInputs,
+                        Collections.singletonList(withCount(focused, recipe.getTertiaryCount())),
                         allVariants.outputs);
             }
         }
@@ -133,7 +152,11 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
                 }
             }
             if (!primaryInputs.isEmpty()) {
-                return new DisplayVariants(primaryInputs, allVariants.secondaryInputs, outputs);
+                return new DisplayVariants(
+                        primaryInputs,
+                        allVariants.secondaryInputs,
+                        allVariants.tertiaryInputs,
+                        outputs);
             }
         }
 
@@ -151,7 +174,11 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
             primaryInputs.add(primary);
             outputs.add(output);
         }
-        return new DisplayVariants(primaryInputs, recipe.getSecondaryDisplayStacks(), outputs);
+        return new DisplayVariants(
+                primaryInputs,
+                recipe.getSecondaryDisplayStacks(),
+                recipe.getTertiaryDisplayStacks(),
+                outputs);
     }
 
     private static ItemStack withCount(ItemStack stack, int count) {
@@ -179,20 +206,23 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
     @Override
     public void draw(MixingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.font.draw(matrixStack, recipe.getProcessingTime() + " t", 46.0F, 12.0F, 0xFF808080);
-        minecraft.font.draw(matrixStack, recipe.getEnergyPerTick() + " FE/t", 40.0F, 31.0F, 0xFF808080);
+        minecraft.font.draw(matrixStack, recipe.getProcessingTime() + " t", 46.0F, 14.0F, 0xFF808080);
+        minecraft.font.draw(matrixStack, recipe.getEnergyPerTick() + " FE/t", 40.0F, 35.0F, 0xFF808080);
     }
 
     private static final class DisplayVariants {
         private final List<ItemStack> primaryInputs;
         private final List<ItemStack> secondaryInputs;
+        private final List<ItemStack> tertiaryInputs;
         private final List<ItemStack> outputs;
 
         private DisplayVariants(List<ItemStack> primaryInputs,
                                 List<ItemStack> secondaryInputs,
+                                List<ItemStack> tertiaryInputs,
                                 List<ItemStack> outputs) {
             this.primaryInputs = primaryInputs;
             this.secondaryInputs = secondaryInputs;
+            this.tertiaryInputs = tertiaryInputs;
             this.outputs = outputs;
         }
     }
