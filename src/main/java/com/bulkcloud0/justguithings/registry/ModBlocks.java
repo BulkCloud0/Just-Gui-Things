@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
 import com.bulkcloud0.justguithings.world.block.BasicFluidPipeBlock;
 import com.bulkcloud0.justguithings.world.block.BasicItemPipeBlock;
+import com.bulkcloud0.justguithings.world.block.ChargingStationBlock;
 import com.bulkcloud0.justguithings.world.block.CoalGeneratorBlock;
 import com.bulkcloud0.justguithings.world.block.CrusherBlock;
 import com.bulkcloud0.justguithings.world.block.EnergyCellBlock;
@@ -32,6 +33,9 @@ public final class ModBlocks {
     public static final RegistryObject<Block> STEAM_GENERATOR = BLOCKS.register("steam_generator",
             () -> new SteamGeneratorBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+    public static final RegistryObject<Block> CHARGING_STATION = BLOCKS.register("charging_station",
+            () -> new ChargingStationBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> CRUSHER = BLOCKS.register("crusher",
             () -> new CrusherBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
