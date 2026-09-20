@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
@@ -158,8 +158,8 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
         }
     }
 
-    private boolean isCoalFuel(ItemStack stack) {
-        return stack.getItem() == Items.COAL || stack.getItem() == Items.CHARCOAL;
+    public static boolean isCoalFuel(ItemStack stack) {
+        return !stack.isEmpty() && ItemTags.COALS.contains(stack.getItem());
     }
 
     public IIntArray getDataAccess() {
