@@ -42,8 +42,9 @@ public class IndustrialMixerScreen extends ContainerScreen<IndustrialMixerContai
         AbstractGui.fill(matrixStack, left + 5, top + 18, left + 171, top + 76, INNER_COLOR);
         AbstractGui.fill(matrixStack, left + 5, top + 80, left + 171, top + 161, INNER_COLOR);
 
-        drawSlot(matrixStack, left + 34, top + 34);
-        drawSlot(matrixStack, left + 52, top + 34);
+        drawSlot(matrixStack, left + 25, top + 34);
+        drawSlot(matrixStack, left + 43, top + 34);
+        drawSlot(matrixStack, left + 61, top + 34);
         drawSlot(matrixStack, left + 115, top + 34);
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -54,10 +55,10 @@ public class IndustrialMixerScreen extends ContainerScreen<IndustrialMixerContai
             drawSlot(matrixStack, left + 7 + column * 18, top + 141);
         }
 
-        AbstractGui.fill(matrixStack, left + 75, top + 38, left + 105, top + 50, PROGRESS_BG_COLOR);
-        int progressWidth = this.menu.getProgressScaled(28);
+        AbstractGui.fill(matrixStack, left + 83, top + 38, left + 110, top + 50, PROGRESS_BG_COLOR);
+        int progressWidth = this.menu.getProgressScaled(25);
         if (progressWidth > 0) {
-            AbstractGui.fill(matrixStack, left + 76, top + 39, left + 76 + progressWidth, top + 49, PROGRESS_COLOR);
+            AbstractGui.fill(matrixStack, left + 84, top + 39, left + 84 + progressWidth, top + 49, PROGRESS_COLOR);
         }
 
         int energyHeight = this.menu.getEnergyScaled(48);
