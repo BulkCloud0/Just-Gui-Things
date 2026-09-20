@@ -105,4 +105,10 @@ public class FluidReservoirTileEntity extends TileEntity implements INamedContai
         super.invalidateCaps();
         fluidCapability.invalidate();
     }
+
+    @Override
+    protected void reviveCaps() {
+        super.reviveCaps();
+        fluidCapability = LazyOptional.of(() -> tank);
+    }
 }

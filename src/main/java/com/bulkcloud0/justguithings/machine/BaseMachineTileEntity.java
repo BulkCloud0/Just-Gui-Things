@@ -592,4 +592,10 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
             capability.invalidate();
         }
     }
+
+    @Override
+    protected void reviveCaps() {
+        super.reviveCaps();
+        initializeCapabilities();
+    }
 }

@@ -72,7 +72,12 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
             sideModes.put(direction, ConduitTransferMode.BOTH);
             targetRules.put(direction, new EnergyRoutingTargetRule());
             sourceRules.put(direction, new EnergyRoutingSourceRule());
+        }
+        initializeSidedEnergyCapabilities();
+    }
 
+    private void initializeSidedEnergyCapabilities() {
+        for (Direction direction : Direction.values()) {
             sidedEnergyCapabilities.put(direction, createSidedEnergyCapability(direction));
         }
     }
@@ -501,6 +506,12 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
         for (LazyOptional<IEnergyStorage> capability : sidedEnergyCapabilities.values()) {
             capability.invalidate();
         }
+    }
+
+    @Override
+    protected void reviveCaps() {
+        super.reviveCaps();
+        initializeSidedEnergyCapabilities();
     }
 
     private static final class EnergyTargetEndpoint {
