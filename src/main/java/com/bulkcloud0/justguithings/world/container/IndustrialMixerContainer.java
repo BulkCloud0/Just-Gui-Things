@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class IndustrialMixerContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 3;
+    private static final int MACHINE_SLOT_COUNT = 4;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -34,9 +34,10 @@ public class IndustrialMixerContainer extends Container {
         this.data = tileEntity.getDataAccess();
         this.sideData = new SideConfigContainerData(tileEntity, tileEntity::getSideMode);
 
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 35, 35));
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 53, 35));
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 116, 35) {
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 26, 35));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 44, 35));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 62, 35));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 3, 116, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
@@ -96,6 +97,10 @@ public class IndustrialMixerContainer extends Container {
                 }
             } else if (tileEntity.canAcceptSecondary(stack)) {
                 if (!this.moveItemStackTo(stack, 1, 2, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (tileEntity.canAcceptTertiary(stack)) {
+                if (!this.moveItemStackTo(stack, 2, 3, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (index < PLAYER_MAIN_END) {

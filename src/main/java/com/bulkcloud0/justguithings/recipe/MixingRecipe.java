@@ -29,6 +29,9 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
     private final int primaryCount;
     private final Ingredient secondary;
     private final int secondaryCount;
+    @Nullable
+    private final Ingredient tertiary;
+    private final int tertiaryCount;
     private final RecipeOutput result;
     private final int processingTime;
     private final int energyPerTick;
@@ -38,6 +41,8 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
                         int primaryCount,
                         Ingredient secondary,
                         int secondaryCount,
+                        @Nullable Ingredient tertiary,
+                        int tertiaryCount,
                         RecipeOutput result,
                         int processingTime,
                         int energyPerTick) {
@@ -46,6 +51,8 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
         this.primaryCount = primaryCount;
         this.secondary = secondary;
         this.secondaryCount = secondaryCount;
+        this.tertiary = tertiary;
+        this.tertiaryCount = tertiaryCount;
         this.result = result;
         this.processingTime = processingTime;
         this.energyPerTick = energyPerTick;
@@ -55,10 +62,20 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
     public boolean matches(IInventory inventory, World world) {
         ItemStack primaryStack = inventory.getItem(0);
         ItemStack secondaryStack = inventory.getItem(1);
-        return primaryStack.getCount() >= primaryCount
-                && secondaryStack.getCount() >= secondaryCount
-                && primary.test(primaryStack)
-                && secondary.test(secondaryStack);
+        if (primaryStack.getCount() < primaryCount
+                || secondaryStack.getCount() < secondaryCount
+                || !primary.test(primaryStack)
+                || !secondary.test(secondaryStack)) {
+            return false;
+        }
+        if (tertiary == null) {
+            return true;
+        }
+        if (inventory.getContainerSize() <= 2) {
+            return false;
+        }
+        ItemStack tertiaryStack = inventory.getItem(2);
+        return tertiaryStack.getCount() >= tertiaryCount && tertiary.test(tertiaryStack);
     }
 
     @Override
@@ -68,7 +85,7 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {
-        return width >= 2 && height >= 1;
+        return width >= (tertiary == null ? 2 : 3) && height >= 1;
     }
 
     @Override
@@ -81,6 +98,9 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
         NonNullList<Ingredient> ingredients = NonNullList.create();
         ingredients.add(primary);
         ingredients.add(secondary);
+        if (tertiary != null) {
+            ingredients.add(tertiary);
+        }
         return ingredients;
     }
 
@@ -115,6 +135,19 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
         return secondaryCount;
     }
 
+    public boolean hasTertiary() {
+        return tertiary != null;
+    }
+
+    @Nullable
+    public Ingredient getTertiary() {
+        return tertiary;
+    }
+
+    public int getTertiaryCount() {
+        return tertiaryCount;
+    }
+
     public ItemStack getResultForPrimary(ItemStack primaryStack) {
         return result.resolve(primaryStack);
     }
@@ -125,6 +158,10 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
 
     public List<ItemStack> getSecondaryDisplayStacks() {
         return getDisplayStacks(secondary, secondaryCount);
+    }
+
+    public List<ItemStack> getTertiaryDisplayStacks() {
+        return tertiary == null ? java.util.Collections.emptyList() : getDisplayStacks(tertiary, tertiaryCount);
     }
 
     public List<ItemStack> getResultDisplayStacks() {
@@ -171,14 +208,20 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             int primaryCount = JSONUtils.getAsInt(json, "primary_count", 1);
             Ingredient secondary = Ingredient.fromJson(json.get("secondary"));
             int secondaryCount = JSONUtils.getAsInt(json, "secondary_count", 1);
+            if (json.has("tertiary_count") && !json.has("tertiary")) {
+                throw new JsonSyntaxException("Mixing recipe " + recipeId
+                        + " defines tertiary_count without a tertiary ingredient");
+            }
+            Ingredient tertiary = json.has("tertiary") ? Ingredient.fromJson(json.get("tertiary")) : null;
+            int tertiaryCount = tertiary == null ? 0 : JSONUtils.getAsInt(json, "tertiary_count", 1);
             RecipeOutput result = RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "result"));
             int processingTime = JSONUtils.getAsInt(json, "processing_time", 160);
             int energyPerTick = JSONUtils.getAsInt(json, "energy_per_tick", 45);
 
-            if (primary.isEmpty() || secondary.isEmpty()) {
+            if (primary.isEmpty() || secondary.isEmpty() || (tertiary != null && tertiary.isEmpty())) {
                 throw new JsonSyntaxException("Mixing recipe " + recipeId + " has an empty ingredient");
             }
-            if (primaryCount <= 0 || secondaryCount <= 0) {
+            if (primaryCount <= 0 || secondaryCount <= 0 || (tertiary != null && tertiaryCount <= 0)) {
                 throw new JsonSyntaxException("Mixing recipe ingredient counts must be greater than zero in " + recipeId);
             }
             if (processingTime <= 0 || energyPerTick <= 0) {
@@ -186,7 +229,7 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             }
 
             return new MixingRecipe(recipeId, primary, primaryCount, secondary, secondaryCount,
-                    result, processingTime, energyPerTick);
+                    tertiary, tertiaryCount, result, processingTime, energyPerTick);
         }
 
         @Nullable
@@ -196,11 +239,17 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             int primaryCount = buffer.readVarInt();
             Ingredient secondary = Ingredient.fromNetwork(buffer);
             int secondaryCount = buffer.readVarInt();
+            Ingredient tertiary = null;
+            int tertiaryCount = 0;
+            if (buffer.readBoolean()) {
+                tertiary = Ingredient.fromNetwork(buffer);
+                tertiaryCount = buffer.readVarInt();
+            }
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
             return new MixingRecipe(recipeId, primary, primaryCount, secondary, secondaryCount,
-                    result, processingTime, energyPerTick);
+                    tertiary, tertiaryCount, result, processingTime, energyPerTick);
         }
 
         @Override
@@ -209,6 +258,11 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             buffer.writeVarInt(recipe.primaryCount);
             recipe.secondary.toNetwork(buffer);
             buffer.writeVarInt(recipe.secondaryCount);
+            buffer.writeBoolean(recipe.tertiary != null);
+            if (recipe.tertiary != null) {
+                recipe.tertiary.toNetwork(buffer);
+                buffer.writeVarInt(recipe.tertiaryCount);
+            }
             recipe.result.toNetwork(buffer);
             buffer.writeVarInt(recipe.processingTime);
             buffer.writeVarInt(recipe.energyPerTick);

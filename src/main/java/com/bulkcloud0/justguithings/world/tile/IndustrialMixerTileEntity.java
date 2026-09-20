@@ -5,11 +5,13 @@ import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -42,7 +44,7 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     };
 
     public IndustrialMixerTileEntity() {
-        super(ModTileEntities.INDUSTRIAL_MIXER.get(), CAPACITY, MAX_RECEIVE, 3, 0, 2, 2, 1,
+        super(ModTileEntities.INDUSTRIAL_MIXER.get(), CAPACITY, MAX_RECEIVE, 4, 0, 3, 3, 1,
                 DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
     }
 
@@ -54,6 +56,9 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
         if (slot == 1) {
             return canAcceptSecondary(stack);
         }
+        if (slot == 2) {
+            return canAcceptTertiary(stack);
+        }
         return false;
     }
 
@@ -63,14 +68,19 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             return Optional.empty();
         }
 
-        Inventory recipeInventory = new Inventory(inventory.getStackInSlot(0).copy(), inventory.getStackInSlot(1).copy());
+        Inventory recipeInventory = new Inventory(
+                inventory.getStackInSlot(0).copy(),
+                inventory.getStackInSlot(1).copy(),
+                inventory.getStackInSlot(2).copy());
         return level.getRecipeManager().getRecipeFor(ModRecipes.MIXING_TYPE, recipeInventory, level);
     }
 
     @Override
     protected boolean canProcessRecipe(MixingRecipe recipe) {
         if (inventory.getStackInSlot(0).getCount() < recipe.getPrimaryCount()
-                || inventory.getStackInSlot(1).getCount() < recipe.getSecondaryCount()) {
+                || inventory.getStackInSlot(1).getCount() < recipe.getSecondaryCount()
+                || (recipe.hasTertiary()
+                && inventory.getStackInSlot(2).getCount() < recipe.getTertiaryCount())) {
             return false;
         }
 
@@ -79,7 +89,7 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             return false;
         }
 
-        ItemStack output = inventory.getStackInSlot(2);
+        ItemStack output = inventory.getStackInSlot(3);
         if (output.isEmpty()) {
             return true;
         }
@@ -98,14 +108,17 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
 
         inventory.extractItem(0, recipe.getPrimaryCount(), false);
         inventory.extractItem(1, recipe.getSecondaryCount(), false);
+        if (recipe.hasTertiary()) {
+            inventory.extractItem(2, recipe.getTertiaryCount(), false);
+        }
 
-        ItemStack output = inventory.getStackInSlot(2);
+        ItemStack output = inventory.getStackInSlot(3);
         if (output.isEmpty()) {
-            inventory.setStackInSlot(2, result);
+            inventory.setStackInSlot(3, result);
         } else {
             ItemStack combined = output.copy();
             combined.grow(result.getCount());
-            inventory.setStackInSlot(2, combined);
+            inventory.setStackInSlot(3, combined);
         }
     }
 
@@ -131,6 +144,33 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             }
         }
         return false;
+    }
+
+    public boolean canAcceptTertiary(ItemStack stack) {
+        if (level == null || stack.isEmpty()) {
+            return false;
+        }
+        for (MixingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.MIXING_TYPE)) {
+            if (recipe.hasTertiary() && recipe.getTertiary() != null && recipe.getTertiary().test(stack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void load(BlockState state, CompoundNBT nbt) {
+        int savedInventorySize = nbt.contains("Inventory")
+                ? nbt.getCompound("Inventory").getInt("Size")
+                : 0;
+        super.load(state, nbt);
+
+        if (savedInventorySize == 3
+                && !inventory.getStackInSlot(2).isEmpty()
+                && inventory.getStackInSlot(3).isEmpty()) {
+            inventory.setStackInSlot(3, inventory.getStackInSlot(2).copy());
+            inventory.setStackInSlot(2, ItemStack.EMPTY);
+        }
     }
 
     public IIntArray getDataAccess() {
