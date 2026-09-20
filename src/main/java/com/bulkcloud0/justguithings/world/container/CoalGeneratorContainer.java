@@ -6,7 +6,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIntArray;
@@ -31,7 +30,7 @@ public class CoalGeneratorContainer extends Container {
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 56, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return isFuel(stack);
+                return CoalGeneratorTileEntity.isCoalFuel(stack);
             }
         });
 
@@ -68,9 +67,6 @@ public class CoalGeneratorContainer extends Container {
         }
     }
 
-    private static boolean isFuel(ItemStack stack) {
-        return stack.getItem() == Items.COAL || stack.getItem() == Items.CHARCOAL;
-    }
 
     @Override
     public boolean stillValid(PlayerEntity player) {
@@ -95,7 +91,7 @@ public class CoalGeneratorContainer extends Container {
                 if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (isFuel(stack)) {
+            } else if (CoalGeneratorTileEntity.isCoalFuel(stack)) {
                 if (!this.moveItemStackTo(stack, 0, MACHINE_SLOT_COUNT, false)) {
                     return ItemStack.EMPTY;
                 }

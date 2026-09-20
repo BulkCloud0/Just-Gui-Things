@@ -11,7 +11,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
@@ -203,7 +203,7 @@ public class SteamGeneratorTileEntity extends BaseMachineTileEntity {
     }
 
     public static boolean isFuel(ItemStack stack) {
-        return stack.getItem() == Items.COAL || stack.getItem() == Items.CHARCOAL;
+        return !stack.isEmpty() && ItemTags.COALS.contains(stack.getItem());
     }
 
     public IIntArray getDataAccess() {
