@@ -89,7 +89,7 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             return false;
         }
 
-        ItemStack output = inventory.getStackInSlot(2);
+        ItemStack output = inventory.getStackInSlot(3);
         if (output.isEmpty()) {
             return true;
         }
@@ -108,14 +108,17 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
 
         inventory.extractItem(0, recipe.getPrimaryCount(), false);
         inventory.extractItem(1, recipe.getSecondaryCount(), false);
+        if (recipe.hasTertiary()) {
+            inventory.extractItem(2, recipe.getTertiaryCount(), false);
+        }
 
-        ItemStack output = inventory.getStackInSlot(2);
+        ItemStack output = inventory.getStackInSlot(3);
         if (output.isEmpty()) {
-            inventory.setStackInSlot(2, result);
+            inventory.setStackInSlot(3, result);
         } else {
             ItemStack combined = output.copy();
             combined.grow(result.getCount());
-            inventory.setStackInSlot(2, combined);
+            inventory.setStackInSlot(3, combined);
         }
     }
 
