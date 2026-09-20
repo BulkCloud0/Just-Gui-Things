@@ -4,6 +4,8 @@
   "container.justguithings.coal_generator": "Gerador a Carvão",
   "block.justguithings.steam_generator": "Gerador a Vapor",
   "container.justguithings.steam_generator": "Gerador a Vapor",
+  "block.justguithings.charging_station": "Estação de Recarga",
+  "container.justguithings.charging_station": "Estação de Recarga",
   "screen.justguithings.steam_generator.water": "Água: %s mB",
   "screen.justguithings.steam_generator.generation": "Saída: %s FE/t",
   "block.justguithings.crusher": "Triturador",
