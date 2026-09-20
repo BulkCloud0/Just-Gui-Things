@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.client;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.client.screen.ChargingStationScreen;
 import com.bulkcloud0.justguithings.client.screen.CoalGeneratorScreen;
 import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
 import com.bulkcloud0.justguithings.client.screen.EnergyCellScreen;
@@ -28,6 +29,7 @@ public final class ClientSetup {
         event.enqueueWork(() -> {
             ScreenManager.register(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new);
             ScreenManager.register(ModContainers.STEAM_GENERATOR.get(), SteamGeneratorScreen::new);
+            ScreenManager.register(ModContainers.CHARGING_STATION.get(), ChargingStationScreen::new);
             ScreenManager.register(ModContainers.CRUSHER.get(), CrusherScreen::new);
             ScreenManager.register(ModContainers.STAMPING_PRESS.get(), StampingPressScreen::new);
             ScreenManager.register(ModContainers.INDUSTRIAL_MIXER.get(), IndustrialMixerScreen::new);
