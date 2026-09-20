@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.world.container.ChargingStationContainer;
 import com.bulkcloud0.justguithings.world.container.CoalGeneratorContainer;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
 import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
@@ -26,6 +27,8 @@ public final class ModContainers {
             CONTAINERS.register("coal_generator", () -> IForgeContainerType.create(CoalGeneratorContainer::new));
     public static final RegistryObject<ContainerType<SteamGeneratorContainer>> STEAM_GENERATOR =
             CONTAINERS.register("steam_generator", () -> IForgeContainerType.create(SteamGeneratorContainer::new));
+    public static final RegistryObject<ContainerType<ChargingStationContainer>> CHARGING_STATION =
+            CONTAINERS.register("charging_station", () -> IForgeContainerType.create(ChargingStationContainer::new));
     public static final RegistryObject<ContainerType<CrusherContainer>> CRUSHER =
             CONTAINERS.register("crusher", () -> IForgeContainerType.create(CrusherContainer::new));
     public static final RegistryObject<ContainerType<StampingPressContainer>> STAMPING_PRESS =

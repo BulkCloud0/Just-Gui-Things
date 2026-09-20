@@ -12,7 +12,7 @@ Use the least coupled mechanism that solves the integration:
 4. Small JGT Java contracts only when tags and capabilities are not expressive enough.
 5. Dedicated `integration/<modid>` code only for behavior that truly requires another mod's API.
 
-Core machine classes must not directly depend on Thermal, Mekanism, AllTheOres or another optional mod.
+Core machine classes must not directly depend on Thermal, Mekanism, AllTheOres or another optional mod. The Charging Station accepts and charges items exclusively through Forge Energy `IEnergyStorage`, so compatible batteries, tools and equipment do not require a JGT-specific adapter.
 
 ## Machine modules
 

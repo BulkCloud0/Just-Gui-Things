@@ -19,6 +19,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Shared machine core for energy, inventory, side configuration and processing state
 - Crusher with data-driven recipes and Speed/Efficiency/Buffer/Batch modules
 - Coal Generator for early power and Steam Generator for water-fed intermediate generation
+- Charging Station for capability-driven charging of Forge Energy items
 - Industrial Mixer, Stamping Press and Resistive Furnace
 - Rod Mill for tag-driven ingot-to-rod forming
 - Wire Mill for tag-driven rod-to-wire processing

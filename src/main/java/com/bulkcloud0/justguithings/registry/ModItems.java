@@ -22,6 +22,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.COAL_GENERATOR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> STEAM_GENERATOR = ITEMS.register("steam_generator",
             () -> new BlockItem(ModBlocks.STEAM_GENERATOR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> CHARGING_STATION = ITEMS.register("charging_station",
+            () -> new BlockItem(ModBlocks.CHARGING_STATION.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> CRUSHER = ITEMS.register("crusher",
             () -> new BlockItem(ModBlocks.CRUSHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> STAMPING_PRESS = ITEMS.register("stamping_press",
