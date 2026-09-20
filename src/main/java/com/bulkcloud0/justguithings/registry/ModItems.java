@@ -20,6 +20,8 @@ public final class ModItems {
 
     public static final RegistryObject<Item> COAL_GENERATOR = ITEMS.register("coal_generator",
             () -> new BlockItem(ModBlocks.COAL_GENERATOR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> STEAM_GENERATOR = ITEMS.register("steam_generator",
+            () -> new BlockItem(ModBlocks.STEAM_GENERATOR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> CRUSHER = ITEMS.register("crusher",
             () -> new BlockItem(ModBlocks.CRUSHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> STAMPING_PRESS = ITEMS.register("stamping_press",

@@ -10,6 +10,7 @@ import com.bulkcloud0.justguithings.client.screen.FluidPumpScreen;
 import com.bulkcloud0.justguithings.client.screen.ResistiveFurnaceScreen;
 import com.bulkcloud0.justguithings.client.screen.RodMillScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
+import com.bulkcloud0.justguithings.client.screen.SteamGeneratorScreen;
 import com.bulkcloud0.justguithings.client.screen.WireMillScreen;
 import com.bulkcloud0.justguithings.registry.ModContainers;
 import net.minecraft.client.gui.ScreenManager;
@@ -26,6 +27,7 @@ public final class ClientSetup {
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             ScreenManager.register(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new);
+            ScreenManager.register(ModContainers.STEAM_GENERATOR.get(), SteamGeneratorScreen::new);
             ScreenManager.register(ModContainers.CRUSHER.get(), CrusherScreen::new);
             ScreenManager.register(ModContainers.STAMPING_PRESS.get(), StampingPressScreen::new);
             ScreenManager.register(ModContainers.INDUSTRIAL_MIXER.get(), IndustrialMixerScreen::new);
