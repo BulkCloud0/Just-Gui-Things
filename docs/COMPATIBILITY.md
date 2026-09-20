@@ -32,7 +32,7 @@ The Resistive Furnace supports one `power_coil` module. It doubles processing sp
 
 ## Materials and processing recipes
 
-JGT uses shared Forge tags where conventions exist, including ores, dusts, ingots, plates, rods, and wires. JGT-owned material forms currently contribute to:
+JGT uses shared Forge tags where conventions exist, including ores, dusts, ingots, plates, rods, and wires. Coal-like generator fuels use the vanilla `minecraft:coals` item tag, so compatible mods can extend generator fuel support without a Java dependency. JGT-owned material forms currently contribute to:
 
 - `forge:dusts/iron`, `forge:dusts/gold`, `forge:dusts/coal`
 - `forge:plates/iron`, `forge:plates/gold`
