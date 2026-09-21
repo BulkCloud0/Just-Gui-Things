@@ -118,15 +118,15 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 } else if (ConfiguratorItem.isMachineRedstoneMode(held)) {
                     ConfiguratorItem.displayMachineTargetRequired(player);
                 } else {
-                        ConduitTransferMode mode = pipe.cycleSideMode(faceDirection);
-                        AbstractConduitBlock.refreshConnections(world, pos);
-        
-                        ITextComponent face = DirectionText.getDisplayName(faceDirection);
-                        player.displayClientMessage(
-                                new TranslationTextComponent(
-                                        "message.justguithings.item_pipe.side_mode",
-                                        face, mode.getDisplayName()),
-                                true);
+                    ConduitTransferMode mode = pipe.cycleSideMode(faceDirection);
+                    AbstractConduitBlock.refreshConnections(world, pos);
+    
+                    ITextComponent face = DirectionText.getDisplayName(faceDirection);
+                    player.displayClientMessage(
+                            new TranslationTextComponent(
+                                    "message.justguithings.item_pipe.side_mode",
+                                    face, mode.getDisplayName()),
+                            true);
                 }
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;

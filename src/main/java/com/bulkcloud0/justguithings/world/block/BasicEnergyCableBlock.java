@@ -115,15 +115,15 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
                 } else if (ConfiguratorItem.isMachineRedstoneMode(held)) {
                     ConfiguratorItem.displayMachineTargetRequired(player);
                 } else {
-                        ConduitTransferMode mode = cable.cycleSideMode(direction);
-                        AbstractConduitBlock.refreshConnections(world, pos);
-        
-                        ITextComponent face = DirectionText.getDisplayName(direction);
-                        player.displayClientMessage(
-                                new TranslationTextComponent(
-                                        "message.justguithings.energy_cable.side_mode",
-                                        face, mode.getEnergyDisplayName()),
-                                true);
+                    ConduitTransferMode mode = cable.cycleSideMode(direction);
+                    AbstractConduitBlock.refreshConnections(world, pos);
+    
+                    ITextComponent face = DirectionText.getDisplayName(direction);
+                    player.displayClientMessage(
+                            new TranslationTextComponent(
+                                    "message.justguithings.energy_cable.side_mode",
+                                    face, mode.getEnergyDisplayName()),
+                            true);
                 }
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;

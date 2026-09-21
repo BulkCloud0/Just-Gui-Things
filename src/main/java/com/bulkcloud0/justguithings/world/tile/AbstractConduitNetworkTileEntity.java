@@ -78,18 +78,19 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
         }
 
         T neighbor = nodeClass.cast(neighborTile);
+        AbstractConduitNetworkTileEntity<T> neighborBase = neighbor;
         boolean currentlyConnected = isConduitConnectionEnabled(direction)
-                && neighbor.isConduitConnectionEnabled(direction.getOpposite());
+                && neighborBase.isConduitConnectionEnabled(direction.getOpposite());
         boolean nextConnected = !currentlyConnected;
 
         invalidateNetworkCache();
-        neighbor.invalidateNetworkCache();
+        neighborBase.invalidateNetworkCache();
 
         setConduitConnectionEnabledLocal(direction, nextConnected);
-        neighbor.setConduitConnectionEnabledLocal(direction.getOpposite(), nextConnected);
+        neighborBase.setConduitConnectionEnabledLocal(direction.getOpposite(), nextConnected);
 
         AbstractConduitBlock.refreshConnections(level, worldPosition);
-        AbstractConduitBlock.refreshConnections(level, neighbor.getBlockPos());
+        AbstractConduitBlock.refreshConnections(level, neighborBase.getBlockPos());
         return nextConnected;
     }
 
