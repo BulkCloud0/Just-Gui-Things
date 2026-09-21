@@ -53,6 +53,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     protected final ItemStackHandler inventory;
 
     private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
+    private MachineRedstoneMode redstoneMode = MachineRedstoneMode.ALWAYS;
     private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
 
@@ -271,6 +272,31 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         return true;
     }
 
+    public boolean supportsRedstoneControl() {
+        return false;
+    }
+
+    public final MachineRedstoneMode getRedstoneMode() {
+        return redstoneMode;
+    }
+
+    public final MachineRedstoneMode cycleRedstoneMode() {
+        if (!supportsRedstoneControl()) {
+            return MachineRedstoneMode.ALWAYS;
+        }
+        redstoneMode = redstoneMode.next();
+        setChanged();
+        syncToClient();
+        return redstoneMode;
+    }
+
+    protected final boolean isOperationEnabled() {
+        if (!supportsRedstoneControl() || level == null) {
+            return true;
+        }
+        return redstoneMode.allows(level.hasNeighborSignal(worldPosition));
+    }
+
     protected MachineSideMode getItemSideMode(Direction side, MachineSideMode mode) {
         return mode;
     }
@@ -487,6 +513,12 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         energyStorage.setCapacity(getEnergyCapacity());
         energyStorage.setEnergy(nbt.getInt("Energy"));
 
+        if (nbt.contains("RedstoneMode")) {
+            redstoneMode = MachineRedstoneMode.fromOrdinal(nbt.getInt("RedstoneMode"));
+        } else {
+            redstoneMode = MachineRedstoneMode.ALWAYS;
+        }
+
         if (nbt.contains("SideConfig")) {
             CompoundNBT config = nbt.getCompound("SideConfig");
             int configVersion = config.contains("Version") ? config.getInt("Version") : 1;
@@ -505,6 +537,9 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         super.save(nbt);
         nbt.put("Inventory", inventory.serializeNBT());
         nbt.putInt("Energy", energyStorage.getEnergyStored());
+        if (supportsRedstoneControl()) {
+            nbt.putInt("RedstoneMode", redstoneMode.ordinal());
+        }
 
         CompoundNBT config = new CompoundNBT();
         config.putInt("Version", SIDE_CONFIG_VERSION);
