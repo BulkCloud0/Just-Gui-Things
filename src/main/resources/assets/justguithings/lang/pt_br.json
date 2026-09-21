@@ -33,9 +33,9 @@
   "tooltip.justguithings.energy_cell.portable": "Mantém FE/configuração das faces e expõe Forge Energy enquanto está como item.",
   "tooltip.justguithings.configurator.use": "Clique com o botão direito em uma face configurável para aplicar o modo selecionado do Configurador.",
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
-  "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem",
+  "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Montador Automatizado",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t e +10% no tempo de processamento por módulo; até 4 módulos.",
-  "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem",
+  "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Montador Automatizado",
   "tooltip.justguithings.buffer_module.effect": "+100.000 FE de capacidade no Triturador por módulo.",
   "tooltip.justguithings.buffer_module.compatibility": "Compatível: Triturador",
   "tooltip.justguithings.batch_module.effect": "+1 item de entrada por operação do Triturador por módulo, até x5 no total.",
@@ -230,5 +230,13 @@
   "hud.justguithings.configurator.target_mode": "Configurador [%s]: %s",
   "configurator_mode.justguithings.conduit_connection": "Conexão de Conduítes",
   "message.justguithings.configurator.conduit_target_required": "O modo Conexão de Conduítes exige um conduíte compatível adjacente nessa face.",
-  "message.justguithings.configurator.conduit_connection": "Elo de conduíte na face %s: %s"
+  "message.justguithings.configurator.conduit_connection": "Elo de conduíte na face %s: %s",
+  "block.justguithings.automated_assembler": "Montador Automatizado",
+  "container.justguithings.automated_assembler": "Montador Automatizado",
+  "gui.justguithings.automated_assembler.recipe_lock": "Trava da Receita",
+  "gui.justguithings.automated_assembler.recipe_locked": "Receita: Travada",
+  "gui.justguithings.automated_assembler.recipe_unlocked": "Receita: Livre",
+  "message.justguithings.automated_assembler.recipe_locked": "Receita do Montador travada.",
+  "message.justguithings.automated_assembler.recipe_unlocked": "Receita do Montador destravada.",
+  "message.justguithings.automated_assembler.recipe_invalid": "Monte uma receita 3x3 válida sem itens retornáveis antes de travar."
 }

@@ -26,6 +26,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.CHARGING_STATION.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> CRUSHER = ITEMS.register("crusher",
             () -> new BlockItem(ModBlocks.CRUSHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> AUTOMATED_ASSEMBLER = ITEMS.register("automated_assembler",
+            () -> new BlockItem(ModBlocks.AUTOMATED_ASSEMBLER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> STAMPING_PRESS = ITEMS.register("stamping_press",
             () -> new BlockItem(ModBlocks.STAMPING_PRESS.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> INDUSTRIAL_MIXER = ITEMS.register("industrial_mixer",

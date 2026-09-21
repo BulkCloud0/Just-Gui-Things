@@ -33,9 +33,9 @@
   "tooltip.justguithings.energy_cell.portable": "Retains stored FE/side config and exposes Forge Energy while carried.",
   "tooltip.justguithings.configurator.use": "Right-click a configurable face to apply the selected Configurator mode.",
   "tooltip.justguithings.speed_module.effect": "+50% process speed multiplier per module; FE/t scales with speed.",
-  "tooltip.justguithings.speed_module.compatibility": "Compatible: Crusher, Stamping Press",
+  "tooltip.justguithings.speed_module.compatibility": "Compatible: Crusher, Stamping Press, Automated Assembler",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t and +10% processing time per module; up to 4 modules.",
-  "tooltip.justguithings.efficiency_module.compatibility": "Compatible: Crusher, Stamping Press",
+  "tooltip.justguithings.efficiency_module.compatibility": "Compatible: Crusher, Stamping Press, Automated Assembler",
   "tooltip.justguithings.buffer_module.effect": "+100,000 FE Crusher capacity per module.",
   "tooltip.justguithings.buffer_module.compatibility": "Compatible: Crusher",
   "tooltip.justguithings.batch_module.effect": "+1 input item per Crusher operation per module, up to x5 total.",
@@ -230,5 +230,13 @@
   "hud.justguithings.configurator.target_mode": "Configurator [%s]: %s",
   "configurator_mode.justguithings.conduit_connection": "Conduit Connection",
   "message.justguithings.configurator.conduit_target_required": "Conduit Connection mode requires an adjacent compatible conduit on that face.",
-  "message.justguithings.configurator.conduit_connection": "%s conduit link: %s"
+  "message.justguithings.configurator.conduit_connection": "%s conduit link: %s",
+  "block.justguithings.automated_assembler": "Automated Assembler",
+  "container.justguithings.automated_assembler": "Automated Assembler",
+  "gui.justguithings.automated_assembler.recipe_lock": "Recipe Lock",
+  "gui.justguithings.automated_assembler.recipe_locked": "Recipe: Locked",
+  "gui.justguithings.automated_assembler.recipe_unlocked": "Recipe: Unlocked",
+  "message.justguithings.automated_assembler.recipe_locked": "Assembler recipe locked.",
+  "message.justguithings.automated_assembler.recipe_unlocked": "Assembler recipe unlocked.",
+  "message.justguithings.automated_assembler.recipe_invalid": "Build a valid 3x3 recipe without crafting remainders before locking."
 }

@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.world.block.AutomatedAssemblerBlock;
 import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
 import com.bulkcloud0.justguithings.world.block.BasicFluidPipeBlock;
 import com.bulkcloud0.justguithings.world.block.BasicItemPipeBlock;
@@ -39,6 +40,9 @@ public final class ModBlocks {
     public static final RegistryObject<Block> CRUSHER = BLOCKS.register("crusher",
             () -> new CrusherBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+    public static final RegistryObject<Block> AUTOMATED_ASSEMBLER = BLOCKS.register("automated_assembler",
+            () -> new AutomatedAssemblerBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> STAMPING_PRESS = BLOCKS.register("stamping_press",
             () -> new StampingPressBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
