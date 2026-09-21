@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gems/diamond"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/diamond"
+      }
+    }
+  ],
+  "type": "justguithings:crushing",
+  "ingredient": {
+    "tag": "forge:gems/diamond"
+  },
+  "result": {
+    "tag": "forge:dusts/diamond",
+    "count": 1
+  },
+  "processing_time": 120,
+  "energy_per_tick": 25
+}
