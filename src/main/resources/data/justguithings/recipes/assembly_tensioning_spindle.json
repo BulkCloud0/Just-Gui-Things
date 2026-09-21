@@ -1,0 +1,28 @@
+{
+  "type": "justguithings:assembly",
+  "ingredients": [
+    {
+      "ingredient": {
+        "tag": "forge:rods/steel"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "tag": "forge:plates/gold"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "tag": "forge:gems/quartz"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:tensioning_spindle"
+  },
+  "processing_time": 140,
+  "energy_per_tick": 55
+}

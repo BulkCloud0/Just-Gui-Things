@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PWP",
+    "SCS",
+    "PWP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "W": { "tag": "forge:wires/gold" },
+    "S": { "tag": "forge:rods/steel" },
+    "C": { "item": "justguithings:basic_energy_cable" }
+  },
+  "result": { "item": "justguithings:industrial_assembler" }
+}

@@ -6,6 +6,7 @@ import com.bulkcloud0.justguithings.world.container.CoalGeneratorContainer;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
 import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
+import com.bulkcloud0.justguithings.world.container.IndustrialAssemblerContainer;
 import com.bulkcloud0.justguithings.world.container.FluidReservoirContainer;
 import com.bulkcloud0.justguithings.world.container.FluidPumpContainer;
 import com.bulkcloud0.justguithings.world.container.ResistiveFurnaceContainer;
@@ -35,6 +36,8 @@ public final class ModContainers {
             CONTAINERS.register("stamping_press", () -> IForgeContainerType.create(StampingPressContainer::new));
     public static final RegistryObject<ContainerType<IndustrialMixerContainer>> INDUSTRIAL_MIXER =
             CONTAINERS.register("industrial_mixer", () -> IForgeContainerType.create(IndustrialMixerContainer::new));
+    public static final RegistryObject<ContainerType<IndustrialAssemblerContainer>> INDUSTRIAL_ASSEMBLER =
+            CONTAINERS.register("industrial_assembler", () -> IForgeContainerType.create(IndustrialAssemblerContainer::new));
     public static final RegistryObject<ContainerType<EnergyCellContainer>> ENERGY_CELL =
             CONTAINERS.register("energy_cell", () -> IForgeContainerType.create(EnergyCellContainer::new));
     public static final RegistryObject<ContainerType<FluidReservoirContainer>> FLUID_RESERVOIR =

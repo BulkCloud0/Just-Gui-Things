@@ -230,5 +230,8 @@
   "hud.justguithings.configurator.target_mode": "Configurador [%s]: %s",
   "configurator_mode.justguithings.conduit_connection": "Conexão de Conduítes",
   "message.justguithings.configurator.conduit_target_required": "O modo Conexão de Conduítes exige um conduíte compatível adjacente nessa face.",
-  "message.justguithings.configurator.conduit_connection": "Elo de conduíte na face %s: %s"
+  "message.justguithings.configurator.conduit_connection": "Elo de conduíte na face %s: %s",
+  "block.justguithings.industrial_assembler": "Montador Industrial",
+  "item.justguithings.industrial_assembler": "Montador Industrial",
+  "container.justguithings.industrial_assembler": "Montador Industrial"
 }
