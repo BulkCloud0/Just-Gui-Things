@@ -400,14 +400,71 @@ tasks.register('validateClientBoundaries') {
     }
 }
 
+
+tasks.register('validateRetiredIndustrialConcepts') {
+    group = 'verification'
+    description = 'Validates that retired Quench, Tempered and Thermal Kiln concepts stay out of runtime source/resources.'
+
+    doLast {
+        File srcMain = file('src/main')
+        if (!srcMain.exists()) {
+            return
+        }
+
+        List<String> forbiddenFragments = [
+                'quench',
+                'tempered',
+                'thermal kiln',
+                'thermal_kiln',
+                'thermal-kiln',
+                'thermalkiln'
+        ]
+        Set<String> textExtensions = ['java', 'json', 'toml', 'mcmeta'] as Set<String>
+
+        fileTree(srcMain).files.sort().each { File candidate ->
+            String relativePath = srcMain.toPath()
+                    .relativize(candidate.toPath())
+                    .toString()
+                    .replace('\\', '/')
+            String normalizedPath = relativePath.toLowerCase(Locale.ROOT)
+
+            forbiddenFragments.each { String fragment ->
+                if (normalizedPath.contains(fragment)) {
+                    throw new GradleException('Retired industrial concept "' + fragment
+                            + '" found in src/main path ' + relativePath)
+                }
+            }
+
+            String fileName = candidate.name
+            int extensionSeparator = fileName.lastIndexOf('.')
+            String extension = extensionSeparator >= 0
+                    ? fileName.substring(extensionSeparator + 1).toLowerCase(Locale.ROOT)
+                    : ''
+            if (!textExtensions.contains(extension)) {
+                return
+            }
+
+            String source = candidate.getText('UTF-8').toLowerCase(Locale.ROOT)
+            forbiddenFragments.each { String fragment ->
+                if (source.contains(fragment)) {
+                    throw new GradleException('Retired industrial concept "' + fragment
+                            + '" found in src/main file ' + relativePath)
+                }
+            }
+        }
+    }
+}
+
 tasks.named('processResources').configure {
     dependsOn tasks.named('validateCompatRecipes')
     dependsOn tasks.named('validateOptionalIntegrationBoundaries')
     dependsOn tasks.named('validateClientBoundaries')
+    dependsOn tasks.named('validateRetiredIndustrialConcepts')
 }
 
 tasks.named('check').configure {
     dependsOn tasks.named('validateCompatRecipes')
     dependsOn tasks.named('validateOptionalIntegrationBoundaries')
     dependsOn tasks.named('validateClientBoundaries')
+    dependsOn tasks.named('validateRetiredIndustrialConcepts')
 }
