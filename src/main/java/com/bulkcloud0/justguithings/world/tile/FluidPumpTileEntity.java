@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.tile;
 
+import com.bulkcloud0.justguithings.logistics.FairShareAllocator;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.machine.SidedFluidOutputHandler;
@@ -12,6 +13,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.text.ITextComponent;
@@ -25,7 +27,9 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 
 public class FluidPumpTileEntity extends BaseMachineTileEntity {
     public static final int ENERGY_CAPACITY = 50_000;
@@ -34,6 +38,7 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
     public static final int ENERGY_PER_TICK = 20;
     public static final int CYCLE_TICKS = 20;
     public static final int WATER_PER_CYCLE = 200;
+    public static final int MAX_OUTPUT_PER_TICK = 250;
 
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
@@ -166,28 +171,112 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
             return;
         }
 
-        if (!hasWaterSource() || fluidTank.getSpace() < WATER_PER_CYCLE) {
+        boolean changed = false;
+        boolean canProduce = hasWaterSource() && fluidTank.getSpace() >= WATER_PER_CYCLE;
+
+        if (!canProduce) {
             if (progress != 0) {
                 progress = 0;
-                setChanged();
+                changed = true;
             }
-            return;
+        } else if (energyStorage.getEnergyStored() >= ENERGY_PER_TICK) {
+            energyStorage.consumeEnergy(ENERGY_PER_TICK);
+            progress++;
+            changed = true;
+
+            if (progress >= CYCLE_TICKS) {
+                FluidStack produced = new FluidStack(Fluids.WATER, WATER_PER_CYCLE);
+                fluidTank.fill(produced, IFluidHandler.FluidAction.EXECUTE);
+                progress = 0;
+            }
         }
 
-        if (energyStorage.getEnergyStored() < ENERGY_PER_TICK) {
-            return;
+        if (pushFluidToNeighborsFairly(MAX_OUTPUT_PER_TICK) > 0) {
+            changed = true;
         }
 
-        energyStorage.consumeEnergy(ENERGY_PER_TICK);
-        progress++;
+        if (changed) {
+            setChanged();
+        }
+    }
 
-        if (progress >= CYCLE_TICKS) {
-            FluidStack produced = new FluidStack(Fluids.WATER, WATER_PER_CYCLE);
-            fluidTank.fill(produced, IFluidHandler.FluidAction.EXECUTE);
-            progress = 0;
+    private int pushFluidToNeighborsFairly(int maxOutput) {
+        if (level == null || maxOutput <= 0 || fluidTank.isEmpty()) {
+            return 0;
         }
 
-        setChanged();
+        List<IFluidHandler> targets = new ArrayList<>();
+        for (Direction direction : Direction.values()) {
+            if (getSideMode(direction) != MachineSideMode.FLUID_OUTPUT) {
+                continue;
+            }
+
+            TileEntity neighbor = getLoadedBlockEntity(worldPosition.relative(direction));
+            if (neighbor == null) {
+                continue;
+            }
+
+            IFluidHandler receiver = neighbor
+                    .getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite())
+                    .orElse(null);
+            if (receiver != null) {
+                targets.add(receiver);
+            }
+        }
+
+        if (targets.isEmpty()) {
+            return 0;
+        }
+
+        int transferred = 0;
+        for (int round = 0; round < 3 && transferred < maxOutput && !fluidTank.isEmpty(); round++) {
+            int budget = Math.min(maxOutput - transferred, fluidTank.getFluidAmount());
+            if (budget <= 0) {
+                break;
+            }
+
+            FluidStack available = fluidTank.getFluid().copy();
+            available.setAmount(budget);
+
+            int[] demands = new int[targets.size()];
+            for (int index = 0; index < targets.size(); index++) {
+                demands[index] = Math.max(0,
+                        targets.get(index).fill(available, IFluidHandler.FluidAction.SIMULATE));
+            }
+
+            int[] allocations = FairShareAllocator.allocate(budget, demands);
+            int movedThisRound = 0;
+
+            for (int index = 0; index < targets.size(); index++) {
+                int planned = allocations[index];
+                if (planned <= 0) {
+                    continue;
+                }
+
+                FluidStack drained = fluidTank.drain(planned, IFluidHandler.FluidAction.EXECUTE);
+                if (drained.isEmpty()) {
+                    break;
+                }
+
+                int inserted = targets.get(index).fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                inserted = Math.max(0, Math.min(inserted, drained.getAmount()));
+
+                if (inserted < drained.getAmount()) {
+                    FluidStack remainder = drained.copy();
+                    remainder.setAmount(drained.getAmount() - inserted);
+                    fluidTank.fill(remainder, IFluidHandler.FluidAction.EXECUTE);
+                }
+
+                movedThisRound += inserted;
+                transferred += inserted;
+            }
+
+            if (movedThisRound <= 0) {
+                break;
+            }
+        }
+
+        return transferred;
     }
 
     private boolean hasWaterSource() {
