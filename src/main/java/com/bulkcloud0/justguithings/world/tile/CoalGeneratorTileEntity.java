@@ -121,21 +121,28 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
+    public boolean supportsRedstoneControl() {
+        return true;
+    }
+
+    @Override
     public void tick() {
         if (level == null || level.isClientSide) {
             return;
         }
 
-        if (burnTicksRemaining <= 0 && canGenerateTick()) {
-            tryConsumeFuel();
-        }
-
         boolean changed = false;
 
-        if (burnTicksRemaining > 0 && canGenerateTick()) {
-            energyStorage.addEnergy(GENERATION_PER_TICK);
-            burnTicksRemaining--;
-            changed = true;
+        if (isOperationEnabled()) {
+            if (burnTicksRemaining <= 0 && canGenerateTick()) {
+                tryConsumeFuel();
+            }
+
+            if (burnTicksRemaining > 0 && canGenerateTick()) {
+                energyStorage.addEnergy(GENERATION_PER_TICK);
+                burnTicksRemaining--;
+                changed = true;
+            }
         }
 
         if (pushEnergyToNeighborsFairly(MAX_OUTPUT_PER_TICK) > 0) {
