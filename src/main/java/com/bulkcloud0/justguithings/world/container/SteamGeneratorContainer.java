@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class SteamGeneratorContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 1;
+    private static final int MACHINE_SLOT_COUNT = 2;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -40,6 +40,7 @@ public class SteamGeneratorContainer extends Container {
                 return SteamGeneratorTileEntity.isFuel(stack);
             }
         });
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 104, 35));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -88,8 +89,13 @@ public class SteamGeneratorContainer extends Container {
                 if (!moveItemStackTo(stack, MACHINE_SLOT_COUNT, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
+            } else if (tileEntity.findModuleSlot(stack) >= 0) {
+                int moduleSlot = tileEntity.findModuleSlot(stack);
+                if (!moveItemStackTo(stack, moduleSlot, moduleSlot + 1, false)) {
+                    return ItemStack.EMPTY;
+                }
             } else if (SteamGeneratorTileEntity.isFuel(stack)) {
-                if (!moveItemStackTo(stack, 0, MACHINE_SLOT_COUNT, false)) {
+                if (!moveItemStackTo(stack, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (index < PLAYER_MAIN_END) {
@@ -131,6 +137,10 @@ public class SteamGeneratorContainer extends Container {
 
     public int getFluidScaled(int pixels) {
         return (int) ((long) getFluidAmount() * pixels / SteamGeneratorTileEntity.TANK_CAPACITY);
+    }
+
+    public int getConfiguredGenerationPerTick() {
+        return tileEntity.getConfiguredGenerationPerTick();
     }
 
     public MachineSideMode getSideMode(Direction direction) {

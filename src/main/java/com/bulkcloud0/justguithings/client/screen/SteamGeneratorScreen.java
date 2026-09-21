@@ -44,6 +44,7 @@ public class SteamGeneratorScreen extends ContainerScreen<SteamGeneratorContaine
         AbstractGui.fill(matrixStack, left + 5, top + 80, left + 171, top + 161, INNER);
 
         drawSlot(matrixStack, left + 55, top + 34);
+        drawSlot(matrixStack, left + 103, top + 34);
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -92,7 +93,7 @@ public class SteamGeneratorScreen extends ContainerScreen<SteamGeneratorContaine
                 82.0F, 6.0F, TEXT);
         font.draw(matrixStack,
                 I18n.get("screen.justguithings.steam_generator.generation",
-                        SteamGeneratorTileEntity.GENERATION_PER_TICK),
+                        menu.getConfiguredGenerationPerTick()),
                 92.0F, 58.0F, TEXT);
     }
 }
