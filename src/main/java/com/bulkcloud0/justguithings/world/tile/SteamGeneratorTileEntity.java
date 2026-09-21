@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.tile;
 
+import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.machine.SidedFluidInputHandler;
@@ -15,6 +16,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -35,6 +37,9 @@ public class SteamGeneratorTileEntity extends BaseMachineTileEntity {
     public static final int FUEL_BURN_TICKS = 1_600;
     public static final int TANK_CAPACITY = 16_000;
     public static final int WATER_PER_TICK = 5;
+    public static final int TURBINE_BURN_UNITS_PER_TICK = 2;
+
+    private static final int TURBINE_SLOT = 1;
 
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
@@ -106,7 +111,7 @@ public class SteamGeneratorTileEntity extends BaseMachineTileEntity {
 
     public SteamGeneratorTileEntity() {
         super(ModTileEntities.STEAM_GENERATOR.get(), ENERGY_CAPACITY, 0, MAX_OUTPUT_PER_TICK,
-                1, 0, 1, 1, 0);
+                2, 0, 1, 2, 0);
 
         setSideMode(Direction.UP, MachineSideMode.INPUT);
         setSideMode(Direction.DOWN, MachineSideMode.FLUID_INPUT);
@@ -121,6 +126,25 @@ public class SteamGeneratorTileEntity extends BaseMachineTileEntity {
     @Override
     protected boolean isItemValidForSlot(int slot, ItemStack stack) {
         return slot == 0 && isFuel(stack);
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
+        return slot == TURBINE_SLOT ? MachineModuleTypes.TURBINE : null;
+    }
+
+    @Override
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return MachineModuleTypes.TURBINE.equals(moduleType) ? 1 : super.getModuleSlotLimit(slot, moduleType);
+    }
+
+    public boolean hasTurbine() {
+        return getModuleCount(MachineModuleTypes.TURBINE) > 0;
+    }
+
+    public int getConfiguredGenerationPerTick() {
+        return GENERATION_PER_TICK * getConfiguredBurnUnitsPerTick();
     }
 
     @Override
@@ -173,16 +197,23 @@ public class SteamGeneratorTileEntity extends BaseMachineTileEntity {
         boolean changed = false;
 
         if (isOperationEnabled()) {
-            if (burnTicksRemaining <= 0 && canGenerateTick() && tryConsumeFuel()) {
+            int configuredBurnUnits = getConfiguredBurnUnitsPerTick();
+
+            if (burnTicksRemaining <= 0
+                    && canGenerateBurnUnits(configuredBurnUnits)
+                    && tryConsumeFuel()) {
                 burnTicksRemaining = FUEL_BURN_TICKS;
                 changed = true;
             }
 
-            if (burnTicksRemaining > 0 && canGenerateTick()) {
-                fluidTank.drain(WATER_PER_TICK, IFluidHandler.FluidAction.EXECUTE);
-                energyStorage.addEnergy(GENERATION_PER_TICK);
-                burnTicksRemaining--;
-                changed = true;
+            if (burnTicksRemaining > 0) {
+                int burnUnits = Math.min(configuredBurnUnits, burnTicksRemaining);
+                if (canGenerateBurnUnits(burnUnits)) {
+                    fluidTank.drain(WATER_PER_TICK * burnUnits, IFluidHandler.FluidAction.EXECUTE);
+                    energyStorage.addEnergy(GENERATION_PER_TICK * burnUnits);
+                    burnTicksRemaining -= burnUnits;
+                    changed = true;
+                }
             }
         }
 
@@ -195,9 +226,18 @@ public class SteamGeneratorTileEntity extends BaseMachineTileEntity {
         }
     }
 
-    private boolean canGenerateTick() {
-        return fluidTank.getFluidAmount() >= WATER_PER_TICK
-                && energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored() >= GENERATION_PER_TICK;
+    private int getConfiguredBurnUnitsPerTick() {
+        return hasTurbine() ? TURBINE_BURN_UNITS_PER_TICK : 1;
+    }
+
+    private boolean canGenerateBurnUnits(int burnUnits) {
+        if (burnUnits <= 0) {
+            return false;
+        }
+        int waterRequired = WATER_PER_TICK * burnUnits;
+        int energyRequired = GENERATION_PER_TICK * burnUnits;
+        return fluidTank.getFluidAmount() >= waterRequired
+                && energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored() >= energyRequired;
     }
 
     private boolean tryConsumeFuel() {
