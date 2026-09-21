@@ -93,6 +93,19 @@ public abstract class AbstractConduitBlock extends Block {
 
     protected abstract boolean canConnectTo(IBlockReader world, BlockPos pos, Direction direction);
 
+    protected static boolean isConduitLinkEnabled(IBlockReader world, BlockPos pos, Direction direction) {
+        TileEntity self = getLoadedBlockEntity(world, pos);
+        if (self instanceof AbstractConduitNetworkTileEntity
+                && !((AbstractConduitNetworkTileEntity<?>) self).isConduitConnectionEnabled(direction)) {
+            return false;
+        }
+
+        TileEntity neighbor = getLoadedBlockEntity(world, pos.relative(direction));
+        return !(neighbor instanceof AbstractConduitNetworkTileEntity)
+                || ((AbstractConduitNetworkTileEntity<?>) neighbor)
+                        .isConduitConnectionEnabled(direction.getOpposite());
+    }
+
     public static boolean isConnected(BlockState state, Direction direction) {
         return state.getBlock() instanceof AbstractConduitBlock
                 && state.getValue(propertyFor(direction));

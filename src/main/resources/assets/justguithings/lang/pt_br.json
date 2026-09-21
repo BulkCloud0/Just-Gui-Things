@@ -221,11 +221,14 @@
   "side_config.justguithings.mode.energy_both": "ES",
   "machine_side_mode.justguithings.item_input_energy_output": "Entrada de Itens + Saída de Energia",
   "side_config.justguithings.mode.item_input_energy_output": "ESE",
-  "tooltip.justguithings.configurator.mode": "Clique com o botão direito no ar para alternar entre E/S das Faces e Redstone da Máquina.",
+  "tooltip.justguithings.configurator.mode": "Clique com o botão direito no ar para alternar entre E/S das Faces, Redstone da Máquina e Conexão de Conduítes.",
   "tooltip.justguithings.configurator.current_mode": "Modo: %s",
   "configurator_mode.justguithings.side_io": "E/S das Faces",
   "configurator_mode.justguithings.machine_redstone": "Redstone da Máquina",
   "message.justguithings.configurator.mode": "Modo do Configurador: %s",
   "message.justguithings.configurator.machine_target_required": "O modo Redstone da Máquina só se aplica a máquinas ativas com suporte a controle por redstone.",
-  "hud.justguithings.configurator.target_mode": "Configurador [%s]: %s"
+  "hud.justguithings.configurator.target_mode": "Configurador [%s]: %s",
+  "configurator_mode.justguithings.conduit_connection": "Conexão de Conduítes",
+  "message.justguithings.configurator.conduit_target_required": "O modo Conexão de Conduítes exige um conduíte compatível adjacente nessa face.",
+  "message.justguithings.configurator.conduit_connection": "Elo de conduíte na face %s: %s"
 }

@@ -24,8 +24,11 @@ import javax.annotation.Nullable;
 public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduitNetworkTileEntity<T>>
         extends TileEntity implements ITickableTileEntity {
     private static final int EXTERNAL_ENDPOINT_CACHE_TTL = 20;
+    private static final String DISCONNECTED_SIDES_KEY = "DisconnectedConduitSides";
+    private static final int DIRECTION_MASK = (1 << Direction.values().length) - 1;
 
     private final int networkCacheTtl;
+    private int disconnectedSideMask;
 
     private List<T> cachedNetwork = Collections.emptyList();
     private Set<BlockPos> cachedNetworkPositions = Collections.emptySet();
@@ -41,6 +44,68 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
     }
 
     protected abstract Class<T> getNetworkNodeClass();
+
+    @Override
+    public void load(BlockState state, CompoundNBT nbt) {
+        super.load(state, nbt);
+        disconnectedSideMask = nbt.getInt(DISCONNECTED_SIDES_KEY) & DIRECTION_MASK;
+    }
+
+    @Override
+    public CompoundNBT save(CompoundNBT nbt) {
+        super.save(nbt);
+        if (disconnectedSideMask != 0) {
+            nbt.putInt(DISCONNECTED_SIDES_KEY, disconnectedSideMask);
+        }
+        return nbt;
+    }
+
+    public final boolean isConduitConnectionEnabled(Direction direction) {
+        int bit = 1 << direction.ordinal();
+        return (disconnectedSideMask & bit) == 0;
+    }
+
+    @Nullable
+    public final Boolean toggleConduitConnection(Direction direction) {
+        if (level == null || level.isClientSide) {
+            return null;
+        }
+
+        TileEntity neighborTile = getLoadedBlockEntity(worldPosition.relative(direction));
+        Class<T> nodeClass = getNetworkNodeClass();
+        if (!nodeClass.isInstance(neighborTile)) {
+            return null;
+        }
+
+        T neighbor = nodeClass.cast(neighborTile);
+        boolean currentlyConnected = isConduitConnectionEnabled(direction)
+                && neighbor.isConduitConnectionEnabled(direction.getOpposite());
+        boolean nextConnected = !currentlyConnected;
+
+        invalidateNetworkCache();
+        neighbor.invalidateNetworkCache();
+
+        setConduitConnectionEnabledLocal(direction, nextConnected);
+        neighbor.setConduitConnectionEnabledLocal(direction.getOpposite(), nextConnected);
+
+        AbstractConduitBlock.refreshConnections(level, worldPosition);
+        AbstractConduitBlock.refreshConnections(level, neighbor.getBlockPos());
+        return nextConnected;
+    }
+
+    private void setConduitConnectionEnabledLocal(Direction direction, boolean enabled) {
+        int bit = 1 << direction.ordinal();
+        int nextMask = enabled
+                ? disconnectedSideMask & ~bit
+                : disconnectedSideMask | bit;
+        if (nextMask == disconnectedSideMask) {
+            return;
+        }
+
+        disconnectedSideMask = nextMask;
+        setChanged();
+        syncToClient();
+    }
 
     @Override
     public CompoundNBT getUpdateTag() {
@@ -198,14 +263,23 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
 
             for (Direction direction : Direction.values()) {
                 BlockPos next = pos.relative(direction);
-                if (!visited.add(next)) {
+                if (visited.contains(next)) {
                     continue;
                 }
 
                 TileEntity nextTile = getLoadedBlockEntity(next);
-                if (nodeClass.isInstance(nextTile)) {
-                    queue.add(next);
+                if (!nodeClass.isInstance(nextTile)) {
+                    continue;
                 }
+
+                T nextNode = nodeClass.cast(nextTile);
+                if (!node.isConduitConnectionEnabled(direction)
+                        || !nextNode.isConduitConnectionEnabled(direction.getOpposite())) {
+                    continue;
+                }
+
+                visited.add(next);
+                queue.add(next);
             }
         }
 
@@ -225,6 +299,7 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
             }
         }
 
+        Class<T> nodeClass = getNetworkNodeClass();
         List<ExternalEndpoint<T>> endpoints = new ArrayList<>();
         for (T node : cachedNetwork) {
             for (Direction direction : Direction.values()) {
@@ -233,7 +308,8 @@ public abstract class AbstractConduitNetworkTileEntity<T extends AbstractConduit
                     continue;
                 }
 
-                if (getLoadedBlockEntity(neighborPos) == null) {
+                TileEntity neighbor = getLoadedBlockEntity(neighborPos);
+                if (neighbor == null || nodeClass.isInstance(neighbor)) {
                     continue;
                 }
 

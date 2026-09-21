@@ -46,7 +46,7 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
 
         BlockState neighborState = world.getBlockState(neighborPos);
         if (neighborState.getBlock() instanceof BasicFluidPipeBlock) {
-            return true;
+            return isConduitLinkEnabled(world, pos, direction);
         }
 
         TileEntity self = world.getBlockEntity(pos);
@@ -109,18 +109,26 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
                 return ActionResultType.PASS;
             }
             if (!world.isClientSide) {
-                if (ConfiguratorItem.isMachineRedstoneMode(held)) {
+                if (ConfiguratorItem.isConduitConnectionMode(held)) {
+                    Boolean connected = pipe.toggleConduitConnection(direction);
+                    ITextComponent face = DirectionText.getDisplayName(direction);
+                    if (connected == null) {
+                        ConfiguratorItem.displayConduitTargetRequired(player);
+                    } else {
+                        ConfiguratorItem.displayConduitConnection(player, face, connected);
+                    }
+                } else if (ConfiguratorItem.isMachineRedstoneMode(held)) {
                     ConfiguratorItem.displayMachineTargetRequired(player);
                 } else {
-                    ConduitTransferMode mode = pipe.cycleSideMode(direction);
-                    AbstractConduitBlock.refreshConnections(world, pos);
-    
-                    ITextComponent face = DirectionText.getDisplayName(direction);
-                    player.displayClientMessage(
-                            new TranslationTextComponent(
-                                    "message.justguithings.fluid_pipe.side_mode",
-                                    face, mode.getDisplayName()),
-                            true);
+                        ConduitTransferMode mode = pipe.cycleSideMode(direction);
+                        AbstractConduitBlock.refreshConnections(world, pos);
+        
+                        ITextComponent face = DirectionText.getDisplayName(direction);
+                        player.displayClientMessage(
+                                new TranslationTextComponent(
+                                        "message.justguithings.fluid_pipe.side_mode",
+                                        face, mode.getDisplayName()),
+                                true);
                 }
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;

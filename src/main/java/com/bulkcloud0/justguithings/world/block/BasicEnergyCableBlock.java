@@ -41,7 +41,7 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
 
         BlockState neighborState = world.getBlockState(neighborPos);
         if (neighborState.getBlock() instanceof BasicEnergyCableBlock) {
-            return true;
+            return isConduitLinkEnabled(world, pos, direction);
         }
 
         TileEntity self = world.getBlockEntity(pos);
@@ -104,18 +104,26 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
                 return ActionResultType.PASS;
             }
             if (!world.isClientSide) {
-                if (ConfiguratorItem.isMachineRedstoneMode(held)) {
+                if (ConfiguratorItem.isConduitConnectionMode(held)) {
+                    Boolean connected = cable.toggleConduitConnection(direction);
+                    ITextComponent face = DirectionText.getDisplayName(direction);
+                    if (connected == null) {
+                        ConfiguratorItem.displayConduitTargetRequired(player);
+                    } else {
+                        ConfiguratorItem.displayConduitConnection(player, face, connected);
+                    }
+                } else if (ConfiguratorItem.isMachineRedstoneMode(held)) {
                     ConfiguratorItem.displayMachineTargetRequired(player);
                 } else {
-                    ConduitTransferMode mode = cable.cycleSideMode(direction);
-                    AbstractConduitBlock.refreshConnections(world, pos);
-    
-                    ITextComponent face = DirectionText.getDisplayName(direction);
-                    player.displayClientMessage(
-                            new TranslationTextComponent(
-                                    "message.justguithings.energy_cable.side_mode",
-                                    face, mode.getEnergyDisplayName()),
-                            true);
+                        ConduitTransferMode mode = cable.cycleSideMode(direction);
+                        AbstractConduitBlock.refreshConnections(world, pos);
+        
+                        ITextComponent face = DirectionText.getDisplayName(direction);
+                        player.displayClientMessage(
+                                new TranslationTextComponent(
+                                        "message.justguithings.energy_cable.side_mode",
+                                        face, mode.getEnergyDisplayName()),
+                                true);
                 }
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
