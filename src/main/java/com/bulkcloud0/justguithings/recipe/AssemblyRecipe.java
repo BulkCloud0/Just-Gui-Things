@@ -220,7 +220,11 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
             implements IRecipeSerializer<AssemblyRecipe> {
         @Override
         public AssemblyRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            JsonArray inputArray = JSONUtils.getAsJsonArray(json, "ingredients");
+            if (!json.has("ingredients") || !json.get("ingredients").isJsonArray()) {
+                throw new JsonSyntaxException("Assembly recipe " + recipeId
+                        + " requires an ingredients array");
+            }
+            JsonArray inputArray = json.getAsJsonArray("ingredients");
             if (inputArray.size() < 1 || inputArray.size() > MAX_INPUTS) {
                 throw new JsonSyntaxException("Assembly recipe " + recipeId
                         + " requires between 1 and " + MAX_INPUTS + " ingredients");
