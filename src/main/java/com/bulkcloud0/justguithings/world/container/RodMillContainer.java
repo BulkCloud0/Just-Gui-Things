@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class RodMillContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 2;
+    private static final int MACHINE_SLOT_COUNT = 4;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -41,6 +41,8 @@ public class RodMillContainer extends Container {
                 return false;
             }
         });
+        addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 72, 56));
+        addSlot(new SlotItemHandler(tileEntity.getInventory(), 3, 90, 56));
         addPlayerInventory(playerInventory);
         addDataSlots(data);
         addDataSlots(sideData);
@@ -87,6 +89,11 @@ public class RodMillContainer extends Container {
 
         if (index < MACHINE_SLOT_COUNT) {
             if (!moveItemStackTo(stack, MACHINE_SLOT_COUNT, slots.size(), true)) return ItemStack.EMPTY;
+        } else if (tileEntity.findModuleSlot(stack) >= 0) {
+            int moduleSlot = tileEntity.findModuleSlot(stack);
+            if (!moveItemStackTo(stack, moduleSlot, moduleSlot + 1, false)) {
+                return ItemStack.EMPTY;
+            }
         } else if (tileEntity.canAcceptInput(stack)) {
             if (!moveItemStackTo(stack, 0, 1, false)) return ItemStack.EMPTY;
         } else if (index < PLAYER_MAIN_END) {
@@ -116,6 +123,14 @@ public class RodMillContainer extends Container {
 
     public int getCurrentEnergyPerTick() {
         return data.get(4);
+    }
+
+    public int getSpeedUpgradeCount() {
+        return tileEntity.getSpeedUpgradeCount();
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return tileEntity.getEfficiencyUpgradeCount();
     }
 
     public MachineSideMode getSideMode(Direction direction) {
