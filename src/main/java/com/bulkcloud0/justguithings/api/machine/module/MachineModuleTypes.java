@@ -12,6 +12,7 @@ public final class MachineModuleTypes {
     public static final ResourceLocation BUFFER = id("buffer");
     public static final ResourceLocation BATCH = id("batch");
     public static final ResourceLocation POWER_COIL = id("power_coil");
+    public static final ResourceLocation TURBINE = id("turbine");
 
     private MachineModuleTypes() {
     }

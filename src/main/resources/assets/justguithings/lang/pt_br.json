@@ -234,5 +234,8 @@
   "block.justguithings.industrial_assembler": "Montador Industrial",
   "item.justguithings.industrial_assembler": "Montador Industrial",
   "container.justguithings.industrial_assembler": "Montador Industrial",
-  "jei.justguithings.assembly": "Montagem Industrial"
+  "jei.justguithings.assembly": "Montagem Industrial",
+  "item.justguithings.turbine_module": "Módulo de Turbina",
+  "tooltip.justguithings.turbine_module.effect": "Dobra a vazão do Gerador a Vapor sem alterar a eficiência de combustível e água.",
+  "tooltip.justguithings.turbine_module.compatibility": "Compatível: Gerador a Vapor"
 }

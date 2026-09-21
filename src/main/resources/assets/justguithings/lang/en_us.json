@@ -234,5 +234,8 @@
   "block.justguithings.industrial_assembler": "Industrial Assembler",
   "item.justguithings.industrial_assembler": "Industrial Assembler",
   "container.justguithings.industrial_assembler": "Industrial Assembler",
-  "jei.justguithings.assembly": "Industrial Assembly"
+  "jei.justguithings.assembly": "Industrial Assembly",
+  "item.justguithings.turbine_module": "Turbine Module",
+  "tooltip.justguithings.turbine_module.effect": "Doubles Steam Generator throughput while preserving fuel and water efficiency.",
+  "tooltip.justguithings.turbine_module.compatibility": "Compatible: Steam Generator"
 }
