@@ -64,7 +64,10 @@ public class AutomatedAssemblerTileEntity extends BaseMachineTileEntity {
                 case 4: return currentEnergyPerTick;
                 case 5: return getSpeedUpgradeCount();
                 case 6: return getEfficiencyUpgradeCount();
-                case 7: return lockedRecipeId != null ? 1 : 0;
+                case 7:
+                    return level != null && level.isClientSide
+                            ? syncedRecipeLocked
+                            : (lockedRecipeId != null ? 1 : 0);
                 default: return 0;
             }
         }
@@ -366,12 +369,6 @@ public class AutomatedAssemblerTileEntity extends BaseMachineTileEntity {
 
     public IIntArray getDataAccess() {
         return dataAccess;
-    }
-
-    public int getSyncedRecipeLocked() {
-        return level != null && level.isClientSide
-                ? syncedRecipeLocked
-                : (lockedRecipeId != null ? 1 : 0);
     }
 
     @Override
