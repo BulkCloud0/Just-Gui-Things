@@ -31,8 +31,7 @@
   "item.justguithings.steel_ingot": "Lingote de Aço",
   "tooltip.justguithings.energy_cell.energy": "Energia armazenada: %s / %s FE",
   "tooltip.justguithings.energy_cell.portable": "Mantém FE/configuração das faces e expõe Forge Energy enquanto está como item.",
-  "tooltip.justguithings.configurator.use": "Clique com o botão direito em faces configuráveis para alternar os modos de E/S suportados.",
-  "tooltip.justguithings.configurator.redstone": "Corra e clique com o botão direito em máquinas ativas para alternar o controle por redstone.",
+  "tooltip.justguithings.configurator.use": "Clique com o botão direito em uma face configurável para aplicar o modo selecionado do Configurador.",
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
   "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t e +10% no tempo de processamento por módulo; até 4 módulos.",
@@ -190,7 +189,7 @@
   "machine_redstone_mode.justguithings.always": "Sempre Ativa",
   "machine_redstone_mode.justguithings.require_signal": "Exigir Sinal",
   "machine_redstone_mode.justguithings.require_no_signal": "Exigir Ausência de Sinal",
-  "tooltip.justguithings.configurator.inspect": "Shift+clique com o botão direito em faces configuráveis para inspecionar o modo de E/S atual.",
+  "tooltip.justguithings.configurator.inspect": "Shift+clique com o botão direito em faces configuráveis para inspecionar a configuração atual.",
   "message.justguithings.configurator.inspect_item_pipe": "%s Tubo de Itens | E/S: %s | Conexão: %s",
   "message.justguithings.configurator.inspect_fluid_pipe": "%s Tubo de Fluidos | E/S: %s | Conexão: %s",
   "message.justguithings.configurator.inspect_energy_cable": "%s Cabo de Energia | E/S: %s | Conexão: %s",
@@ -221,5 +220,12 @@
   "side_config.justguithings.mode.energy_output": "SE",
   "side_config.justguithings.mode.energy_both": "ES",
   "machine_side_mode.justguithings.item_input_energy_output": "Entrada de Itens + Saída de Energia",
-  "side_config.justguithings.mode.item_input_energy_output": "ESE"
+  "side_config.justguithings.mode.item_input_energy_output": "ESE",
+  "tooltip.justguithings.configurator.mode": "Clique com o botão direito no ar para alternar entre E/S das Faces e Redstone da Máquina.",
+  "tooltip.justguithings.configurator.current_mode": "Modo: %s",
+  "configurator_mode.justguithings.side_io": "E/S das Faces",
+  "configurator_mode.justguithings.machine_redstone": "Redstone da Máquina",
+  "message.justguithings.configurator.mode": "Modo do Configurador: %s",
+  "message.justguithings.configurator.machine_target_required": "O modo Redstone da Máquina só se aplica a máquinas ativas com suporte a controle por redstone.",
+  "hud.justguithings.configurator.target_mode": "Configurador [%s]: %s"
 }

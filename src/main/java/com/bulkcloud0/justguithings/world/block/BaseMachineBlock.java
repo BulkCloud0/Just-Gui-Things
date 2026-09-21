@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.block;
 
+import com.bulkcloud0.justguithings.item.ConfiguratorItem;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineInventoryDropHelper;
 import com.bulkcloud0.justguithings.machine.MachineRedstoneMode;
@@ -76,13 +77,17 @@ public abstract class BaseMachineBlock<T extends BaseMachineTileEntity> extends 
                 return ActionResultType.PASS;
             }
             if (!world.isClientSide) {
-                if (player.isSprinting() && tile.supportsRedstoneControl()) {
-                    MachineRedstoneMode mode = tile.cycleRedstoneMode();
-                    player.displayClientMessage(
-                            new TranslationTextComponent(
-                                    "message.justguithings.machine.redstone_mode",
-                                    mode.getDisplayName()),
-                            true);
+                if (ConfiguratorItem.isMachineRedstoneMode(held)) {
+                    if (tile.supportsRedstoneControl()) {
+                        MachineRedstoneMode mode = tile.cycleRedstoneMode();
+                        player.displayClientMessage(
+                                new TranslationTextComponent(
+                                        "message.justguithings.machine.redstone_mode",
+                                        mode.getDisplayName()),
+                                true);
+                    } else {
+                        ConfiguratorItem.displayMachineTargetRequired(player);
+                    }
                 } else {
                     MachineSideMode mode = tile.cycleSideMode(hit.getDirection());
                     ITextComponent face = DirectionText.getDisplayName(hit.getDirection());
