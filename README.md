@@ -25,7 +25,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Wire Mill for tag-driven rod-to-wire processing
 - Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
 - Machine specialization through modules such as the Resistive Furnace Power Coil
-- Configurator-based per-face automation
+- Configurator-based per-face automation and redstone operation control for active machines
 - Data-driven recipes loaded through Minecraft's Recipe Manager
 - Forge tag compatibility for shared dusts, ingots, plates, rods and wires
 - Optional-mod recipes guarded by Forge conditions
