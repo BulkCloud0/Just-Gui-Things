@@ -38,7 +38,7 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
     public static final int ENERGY_PER_TICK = 20;
     public static final int CYCLE_TICKS = 20;
     public static final int WATER_PER_CYCLE = 200;
-    public static final int MAX_OUTPUT_PER_TICK = 250;
+    public static final int DIRECT_OUTPUT_RATE = 250;
 
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
@@ -191,7 +191,7 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
             }
         }
 
-        if (pushFluidToNeighborsFairly(MAX_OUTPUT_PER_TICK) > 0) {
+        if (pushFluidToNeighborsFairly(DIRECT_OUTPUT_RATE) > 0) {
             changed = true;
         }
 
