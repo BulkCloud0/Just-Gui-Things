@@ -1,0 +1,28 @@
+{
+  "type": "justguithings:assembly",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:sugar"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "tag": "forge:dusts/redstone"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "tag": "forge:plates/iron"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:speed_upgrade"
+  },
+  "processing_time": 100,
+  "energy_per_tick": 40
+}

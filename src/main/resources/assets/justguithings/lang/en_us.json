@@ -230,5 +230,8 @@
   "hud.justguithings.configurator.target_mode": "Configurator [%s]: %s",
   "configurator_mode.justguithings.conduit_connection": "Conduit Connection",
   "message.justguithings.configurator.conduit_target_required": "Conduit Connection mode requires an adjacent compatible conduit on that face.",
-  "message.justguithings.configurator.conduit_connection": "%s conduit link: %s"
+  "message.justguithings.configurator.conduit_connection": "%s conduit link: %s",
+  "block.justguithings.industrial_assembler": "Industrial Assembler",
+  "item.justguithings.industrial_assembler": "Industrial Assembler",
+  "container.justguithings.industrial_assembler": "Industrial Assembler"
 }
