@@ -41,6 +41,8 @@ public class RodMillScreen extends ContainerScreen<RodMillContainer> {
         AbstractGui.fill(matrixStack, left + 5, top + 80, left + 171, top + 161, INNER);
         drawSlot(matrixStack, left + 43, top + 34);
         drawSlot(matrixStack, left + 115, top + 34);
+        drawSlot(matrixStack, left + 71, top + 55);
+        drawSlot(matrixStack, left + 89, top + 55);
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -70,5 +72,8 @@ public class RodMillScreen extends ContainerScreen<RodMillContainer> {
         font.draw(matrixStack, inventory.getDisplayName(), 8.0F, inventoryLabelY, TEXT);
         font.draw(matrixStack, "FE: " + menu.getEnergyStored() + " / " + RodMillTileEntity.CAPACITY, 82.0F, 6.0F, TEXT);
         font.draw(matrixStack, menu.getCurrentEnergyPerTick() + " FE/t", 8.0F, 55.0F, TEXT);
+        font.draw(matrixStack,
+                "S" + menu.getSpeedUpgradeCount() + " E" + menu.getEfficiencyUpgradeCount(),
+                108.0F, 55.0F, TEXT);
     }
 }
