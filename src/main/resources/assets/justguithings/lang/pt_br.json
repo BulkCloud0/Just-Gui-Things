@@ -233,5 +233,6 @@
   "message.justguithings.configurator.conduit_connection": "Elo de conduíte na face %s: %s",
   "block.justguithings.industrial_assembler": "Montador Industrial",
   "item.justguithings.industrial_assembler": "Montador Industrial",
-  "container.justguithings.industrial_assembler": "Montador Industrial"
+  "container.justguithings.industrial_assembler": "Montador Industrial",
+  "jei.justguithings.assembly": "Montagem Industrial"
 }
