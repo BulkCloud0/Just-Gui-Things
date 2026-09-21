@@ -272,10 +272,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                     movedThisRound += accepted;
                     movedAny = true;
 
-                    int receiverIndex = receivers.indexOf(target);
-                    if (receiverIndex >= 0) {
-                        distributionCursor = (receiverIndex + 1) % receivers.size();
-                    }
+                    distributionCursor = (target.receiverIndex + 1) % receivers.size();
 
                     if (accepted < planned) {
                         retry = true;
@@ -350,7 +347,7 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
                 continue;
             }
 
-            receivers.add(new EnergyTargetEndpoint(receiver, rule));
+            receivers.add(new EnergyTargetEndpoint(receivers.size(), receiver, rule));
         }
 
         return receivers;
@@ -515,11 +512,14 @@ public class BasicEnergyCableTileEntity extends AbstractConduitNetworkTileEntity
     }
 
     private static final class EnergyTargetEndpoint {
+        private final int receiverIndex;
         private final IEnergyStorage handler;
         private final EnergyRoutingTargetRule rule;
 
-        private EnergyTargetEndpoint(IEnergyStorage handler,
+        private EnergyTargetEndpoint(int receiverIndex,
+                                     IEnergyStorage handler,
                                      EnergyRoutingTargetRule rule) {
+            this.receiverIndex = receiverIndex;
             this.handler = handler;
             this.rule = new EnergyRoutingTargetRule(rule);
         }
