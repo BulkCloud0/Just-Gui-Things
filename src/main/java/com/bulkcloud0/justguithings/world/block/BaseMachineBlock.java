@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.block;
 
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineInventoryDropHelper;
+import com.bulkcloud0.justguithings.machine.MachineRedstoneMode;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModItems;
 import com.bulkcloud0.justguithings.world.DirectionText;
@@ -75,13 +76,22 @@ public abstract class BaseMachineBlock<T extends BaseMachineTileEntity> extends 
                 return ActionResultType.PASS;
             }
             if (!world.isClientSide) {
-                MachineSideMode mode = tile.cycleSideMode(hit.getDirection());
-                ITextComponent face = DirectionText.getDisplayName(hit.getDirection());
-                player.displayClientMessage(
-                        new TranslationTextComponent(
-                                "message.justguithings.machine.side_mode",
-                                face, mode.getDisplayName()),
-                        true);
+                if (player.isSprinting() && tile.supportsRedstoneControl()) {
+                    MachineRedstoneMode mode = tile.cycleRedstoneMode();
+                    player.displayClientMessage(
+                            new TranslationTextComponent(
+                                    "message.justguithings.machine.redstone_mode",
+                                    mode.getDisplayName()),
+                            true);
+                } else {
+                    MachineSideMode mode = tile.cycleSideMode(hit.getDirection());
+                    ITextComponent face = DirectionText.getDisplayName(hit.getDirection());
+                    player.displayClientMessage(
+                            new TranslationTextComponent(
+                                    "message.justguithings.machine.side_mode",
+                                    face, mode.getDisplayName()),
+                            true);
+                }
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
         }
