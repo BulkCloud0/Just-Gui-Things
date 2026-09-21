@@ -43,10 +43,35 @@ public class ConfiguratorItem extends TooltipItem {
         return getMode(stack) == ConfiguratorMode.MACHINE_REDSTONE;
     }
 
+    public static boolean isConduitConnectionMode(ItemStack stack) {
+        return getMode(stack) == ConfiguratorMode.CONDUIT_CONNECTION;
+    }
+
     public static void displayMachineTargetRequired(PlayerEntity player) {
         player.displayClientMessage(
                 new TranslationTextComponent(
                         "message.justguithings.configurator.machine_target_required"),
+                true);
+    }
+
+    public static void displayConduitTargetRequired(PlayerEntity player) {
+        player.displayClientMessage(
+                new TranslationTextComponent(
+                        "message.justguithings.configurator.conduit_target_required"),
+                true);
+    }
+
+    public static void displayConduitConnection(PlayerEntity player,
+                                                ITextComponent face,
+                                                boolean connected) {
+        ITextComponent state = new TranslationTextComponent(
+                connected
+                        ? "connection.justguithings.connected"
+                        : "connection.justguithings.disconnected");
+        player.displayClientMessage(
+                new TranslationTextComponent(
+                        "message.justguithings.configurator.conduit_connection",
+                        face, state),
                 true);
     }
 
@@ -101,7 +126,8 @@ public class ConfiguratorItem extends TooltipItem {
 
     public enum ConfiguratorMode {
         SIDE_IO,
-        MACHINE_REDSTONE;
+        MACHINE_REDSTONE,
+        CONDUIT_CONNECTION;
 
         public ConfiguratorMode next() {
             ConfiguratorMode[] values = values();

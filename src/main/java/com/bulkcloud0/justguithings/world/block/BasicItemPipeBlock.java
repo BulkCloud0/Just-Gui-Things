@@ -44,7 +44,7 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
 
         BlockState neighborState = world.getBlockState(neighborPos);
         if (neighborState.getBlock() instanceof BasicItemPipeBlock) {
-            return true;
+            return isConduitLinkEnabled(world, pos, direction);
         }
 
         TileEntity self = world.getBlockEntity(pos);
@@ -107,7 +107,15 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 return ActionResultType.PASS;
             }
             if (!world.isClientSide) {
-                if (ConfiguratorItem.isMachineRedstoneMode(held)) {
+                if (ConfiguratorItem.isConduitConnectionMode(held)) {
+                    Boolean connected = pipe.toggleConduitConnection(faceDirection);
+                    ITextComponent face = DirectionText.getDisplayName(faceDirection);
+                    if (connected == null) {
+                        ConfiguratorItem.displayConduitTargetRequired(player);
+                    } else {
+                        ConfiguratorItem.displayConduitConnection(player, face, connected);
+                    }
+                } else if (ConfiguratorItem.isMachineRedstoneMode(held)) {
                     ConfiguratorItem.displayMachineTargetRequired(player);
                 } else {
                     ConduitTransferMode mode = pipe.cycleSideMode(faceDirection);

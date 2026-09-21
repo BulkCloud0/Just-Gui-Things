@@ -77,7 +77,9 @@ public abstract class BaseMachineBlock<T extends BaseMachineTileEntity> extends 
                 return ActionResultType.PASS;
             }
             if (!world.isClientSide) {
-                if (ConfiguratorItem.isMachineRedstoneMode(held)) {
+                if (ConfiguratorItem.isConduitConnectionMode(held)) {
+                    ConfiguratorItem.displayConduitTargetRequired(player);
+                } else if (ConfiguratorItem.isMachineRedstoneMode(held)) {
                     if (tile.supportsRedstoneControl()) {
                         MachineRedstoneMode mode = tile.cycleRedstoneMode();
                         player.displayClientMessage(
