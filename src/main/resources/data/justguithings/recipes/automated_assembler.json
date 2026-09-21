@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PWP",
+    "RTR",
+    "PCP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "W": { "tag": "forge:wires/gold" },
+    "R": { "tag": "forge:rods/steel" },
+    "T": { "item": "minecraft:crafting_table" },
+    "C": { "item": "minecraft:comparator" }
+  },
+  "result": {
+    "item": "justguithings:automated_assembler"
+  }
+}

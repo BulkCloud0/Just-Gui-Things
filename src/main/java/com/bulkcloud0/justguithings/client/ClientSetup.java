@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.client;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.client.screen.AutomatedAssemblerScreen;
 import com.bulkcloud0.justguithings.client.screen.ChargingStationScreen;
 import com.bulkcloud0.justguithings.client.screen.CoalGeneratorScreen;
 import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
@@ -31,6 +32,7 @@ public final class ClientSetup {
             ScreenManager.register(ModContainers.STEAM_GENERATOR.get(), SteamGeneratorScreen::new);
             ScreenManager.register(ModContainers.CHARGING_STATION.get(), ChargingStationScreen::new);
             ScreenManager.register(ModContainers.CRUSHER.get(), CrusherScreen::new);
+            ScreenManager.register(ModContainers.AUTOMATED_ASSEMBLER.get(), AutomatedAssemblerScreen::new);
             ScreenManager.register(ModContainers.STAMPING_PRESS.get(), StampingPressScreen::new);
             ScreenManager.register(ModContainers.INDUSTRIAL_MIXER.get(), IndustrialMixerScreen::new);
             ScreenManager.register(ModContainers.ENERGY_CELL.get(), EnergyCellScreen::new);

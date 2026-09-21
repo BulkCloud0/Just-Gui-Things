@@ -23,6 +23,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Industrial Mixer, Stamping Press and Resistive Furnace
 - Rod Mill for tag-driven ingot-to-rod forming
 - Wire Mill for tag-driven rod-to-wire processing
+- Automated Assembler for energy-driven execution of locked vanilla/modded 3x3 crafting recipes
 - Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
 - Machine specialization through modules such as the Resistive Furnace Power Coil
 - Configurator modes for per-face automation, active-machine redstone control and conduit-to-conduit connection toggling

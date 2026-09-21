@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.world.tile.AutomatedAssemblerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
@@ -33,6 +34,9 @@ public final class ModTileEntities {
             "charging_station", () -> TileEntityType.Builder.of(ChargingStationTileEntity::new, ModBlocks.CHARGING_STATION.get()).build(null));
     public static final RegistryObject<TileEntityType<CrusherTileEntity>> CRUSHER = TILE_ENTITIES.register(
             "crusher", () -> TileEntityType.Builder.of(CrusherTileEntity::new, ModBlocks.CRUSHER.get()).build(null));
+    public static final RegistryObject<TileEntityType<AutomatedAssemblerTileEntity>> AUTOMATED_ASSEMBLER = TILE_ENTITIES.register(
+            "automated_assembler",
+            () -> TileEntityType.Builder.of(AutomatedAssemblerTileEntity::new, ModBlocks.AUTOMATED_ASSEMBLER.get()).build(null));
     public static final RegistryObject<TileEntityType<StampingPressTileEntity>> STAMPING_PRESS = TILE_ENTITIES.register(
             "stamping_press", () -> TileEntityType.Builder.of(StampingPressTileEntity::new, ModBlocks.STAMPING_PRESS.get()).build(null));
     public static final RegistryObject<TileEntityType<IndustrialMixerTileEntity>> INDUSTRIAL_MIXER = TILE_ENTITIES.register(
