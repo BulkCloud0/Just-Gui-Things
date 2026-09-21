@@ -95,12 +95,8 @@ public class IndustrialAssemblerContainer extends Container {
                     return ItemStack.EMPTY;
                 }
             } else {
-                boolean moved = false;
-                for (int inputSlot = 0; inputSlot < 4 && !moved; inputSlot++) {
-                    if (tileEntity.canAcceptInput(inputSlot, stack)) {
-                        moved = this.moveItemStackTo(stack, inputSlot, inputSlot + 1, false);
-                    }
-                }
+                boolean moved = tileEntity.canAcceptInput(stack)
+                        && this.moveItemStackTo(stack, 0, 4, false);
 
                 if (!moved) {
                     if (index < PLAYER_MAIN_END) {

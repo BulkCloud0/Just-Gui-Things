@@ -49,24 +49,59 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
 
     @Override
     public boolean matches(IInventory inventory, World world) {
-        if (inventory.getContainerSize() < ingredients.size()) {
-            return false;
-        }
+        return findMatchingSlots(inventory) != null;
+    }
 
-        for (int slot = 0; slot < ingredients.size(); slot++) {
-            ItemStack stack = inventory.getItem(slot);
-            if (stack.getCount() < counts.get(slot) || !ingredients.get(slot).test(stack)) {
-                return false;
-            }
-        }
-
+    @Nullable
+    public int[] findMatchingSlots(IInventory inventory) {
         int checkedSlots = Math.min(MAX_INPUTS, inventory.getContainerSize());
-        for (int slot = ingredients.size(); slot < checkedSlots; slot++) {
+        int nonEmptySlots = 0;
+        for (int slot = 0; slot < checkedSlots; slot++) {
             if (!inventory.getItem(slot).isEmpty()) {
-                return false;
+                nonEmptySlots++;
             }
         }
-        return true;
+        if (nonEmptySlots != ingredients.size()) {
+            return null;
+        }
+
+        int[] ingredientSlots = new int[ingredients.size()];
+        java.util.Arrays.fill(ingredientSlots, -1);
+        boolean[] usedSlots = new boolean[checkedSlots];
+        return matchIngredient(0, inventory, usedSlots, ingredientSlots)
+                ? ingredientSlots
+                : null;
+    }
+
+    private boolean matchIngredient(int ingredientIndex,
+                                    IInventory inventory,
+                                    boolean[] usedSlots,
+                                    int[] ingredientSlots) {
+        if (ingredientIndex >= ingredients.size()) {
+            return true;
+        }
+
+        Ingredient ingredient = ingredients.get(ingredientIndex);
+        int required = counts.get(ingredientIndex);
+        for (int slot = 0; slot < usedSlots.length; slot++) {
+            if (usedSlots[slot]) {
+                continue;
+            }
+
+            ItemStack stack = inventory.getItem(slot);
+            if (stack.getCount() < required || !ingredient.test(stack)) {
+                continue;
+            }
+
+            usedSlots[slot] = true;
+            ingredientSlots[ingredientIndex] = slot;
+            if (matchIngredient(ingredientIndex + 1, inventory, usedSlots, ingredientSlots)) {
+                return true;
+            }
+            ingredientSlots[ingredientIndex] = -1;
+            usedSlots[slot] = false;
+        }
+        return false;
     }
 
     @Override

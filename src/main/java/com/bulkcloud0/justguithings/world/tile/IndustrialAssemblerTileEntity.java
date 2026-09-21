@@ -47,7 +47,7 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
 
     @Override
     protected boolean isItemValidForSlot(int slot, ItemStack stack) {
-        return slot >= 0 && slot < AssemblyRecipe.MAX_INPUTS && canAcceptInput(slot, stack);
+        return slot >= 0 && slot < AssemblyRecipe.MAX_INPUTS && canAcceptInput(stack);
     }
 
     @Override
@@ -69,7 +69,8 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
 
     @Override
     protected boolean canProcessRecipe(AssemblyRecipe recipe) {
-        if (!recipe.matches(createRecipeInventory(), level)) {
+        Inventory recipeInventory = createRecipeInventory();
+        if (recipe.findMatchingSlots(recipeInventory) == null) {
             return false;
         }
 
@@ -94,8 +95,15 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
             return;
         }
 
-        for (int slot = 0; slot < recipe.getInputCount(); slot++) {
-            inventory.extractItem(slot, recipe.getRequiredCount(slot), false);
+        int[] ingredientSlots = recipe.findMatchingSlots(createRecipeInventory());
+        if (ingredientSlots == null) {
+            return;
+        }
+        for (int ingredient = 0; ingredient < recipe.getInputCount(); ingredient++) {
+            inventory.extractItem(
+                    ingredientSlots[ingredient],
+                    recipe.getRequiredCount(ingredient),
+                    false);
         }
 
         ItemStack output = inventory.getStackInSlot(4);
@@ -108,13 +116,15 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
         }
     }
 
-    public boolean canAcceptInput(int slot, ItemStack stack) {
-        if (level == null || stack.isEmpty() || slot < 0 || slot >= AssemblyRecipe.MAX_INPUTS) {
+    public boolean canAcceptInput(ItemStack stack) {
+        if (level == null || stack.isEmpty()) {
             return false;
         }
         for (AssemblyRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE)) {
-            if (slot < recipe.getInputCount() && recipe.getIngredient(slot).test(stack)) {
-                return true;
+            for (int ingredient = 0; ingredient < recipe.getInputCount(); ingredient++) {
+                if (recipe.getIngredient(ingredient).test(stack)) {
+                    return true;
+                }
             }
         }
         return false;
