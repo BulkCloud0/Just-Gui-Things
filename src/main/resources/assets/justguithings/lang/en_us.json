@@ -233,5 +233,6 @@
   "message.justguithings.configurator.conduit_connection": "%s conduit link: %s",
   "block.justguithings.industrial_assembler": "Industrial Assembler",
   "item.justguithings.industrial_assembler": "Industrial Assembler",
-  "container.justguithings.industrial_assembler": "Industrial Assembler"
+  "container.justguithings.industrial_assembler": "Industrial Assembler",
+  "jei.justguithings.assembly": "Industrial Assembly"
 }
