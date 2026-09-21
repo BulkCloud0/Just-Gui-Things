@@ -1,0 +1,29 @@
+{
+  "type": "justguithings:assembly",
+  "ingredients": [
+    {
+      "ingredient": {
+        "tag": "forge:nuggets/iron"
+      },
+      "count": 6
+    },
+    {
+      "ingredient": {
+        "tag": "forge:dusts/redstone"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:hopper"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:basic_item_pipe",
+    "count": 8
+  },
+  "processing_time": 120,
+  "energy_per_tick": 50
+}
