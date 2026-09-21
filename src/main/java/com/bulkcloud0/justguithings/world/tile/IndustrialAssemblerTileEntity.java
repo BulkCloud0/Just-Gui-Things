@@ -47,7 +47,7 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
 
     @Override
     protected boolean isItemValidForSlot(int slot, ItemStack stack) {
-        return slot >= 0 && slot < AssemblyRecipe.MAX_INPUTS && canAcceptInput(stack);
+        return slot >= 0 && slot < AssemblyRecipe.MAX_INPUTS && canAcceptInput(slot, stack);
     }
 
     @Override
@@ -116,15 +116,22 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
         }
     }
 
-    public boolean canAcceptInput(ItemStack stack) {
-        if (level == null || stack.isEmpty()) {
+    public boolean canAcceptInput(int slot, ItemStack stack) {
+        if (level == null || stack.isEmpty() || slot < 0 || slot >= AssemblyRecipe.MAX_INPUTS) {
             return false;
         }
+
+        Inventory partial = createRecipeInventory();
+        ItemStack existing = partial.getItem(slot);
+        if (existing.isEmpty()) {
+            partial.setItem(slot, stack.copy());
+        } else if (!ItemStack.isSame(existing, stack) || !ItemStack.tagMatches(existing, stack)) {
+            return false;
+        }
+
         for (AssemblyRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE)) {
-            for (int ingredient = 0; ingredient < recipe.getInputCount(); ingredient++) {
-                if (recipe.getIngredient(ingredient).test(stack)) {
-                    return true;
-                }
+            if (recipe.canMatchPartial(partial)) {
+                return true;
             }
         }
         return false;

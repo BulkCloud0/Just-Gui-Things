@@ -104,6 +104,44 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
         return false;
     }
 
+    public boolean canMatchPartial(IInventory inventory) {
+        int checkedSlots = Math.min(MAX_INPUTS, inventory.getContainerSize());
+        List<Integer> occupiedSlots = new ArrayList<>();
+        for (int slot = 0; slot < checkedSlots; slot++) {
+            if (!inventory.getItem(slot).isEmpty()) {
+                occupiedSlots.add(slot);
+            }
+        }
+        if (occupiedSlots.size() > ingredients.size()) {
+            return false;
+        }
+
+        return matchPartialSlot(0, occupiedSlots, inventory, new boolean[ingredients.size()]);
+    }
+
+    private boolean matchPartialSlot(int occupiedIndex,
+                                     List<Integer> occupiedSlots,
+                                     IInventory inventory,
+                                     boolean[] usedIngredients) {
+        if (occupiedIndex >= occupiedSlots.size()) {
+            return true;
+        }
+
+        ItemStack stack = inventory.getItem(occupiedSlots.get(occupiedIndex));
+        for (int ingredientIndex = 0; ingredientIndex < ingredients.size(); ingredientIndex++) {
+            if (usedIngredients[ingredientIndex] || !ingredients.get(ingredientIndex).test(stack)) {
+                continue;
+            }
+
+            usedIngredients[ingredientIndex] = true;
+            if (matchPartialSlot(occupiedIndex + 1, occupiedSlots, inventory, usedIngredients)) {
+                return true;
+            }
+            usedIngredients[ingredientIndex] = false;
+        }
+        return false;
+    }
+
     @Override
     public ItemStack assemble(IInventory inventory) {
         ItemStack provider = inventory.getContainerSize() > 0 ? inventory.getItem(0) : ItemStack.EMPTY;
