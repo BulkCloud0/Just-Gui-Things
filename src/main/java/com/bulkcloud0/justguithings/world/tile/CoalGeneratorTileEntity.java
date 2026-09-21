@@ -126,18 +126,16 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
             return;
         }
 
-        if (burnTicksRemaining <= 0 && energyStorage.getEnergyStored() < energyStorage.getMaxEnergyStored()) {
+        if (burnTicksRemaining <= 0 && canGenerateTick()) {
             tryConsumeFuel();
         }
 
         boolean changed = false;
 
-        if (burnTicksRemaining > 0) {
-            int generated = energyStorage.addEnergy(GENERATION_PER_TICK);
-            if (generated > 0) {
-                burnTicksRemaining--;
-                changed = true;
-            }
+        if (burnTicksRemaining > 0 && canGenerateTick()) {
+            energyStorage.addEnergy(GENERATION_PER_TICK);
+            burnTicksRemaining--;
+            changed = true;
         }
 
         if (pushEnergyToNeighborsFairly(MAX_OUTPUT_PER_TICK) > 0) {
@@ -147,6 +145,10 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
         if (changed) {
             setChanged();
         }
+    }
+
+    private boolean canGenerateTick() {
+        return energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored() >= GENERATION_PER_TICK;
     }
 
     private void tryConsumeFuel() {
