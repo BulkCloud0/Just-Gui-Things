@@ -64,8 +64,16 @@ public abstract class BaseProcessingMachineTileEntity<R extends MachineProcessin
     }
 
     @Override
+    public boolean supportsRedstoneControl() {
+        return true;
+    }
+
+    @Override
     public final void tick() {
         if (level == null || level.isClientSide) {
+            return;
+        }
+        if (!isOperationEnabled()) {
             return;
         }
 

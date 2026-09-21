@@ -69,8 +69,16 @@ public class ChargingStationTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
+    public boolean supportsRedstoneControl() {
+        return true;
+    }
+
+    @Override
     public void tick() {
         if (level == null || level.isClientSide) {
+            return;
+        }
+        if (!isOperationEnabled()) {
             return;
         }
 

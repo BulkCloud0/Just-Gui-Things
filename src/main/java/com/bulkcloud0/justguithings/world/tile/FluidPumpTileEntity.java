@@ -166,28 +166,36 @@ public class FluidPumpTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
+    public boolean supportsRedstoneControl() {
+        return true;
+    }
+
+    @Override
     public void tick() {
         if (level == null || level.isClientSide) {
             return;
         }
 
         boolean changed = false;
-        boolean canProduce = hasWaterSource() && fluidTank.getSpace() >= WATER_PER_CYCLE;
 
-        if (!canProduce) {
-            if (progress != 0) {
-                progress = 0;
+        if (isOperationEnabled()) {
+            boolean canProduce = hasWaterSource() && fluidTank.getSpace() >= WATER_PER_CYCLE;
+
+            if (!canProduce) {
+                if (progress != 0) {
+                    progress = 0;
+                    changed = true;
+                }
+            } else if (energyStorage.getEnergyStored() >= ENERGY_PER_TICK) {
+                energyStorage.consumeEnergy(ENERGY_PER_TICK);
+                progress++;
                 changed = true;
-            }
-        } else if (energyStorage.getEnergyStored() >= ENERGY_PER_TICK) {
-            energyStorage.consumeEnergy(ENERGY_PER_TICK);
-            progress++;
-            changed = true;
 
-            if (progress >= CYCLE_TICKS) {
-                FluidStack produced = new FluidStack(Fluids.WATER, WATER_PER_CYCLE);
-                fluidTank.fill(produced, IFluidHandler.FluidAction.EXECUTE);
-                progress = 0;
+                if (progress >= CYCLE_TICKS) {
+                    FluidStack produced = new FluidStack(Fluids.WATER, WATER_PER_CYCLE);
+                    fluidTank.fill(produced, IFluidHandler.FluidAction.EXECUTE);
+                    progress = 0;
+                }
             }
         }
 

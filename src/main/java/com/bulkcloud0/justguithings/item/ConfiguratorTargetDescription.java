@@ -60,6 +60,13 @@ public final class ConfiguratorTargetDescription {
         }
 
         BaseMachineTileEntity machine = (BaseMachineTileEntity) tile;
+        if (machine.supportsRedstoneControl()) {
+            return new TranslationTextComponent(
+                    "message.justguithings.configurator.inspect_machine_redstone",
+                    face,
+                    machine.getSideMode(direction).getDisplayName(),
+                    machine.getRedstoneMode().getDisplayName());
+        }
         return new TranslationTextComponent(
                 "message.justguithings.configurator.inspect_machine",
                 face, machine.getSideMode(direction).getDisplayName());
