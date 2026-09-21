@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.block;
 
+import com.bulkcloud0.justguithings.item.ConfiguratorItem;
 import com.bulkcloud0.justguithings.item.RoutingControllerItem;
 import com.bulkcloud0.justguithings.logistics.ConduitTransferMode;
 import com.bulkcloud0.justguithings.logistics.RoutingFilterMode;
@@ -106,15 +107,19 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                 return ActionResultType.PASS;
             }
             if (!world.isClientSide) {
-                ConduitTransferMode mode = pipe.cycleSideMode(faceDirection);
-                AbstractConduitBlock.refreshConnections(world, pos);
-
-                ITextComponent face = DirectionText.getDisplayName(faceDirection);
-                player.displayClientMessage(
-                        new TranslationTextComponent(
-                                "message.justguithings.item_pipe.side_mode",
-                                face, mode.getDisplayName()),
-                        true);
+                if (ConfiguratorItem.isMachineRedstoneMode(held)) {
+                    ConfiguratorItem.displayMachineTargetRequired(player);
+                } else {
+                    ConduitTransferMode mode = pipe.cycleSideMode(faceDirection);
+                    AbstractConduitBlock.refreshConnections(world, pos);
+    
+                    ITextComponent face = DirectionText.getDisplayName(faceDirection);
+                    player.displayClientMessage(
+                            new TranslationTextComponent(
+                                    "message.justguithings.item_pipe.side_mode",
+                                    face, mode.getDisplayName()),
+                            true);
+                }
             }
             return world.isClientSide ? ActionResultType.SUCCESS : ActionResultType.CONSUME;
         }

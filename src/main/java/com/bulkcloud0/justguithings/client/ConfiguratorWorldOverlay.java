@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.client;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.item.ConfiguratorItem;
 import com.bulkcloud0.justguithings.item.ConfiguratorTargetDescription;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.registry.ModItems;
@@ -71,9 +72,11 @@ public final class ConfiguratorWorldOverlay {
                 minecraft.level.getBlockState(blockHit.getBlockPos()),
                 blockHit.getDirection());
         if (description != null) {
+            ItemStack configurator = getConfiguratorStack(minecraft.player);
             event.getLeft().add(
                     new TranslationTextComponent(
-                            "hud.justguithings.configurator.target",
+                            "hud.justguithings.configurator.target_mode",
+                            ConfiguratorItem.getMode(configurator).getDisplayName(),
                             description).getString());
         }
     }
@@ -81,7 +84,8 @@ public final class ConfiguratorWorldOverlay {
     @Nullable
     private static BlockRayTraceResult getConfiguratorTarget(Minecraft minecraft) {
         ClientPlayerEntity player = minecraft.player;
-        if (player == null || minecraft.level == null || minecraft.screen != null || !isConfiguratorHeld(player)) {
+        if (player == null || minecraft.level == null || minecraft.screen != null
+                || getConfiguratorStack(player).isEmpty()) {
             return null;
         }
 
@@ -95,11 +99,16 @@ public final class ConfiguratorWorldOverlay {
         return ConfiguratorTargetDescription.isSupported(tile) ? blockHit : null;
     }
 
-    private static boolean isConfiguratorHeld(ClientPlayerEntity player) {
+    private static ItemStack getConfiguratorStack(ClientPlayerEntity player) {
         ItemStack mainHand = player.getMainHandItem();
+        if (mainHand.getItem() == ModItems.CONFIGURATOR.get()) {
+            return mainHand;
+        }
+
         ItemStack offHand = player.getOffhandItem();
-        return mainHand.getItem() == ModItems.CONFIGURATOR.get()
-                || offHand.getItem() == ModItems.CONFIGURATOR.get();
+        return offHand.getItem() == ModItems.CONFIGURATOR.get()
+                ? offHand
+                : ItemStack.EMPTY;
     }
 
     @Nullable
