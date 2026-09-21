@@ -76,6 +76,11 @@ public final class ModItems {
                     MachineModuleTypes.POWER_COIL,
                     "tooltip.justguithings.power_coil_module.effect",
                     "tooltip.justguithings.power_coil_module.compatibility"));
+    public static final RegistryObject<Item> TURBINE_MODULE = ITEMS.register("turbine_module",
+            () -> new MachineModuleItem(new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1),
+                    MachineModuleTypes.TURBINE,
+                    "tooltip.justguithings.turbine_module.effect",
+                    "tooltip.justguithings.turbine_module.compatibility"));
 
     public static final RegistryObject<Item> IRON_DUST = ITEMS.register("iron_dust",
             () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));

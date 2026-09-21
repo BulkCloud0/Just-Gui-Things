@@ -18,6 +18,8 @@ public final class MachineModuleTypes {
             com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes.BATCH;
     public static final ResourceLocation POWER_COIL =
             com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes.POWER_COIL;
+    public static final ResourceLocation TURBINE =
+            com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes.TURBINE;
 
     private MachineModuleTypes() {
     }

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PRP",
+    "WFW",
+    "PRP"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/iron"
+    },
+    "R": {
+      "tag": "forge:rods/steel"
+    },
+    "W": {
+      "tag": "forge:wires/gold"
+    },
+    "F": {
+      "item": "justguithings:basic_fluid_pipe"
+    }
+  },
+  "result": {
+    "item": "justguithings:turbine_module"
+  }
+}
