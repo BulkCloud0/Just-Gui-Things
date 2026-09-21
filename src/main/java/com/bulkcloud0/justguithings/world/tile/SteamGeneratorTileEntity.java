@@ -160,6 +160,11 @@ public class SteamGeneratorTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
+    public boolean supportsRedstoneControl() {
+        return true;
+    }
+
+    @Override
     public void tick() {
         if (level == null || level.isClientSide) {
             return;
@@ -167,16 +172,18 @@ public class SteamGeneratorTileEntity extends BaseMachineTileEntity {
 
         boolean changed = false;
 
-        if (burnTicksRemaining <= 0 && canGenerateTick() && tryConsumeFuel()) {
-            burnTicksRemaining = FUEL_BURN_TICKS;
-            changed = true;
-        }
+        if (isOperationEnabled()) {
+            if (burnTicksRemaining <= 0 && canGenerateTick() && tryConsumeFuel()) {
+                burnTicksRemaining = FUEL_BURN_TICKS;
+                changed = true;
+            }
 
-        if (burnTicksRemaining > 0 && canGenerateTick()) {
-            fluidTank.drain(WATER_PER_TICK, IFluidHandler.FluidAction.EXECUTE);
-            energyStorage.addEnergy(GENERATION_PER_TICK);
-            burnTicksRemaining--;
-            changed = true;
+            if (burnTicksRemaining > 0 && canGenerateTick()) {
+                fluidTank.drain(WATER_PER_TICK, IFluidHandler.FluidAction.EXECUTE);
+                energyStorage.addEnergy(GENERATION_PER_TICK);
+                burnTicksRemaining--;
+                changed = true;
+            }
         }
 
         if (pushEnergyToNeighborsFairly(MAX_OUTPUT_PER_TICK) > 0) {
