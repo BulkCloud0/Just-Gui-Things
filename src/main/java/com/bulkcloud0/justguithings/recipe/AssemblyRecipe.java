@@ -16,6 +16,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -38,6 +39,7 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
                           RecipeOutput result, int processingTime, int energyPerTick) {
         this.id = id;
         this.inputs = new ArrayList<>(inputs);
+        this.inputs.sort(Comparator.comparingInt(AssemblyInput::getSlot));
         this.result = result;
         this.processingTime = processingTime;
         this.energyPerTick = energyPerTick;
@@ -48,15 +50,17 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
         if (inventory.getContainerSize() < MAX_INPUTS) {
             return false;
         }
-        for (int index = 0; index < inputs.size(); index++) {
-            AssemblyInput input = inputs.get(index);
-            ItemStack stack = inventory.getItem(index);
-            if (stack.getCount() < input.count || !input.ingredient.test(stack)) {
-                return false;
+
+        for (int slot = 0; slot < MAX_INPUTS; slot++) {
+            AssemblyInput input = getInput(slot);
+            ItemStack stack = inventory.getItem(slot);
+            if (input == null) {
+                if (!stack.isEmpty()) {
+                    return false;
+                }
+                continue;
             }
-        }
-        for (int index = inputs.size(); index < MAX_INPUTS; index++) {
-            if (!inventory.getItem(index).isEmpty()) {
+            if (stack.getCount() < input.count || !input.ingredient.test(stack)) {
                 return false;
             }
         }
@@ -70,7 +74,7 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= inputs.size();
+        return width * height >= MAX_INPUTS;
     }
 
     @Override
@@ -106,23 +110,29 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
         return inputs.size();
     }
 
-    public Ingredient getInputIngredient(int index) {
-        return index >= 0 && index < inputs.size() ? inputs.get(index).ingredient : Ingredient.EMPTY;
+    public boolean hasInput(int slot) {
+        return getInput(slot) != null;
     }
 
-    public int getRequiredCount(int index) {
-        return index >= 0 && index < inputs.size() ? inputs.get(index).count : 0;
+    public Ingredient getInputIngredient(int slot) {
+        AssemblyInput input = getInput(slot);
+        return input == null ? Ingredient.EMPTY : input.ingredient;
     }
 
-    public List<ItemStack> getInputDisplayStacks(int index) {
-        if (index < 0 || index >= inputs.size()) {
+    public int getRequiredCount(int slot) {
+        AssemblyInput input = getInput(slot);
+        return input == null ? 0 : input.count;
+    }
+
+    public List<ItemStack> getInputDisplayStacks(int slot) {
+        AssemblyInput input = getInput(slot);
+        if (input == null) {
             return java.util.Collections.emptyList();
         }
-        AssemblyInput input = inputs.get(index);
         return Arrays.stream(input.ingredient.getItems())
                 .filter(stack -> !stack.isEmpty())
                 .sorted(Comparator.comparing(stack -> {
-                    ResourceLocation name = stack.getItem().getRegistryName();
+                    ResourceLocation name = ForgeRegistries.ITEMS.getKey(stack.getItem());
                     return name == null ? "" : name.toString();
                 }))
                 .map(stack -> {
@@ -151,13 +161,29 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
         return energyPerTick;
     }
 
+    @Nullable
+    private AssemblyInput getInput(int slot) {
+        for (AssemblyInput input : inputs) {
+            if (input.slot == slot) {
+                return input;
+            }
+        }
+        return null;
+    }
+
     public static final class AssemblyInput {
+        private final int slot;
         private final Ingredient ingredient;
         private final int count;
 
-        public AssemblyInput(Ingredient ingredient, int count) {
+        public AssemblyInput(int slot, Ingredient ingredient, int count) {
+            this.slot = slot;
             this.ingredient = ingredient;
             this.count = count;
+        }
+
+        public int getSlot() {
+            return slot;
         }
     }
 
@@ -175,7 +201,9 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
                         + " must define between 1 and " + MAX_INPUTS + " inputs");
             }
 
+            boolean[] occupied = new boolean[MAX_INPUTS];
             List<AssemblyInput> inputs = new ArrayList<>();
+            int sequentialSlot = 0;
             for (JsonElement element : inputArray) {
                 if (!element.isJsonObject()) {
                     throw new JsonSyntaxException("Assembly recipe " + recipeId + " has a non-object input");
@@ -184,13 +212,28 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
                 if (!inputJson.has("ingredient")) {
                     throw new JsonSyntaxException("Assembly recipe " + recipeId + " input is missing ingredient");
                 }
+
+                int slot = JSONUtils.getAsInt(inputJson, "slot", sequentialSlot);
+                sequentialSlot++;
+                if (slot < 0 || slot >= MAX_INPUTS || occupied[slot]) {
+                    throw new JsonSyntaxException("Assembly recipe " + recipeId
+                            + " input slots must be unique values from 0 to " + (MAX_INPUTS - 1));
+                }
+
                 Ingredient ingredient = Ingredient.fromJson(inputJson.get("ingredient"));
                 int count = JSONUtils.getAsInt(inputJson, "count", 1);
                 if (ingredient.isEmpty() || count <= 0) {
                     throw new JsonSyntaxException("Assembly recipe " + recipeId
                             + " inputs require a non-empty ingredient and positive count");
                 }
-                inputs.add(new AssemblyInput(ingredient, count));
+
+                occupied[slot] = true;
+                inputs.add(new AssemblyInput(slot, ingredient, count));
+            }
+
+            if (!occupied[0]) {
+                throw new JsonSyntaxException("Assembly recipe " + recipeId
+                        + " must define slot 0 as its primary input");
             }
 
             RecipeOutput result = RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "result"));
@@ -210,10 +253,23 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
             if (inputCount < 1 || inputCount > MAX_INPUTS) {
                 return null;
             }
+
+            boolean[] occupied = new boolean[MAX_INPUTS];
             List<AssemblyInput> inputs = new ArrayList<>();
             for (int index = 0; index < inputCount; index++) {
-                inputs.add(new AssemblyInput(Ingredient.fromNetwork(buffer), buffer.readVarInt()));
+                int slot = buffer.readVarInt();
+                Ingredient ingredient = Ingredient.fromNetwork(buffer);
+                int count = buffer.readVarInt();
+                if (slot < 0 || slot >= MAX_INPUTS || occupied[slot] || ingredient.isEmpty() || count <= 0) {
+                    return null;
+                }
+                occupied[slot] = true;
+                inputs.add(new AssemblyInput(slot, ingredient, count));
             }
+            if (!occupied[0]) {
+                return null;
+            }
+
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
@@ -224,6 +280,7 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
         public void toNetwork(PacketBuffer buffer, AssemblyRecipe recipe) {
             buffer.writeVarInt(recipe.inputs.size());
             for (AssemblyInput input : recipe.inputs) {
+                buffer.writeVarInt(input.slot);
                 input.ingredient.toNetwork(buffer);
                 buffer.writeVarInt(input.count);
             }

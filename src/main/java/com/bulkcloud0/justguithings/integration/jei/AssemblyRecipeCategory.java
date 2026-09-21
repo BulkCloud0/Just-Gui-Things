@@ -17,8 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public final class AssemblyRecipeCategory implements IRecipeCategory<AssemblyRecipe> {
     public static final ResourceLocation UID = new ResourceLocation(JustGuiThings.MOD_ID, "assembling");

@@ -98,8 +98,11 @@ public class AssemblerTileEntity extends BaseProcessingMachineTileEntity<Assembl
             return;
         }
 
-        for (int slot = 0; slot < recipe.getInputCount(); slot++) {
-            inventory.extractItem(slot, recipe.getRequiredCount(slot), false);
+        for (int slot = 0; slot < INPUT_SLOTS; slot++) {
+            int required = recipe.getRequiredCount(slot);
+            if (required > 0) {
+                inventory.extractItem(slot, required, false);
+            }
         }
 
         ItemStack output = inventory.getStackInSlot(OUTPUT_SLOT);
@@ -117,7 +120,26 @@ public class AssemblerTileEntity extends BaseProcessingMachineTileEntity<Assembl
             return false;
         }
         for (AssemblyRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLING_TYPE)) {
-            if (slot < recipe.getInputCount() && recipe.getInputIngredient(slot).test(stack)) {
+            if (!recipe.hasInput(slot) || !recipe.getInputIngredient(slot).test(stack)) {
+                continue;
+            }
+
+            boolean compatible = true;
+            for (int existingSlot = 0; existingSlot < INPUT_SLOTS; existingSlot++) {
+                if (existingSlot == slot) {
+                    continue;
+                }
+                ItemStack existing = inventory.getStackInSlot(existingSlot);
+                if (existing.isEmpty()) {
+                    continue;
+                }
+                if (!recipe.hasInput(existingSlot)
+                        || !recipe.getInputIngredient(existingSlot).test(existing)) {
+                    compatible = false;
+                    break;
+                }
+            }
+            if (compatible) {
                 return true;
             }
         }

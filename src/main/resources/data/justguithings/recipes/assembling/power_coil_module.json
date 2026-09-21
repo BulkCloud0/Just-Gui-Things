@@ -2,24 +2,28 @@
   "type": "justguithings:assembling",
   "inputs": [
     {
+      "slot": 0,
       "ingredient": {
         "tag": "forge:wires/gold"
       },
       "count": 4
     },
     {
+      "slot": 1,
       "ingredient": {
         "tag": "forge:dusts/redstone"
       },
       "count": 2
     },
     {
+      "slot": 2,
       "ingredient": {
         "tag": "forge:wires/steel"
       },
       "count": 2
     },
     {
+      "slot": 3,
       "ingredient": {
         "tag": "forge:rods/steel"
       },
