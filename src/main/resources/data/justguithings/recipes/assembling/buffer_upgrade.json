@@ -1,0 +1,31 @@
+{
+  "type": "justguithings:assembling",
+  "inputs": [
+    {
+      "slot": 0,
+      "ingredient": {
+        "tag": "forge:ingots/steel"
+      },
+      "count": 4
+    },
+    {
+      "slot": 1,
+      "ingredient": {
+        "tag": "forge:dusts/redstone"
+      },
+      "count": 4
+    },
+    {
+      "slot": 2,
+      "ingredient": {
+        "tag": "forge:storage_blocks/redstone"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:buffer_upgrade"
+  },
+  "processing_time": 140,
+  "energy_per_tick": 60
+}

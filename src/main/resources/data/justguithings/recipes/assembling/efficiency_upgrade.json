@@ -1,0 +1,31 @@
+{
+  "type": "justguithings:assembling",
+  "inputs": [
+    {
+      "slot": 0,
+      "ingredient": {
+        "tag": "forge:gems/quartz"
+      },
+      "count": 4
+    },
+    {
+      "slot": 1,
+      "ingredient": {
+        "tag": "forge:dusts/redstone"
+      },
+      "count": 4
+    },
+    {
+      "slot": 2,
+      "ingredient": {
+        "tag": "forge:plates/gold"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:efficiency_upgrade"
+  },
+  "processing_time": 120,
+  "energy_per_tick": 50
+}

@@ -1,0 +1,31 @@
+{
+  "type": "justguithings:assembling",
+  "inputs": [
+    {
+      "slot": 0,
+      "ingredient": {
+        "item": "minecraft:sugar"
+      },
+      "count": 4
+    },
+    {
+      "slot": 1,
+      "ingredient": {
+        "tag": "forge:dusts/redstone"
+      },
+      "count": 4
+    },
+    {
+      "slot": 2,
+      "ingredient": {
+        "tag": "forge:plates/iron"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:speed_upgrade"
+  },
+  "processing_time": 120,
+  "energy_per_tick": 50
+}
