@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SWS",
+    "GCG",
+    "SAS"
+  ],
+  "key": {
+    "S": { "tag": "forge:ingots/steel" },
+    "W": { "tag": "forge:wires/gold" },
+    "G": { "tag": "forge:plates/gold" },
+    "C": { "item": "justguithings:basic_energy_cable" },
+    "A": { "item": "minecraft:crafting_table" }
+  },
+  "result": {
+    "item": "justguithings:assembler"
+  }
+}

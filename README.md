@@ -24,6 +24,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Rod Mill for tag-driven ingot-to-rod forming
 - Wire Mill for tag-driven rod-to-wire processing
 - Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
+- Assembler with data-driven counted inputs for automated component and module production
 - Machine specialization through modules such as the Resistive Furnace Power Coil
 - Configurator modes for per-face automation, active-machine redstone control and conduit-to-conduit connection toggling
 - Data-driven recipes loaded through Minecraft's Recipe Manager

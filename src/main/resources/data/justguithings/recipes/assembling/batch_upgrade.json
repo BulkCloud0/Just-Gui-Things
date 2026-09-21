@@ -1,0 +1,28 @@
+{
+  "type": "justguithings:assembling",
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "forge:plates/iron"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "tag": "forge:dusts/redstone"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:hopper"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:batch_upgrade"
+  },
+  "processing_time": 140,
+  "energy_per_tick": 60
+}

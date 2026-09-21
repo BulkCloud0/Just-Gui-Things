@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.recipe.AssemblyRecipe;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.recipe.HeatingRecipe;
@@ -17,6 +18,8 @@ public final class ModRecipes {
     public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS =
             DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, JustGuiThings.MOD_ID);
 
+    public static final IRecipeType<AssemblyRecipe> ASSEMBLING_TYPE =
+            IRecipeType.register(JustGuiThings.MOD_ID + ":assembling");
     public static final IRecipeType<CrusherRecipe> CRUSHING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":crushing");
     public static final IRecipeType<PressingRecipe> PRESSING_TYPE =
@@ -30,6 +33,8 @@ public final class ModRecipes {
     public static final IRecipeType<WireDrawingRecipe> WIRE_DRAWING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":wire_drawing");
 
+    public static final RegistryObject<IRecipeSerializer<AssemblyRecipe>> ASSEMBLING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("assembling", AssemblyRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<CrusherRecipe>> CRUSHING_SERIALIZER =
             RECIPE_SERIALIZERS.register("crushing", CrusherRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<PressingRecipe>> PRESSING_SERIALIZER =
