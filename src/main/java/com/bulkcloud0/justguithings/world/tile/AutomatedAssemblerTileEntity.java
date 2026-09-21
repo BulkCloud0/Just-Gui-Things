@@ -140,6 +140,14 @@ public class AutomatedAssemblerTileEntity extends BaseMachineTileEntity {
     }
 
     @Override
+    protected int getMachineSlotLimit(int slot) {
+        if (slot >= 0 && slot < INPUT_SLOT_COUNT && lockedRecipeId != null) {
+            return 1;
+        }
+        return super.getMachineSlotLimit(slot);
+    }
+
+    @Override
     public boolean supportsRedstoneControl() {
         return true;
     }
