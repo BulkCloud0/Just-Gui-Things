@@ -52,7 +52,7 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
 
     @Override
     protected Optional<AssemblyRecipe> findCurrentRecipe() {
-        if (level == null || inventory.getStackInSlot(0).isEmpty()) {
+        if (level == null) {
             return Optional.empty();
         }
         return level.getRecipeManager().getRecipeFor(
@@ -74,7 +74,7 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
             return false;
         }
 
-        ItemStack result = recipe.getResultForInput(inventory.getStackInSlot(0));
+        ItemStack result = recipe.getResultForInventory(recipeInventory);
         if (result.isEmpty()) {
             return false;
         }
@@ -90,12 +90,13 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
 
     @Override
     protected void processRecipe(AssemblyRecipe recipe) {
-        ItemStack result = recipe.getResultForInput(inventory.getStackInSlot(0));
+        Inventory recipeInventory = createRecipeInventory();
+        ItemStack result = recipe.getResultForInventory(recipeInventory);
         if (result.isEmpty()) {
             return;
         }
 
-        int[] ingredientSlots = recipe.findMatchingSlots(createRecipeInventory());
+        int[] ingredientSlots = recipe.findMatchingSlots(recipeInventory);
         if (ingredientSlots == null) {
             return;
         }

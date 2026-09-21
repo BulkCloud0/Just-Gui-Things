@@ -144,8 +144,7 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
 
     @Override
     public ItemStack assemble(IInventory inventory) {
-        ItemStack provider = inventory.getContainerSize() > 0 ? inventory.getItem(0) : ItemStack.EMPTY;
-        return result.resolve(provider);
+        return getResultForInventory(inventory);
     }
 
     @Override
@@ -192,8 +191,19 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
         return counts.get(slot);
     }
 
-    public ItemStack getResultForInput(ItemStack provider) {
-        return result.resolve(provider);
+    public ItemStack getResultForInventory(IInventory inventory) {
+        int[] matchingSlots = findMatchingSlots(inventory);
+        if (matchingSlots != null && matchingSlots.length > 0) {
+            return result.resolve(inventory.getItem(matchingSlots[0]));
+        }
+
+        for (int slot = 0; slot < Math.min(MAX_INPUTS, inventory.getContainerSize()); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (!stack.isEmpty()) {
+                return result.resolve(stack);
+            }
+        }
+        return result.resolve();
     }
 
     @Override
