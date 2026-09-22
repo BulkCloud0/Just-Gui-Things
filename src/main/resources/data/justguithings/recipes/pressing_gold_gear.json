@@ -1,0 +1,12 @@
+{
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:ingots/gold"
+  },
+  "input_count": 4,
+  "result": {
+    "item": "justguithings:gold_gear"
+  },
+  "processing_time": 160,
+  "energy_per_tick": 40
+}

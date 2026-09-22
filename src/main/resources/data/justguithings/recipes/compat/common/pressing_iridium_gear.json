@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/iridium"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gears/iridium"
+      }
+    }
+  ],
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:ingots/iridium"
+  },
+  "input_count": 4,
+  "result": {
+    "tag": "forge:gears/iridium",
+    "count": 1
+  },
+  "processing_time": 160,
+  "energy_per_tick": 40
+}

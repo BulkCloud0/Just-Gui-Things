@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/electrum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gears/electrum"
+      }
+    }
+  ],
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:ingots/electrum"
+  },
+  "input_count": 4,
+  "result": {
+    "tag": "forge:gears/electrum",
+    "count": 1
+  },
+  "processing_time": 160,
+  "energy_per_tick": 40
+}

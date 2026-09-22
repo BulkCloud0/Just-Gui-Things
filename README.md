@@ -21,7 +21,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Crusher with data-driven primary/optional secondary outputs and Speed/Efficiency/Buffer/Batch modules
 - Coal Generator for early power, Steam Generator for water-fed generation, and a datapack-driven Fluid Generator for liquid fuels
 - Charging Station for capability-driven charging of Forge Energy items
-- Industrial Mixer with backward-compatible item-only recipes plus optional fluid/tag inputs, alongside Stamping Press and Resistive Furnace
+- Industrial Mixer with backward-compatible item-only recipes plus optional fluid/tag inputs, Stamping Press with counted inputs for plates/gears, and Resistive Furnace
 - Rod Mill for tag-driven ingot-to-rod forming
 - Wire Mill for tag-driven rod-to-wire processing
 - Industrial Assembler for data-driven automation of machine components, upgrades and repeatable infrastructure using 1-4 counted inputs
@@ -29,7 +29,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Machine specialization through modules such as the Resistive Furnace Power Coil
 - Configurator modes for per-face automation, active-machine redstone control, machine item auto-eject and conduit-to-conduit connection toggling
 - Data-driven recipes loaded through Minecraft's Recipe Manager
-- Forge tag compatibility for shared dusts, ingots, plates, rods and wires
+- Forge tag compatibility for shared dusts, ingots, plates, gears, rods and wires
 - Optional-mod recipes guarded by Forge conditions
 - JEI categories for JGT processing recipes, including fluid-aware Industrial Mixer inputs
 - English and Brazilian Portuguese translations

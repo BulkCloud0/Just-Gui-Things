@@ -24,11 +24,20 @@ final class SingleInputRecipeJeiHelper {
     }
 
     static void setRecipe(IRecipeLayout recipeLayout, SingleInputProcessingRecipe recipe) {
+        setRecipe(recipeLayout, recipe, 1);
+    }
+
+    static void setRecipe(IRecipeLayout recipeLayout,
+                          SingleInputProcessingRecipe recipe,
+                          int inputCount) {
         IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
         itemStacks.init(0, true, 8, 17);
         itemStacks.init(1, false, 94, 17);
 
-        DisplayPairs pairs = getDisplayPairs(recipe, recipeLayout.getFocus(VanillaTypes.ITEM));
+        DisplayPairs pairs = getDisplayPairs(
+                recipe,
+                recipeLayout.getFocus(VanillaTypes.ITEM),
+                Math.max(1, inputCount));
         itemStacks.set(0, pairs.inputs);
         itemStacks.set(1, pairs.outputs);
 
@@ -44,8 +53,9 @@ final class SingleInputRecipeJeiHelper {
     }
 
     private static DisplayPairs getDisplayPairs(SingleInputProcessingRecipe recipe,
-                                                IFocus<ItemStack> focus) {
-        DisplayPairs allPairs = buildAllPairs(recipe);
+                                                IFocus<ItemStack> focus,
+                                                int inputCount) {
+        DisplayPairs allPairs = buildAllPairs(recipe, inputCount);
         if (focus == null) {
             return allPairs;
         }
@@ -54,8 +64,10 @@ final class SingleInputRecipeJeiHelper {
         if (focus.getMode() == IFocus.Mode.INPUT && recipe.getInput().test(focused)) {
             ItemStack output = recipe.getResultForInput(focused);
             if (!output.isEmpty()) {
+                ItemStack countedInput = focused.copy();
+                countedInput.setCount(inputCount);
                 return new DisplayPairs(
-                        Collections.singletonList(focused.copy()),
+                        Collections.singletonList(countedInput),
                         Collections.singletonList(output));
             }
         }
@@ -78,7 +90,7 @@ final class SingleInputRecipeJeiHelper {
         return allPairs;
     }
 
-    private static DisplayPairs buildAllPairs(SingleInputProcessingRecipe recipe) {
+    private static DisplayPairs buildAllPairs(SingleInputProcessingRecipe recipe, int inputCount) {
         List<ItemStack> inputs = new ArrayList<>();
         List<ItemStack> outputs = new ArrayList<>();
         for (ItemStack input : recipe.getInputDisplayStacks()) {
@@ -86,7 +98,9 @@ final class SingleInputRecipeJeiHelper {
             if (output.isEmpty()) {
                 continue;
             }
-            inputs.add(input);
+            ItemStack countedInput = input.copy();
+            countedInput.setCount(inputCount);
+            inputs.add(countedInput);
             outputs.add(output);
         }
         return new DisplayPairs(inputs, outputs);

@@ -1,0 +1,12 @@
+{
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:ingots/iron"
+  },
+  "input_count": 4,
+  "result": {
+    "item": "justguithings:iron_gear"
+  },
+  "processing_time": 160,
+  "energy_per_tick": 40
+}

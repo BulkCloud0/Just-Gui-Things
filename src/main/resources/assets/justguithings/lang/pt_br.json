@@ -254,5 +254,8 @@
   "machine_auto_eject.justguithings.disabled": "Desativada",
   "message.justguithings.configurator.inspect_machine_redstone_auto_eject": "%s Máquina | E/S: %s | Redstone: %s | Ejeção Automática: %s",
   "jei.justguithings.fluid_fuel": "Combustíveis do Gerador de Fluido",
-  "jei.justguithings.fluid_fuel.energy": "Energia total: %s FE"
+  "jei.justguithings.fluid_fuel.energy": "Energia total: %s FE",
+  "item.justguithings.iron_gear": "Engrenagem de Ferro",
+  "item.justguithings.gold_gear": "Engrenagem de Ouro",
+  "item.justguithings.steel_gear": "Engrenagem de Aço"
 }

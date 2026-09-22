@@ -85,7 +85,12 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
 
     @Override
     protected boolean canProcessRecipe(PressingRecipe recipe) {
-        ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
+        ItemStack input = inventory.getStackInSlot(0);
+        if (input.getCount() < recipe.getInputCount()) {
+            return false;
+        }
+
+        ItemStack result = recipe.assemble(new Inventory(input.copy()));
         if (result.isEmpty()) {
             return false;
         }
@@ -119,12 +124,17 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
 
     @Override
     protected void processRecipe(PressingRecipe recipe) {
-        ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
+        ItemStack input = inventory.getStackInSlot(0);
+        if (input.getCount() < recipe.getInputCount()) {
+            return;
+        }
+
+        ItemStack result = recipe.assemble(new Inventory(input.copy()));
         if (result.isEmpty()) {
             return;
         }
 
-        inventory.extractItem(0, 1, false);
+        inventory.extractItem(0, recipe.getInputCount(), false);
         ItemStack output = inventory.getStackInSlot(1);
         if (output.isEmpty()) {
             inventory.setStackInSlot(1, result.copy());

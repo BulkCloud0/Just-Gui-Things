@@ -65,7 +65,7 @@ public final class PressingRecipeCategory implements IRecipeCategory<PressingRec
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, PressingRecipe recipe, IIngredients ingredients) {
-        SingleInputRecipeJeiHelper.setRecipe(recipeLayout, recipe);
+        SingleInputRecipeJeiHelper.setRecipe(recipeLayout, recipe, recipe.getInputCount());
     }
 
     @Override

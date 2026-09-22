@@ -3,9 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "tag": "forge:ingots/steel"
+        "tag": "forge:gears/steel"
       },
-      "count": 4
+      "count": 1
     },
     {
       "ingredient": {

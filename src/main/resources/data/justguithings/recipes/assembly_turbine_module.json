@@ -3,9 +3,9 @@
   "ingredients": [
     {
       "ingredient": {
-        "tag": "forge:plates/iron"
+        "tag": "forge:gears/iron"
       },
-      "count": 4
+      "count": 1
     },
     {
       "ingredient": {
