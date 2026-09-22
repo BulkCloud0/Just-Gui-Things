@@ -48,6 +48,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.FLUID_PUMP.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> FLUID_CONTAINER_STATION = ITEMS.register("fluid_container_station",
             () -> new BlockItem(ModBlocks.FLUID_CONTAINER_STATION.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> FLUID_GENERATOR = ITEMS.register("fluid_generator",
+            () -> new BlockItem(ModBlocks.FLUID_GENERATOR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> RESISTIVE_FURNACE = ITEMS.register("resistive_furnace",
             () -> new BlockItem(ModBlocks.RESISTIVE_FURNACE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> ROD_MILL = ITEMS.register("rod_mill",

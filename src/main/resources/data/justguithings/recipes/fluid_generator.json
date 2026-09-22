@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SPS",
+    "CBC",
+    "SRS"
+  ],
+  "key": {
+    "S": { "tag": "forge:ingots/steel" },
+    "P": { "item": "justguithings:basic_fluid_pipe" },
+    "C": { "item": "justguithings:basic_energy_cable" },
+    "B": { "item": "minecraft:blast_furnace" },
+    "R": { "tag": "forge:dusts/redstone" }
+  },
+  "result": {
+    "item": "justguithings:fluid_generator"
+  }
+}

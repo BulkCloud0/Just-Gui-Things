@@ -13,6 +13,7 @@ import com.bulkcloud0.justguithings.world.block.IndustrialAssemblerBlock;
 import com.bulkcloud0.justguithings.world.block.FluidReservoirBlock;
 import com.bulkcloud0.justguithings.world.block.FluidPumpBlock;
 import com.bulkcloud0.justguithings.world.block.FluidContainerStationBlock;
+import com.bulkcloud0.justguithings.world.block.FluidGeneratorBlock;
 import com.bulkcloud0.justguithings.world.block.ResistiveFurnaceBlock;
 import com.bulkcloud0.justguithings.world.block.RodMillBlock;
 import com.bulkcloud0.justguithings.world.block.StampingPressBlock;
@@ -70,6 +71,9 @@ public final class ModBlocks {
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> FLUID_CONTAINER_STATION = BLOCKS.register("fluid_container_station",
             () -> new FluidContainerStationBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+    public static final RegistryObject<Block> FLUID_GENERATOR = BLOCKS.register("fluid_generator",
+            () -> new FluidGeneratorBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> RESISTIVE_FURNACE = BLOCKS.register("resistive_furnace",
             () -> new ResistiveFurnaceBlock(AbstractBlock.Properties.of(Material.METAL)
