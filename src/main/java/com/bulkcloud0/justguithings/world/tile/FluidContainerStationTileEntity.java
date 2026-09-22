@@ -213,6 +213,9 @@ public class FluidContainerStationTileEntity extends BaseMachineTileEntity {
         if (handler == null) {
             return moveToOutput(FILL_INPUT_SLOT, FILL_OUTPUT_SLOT);
         }
+        if (!hasFluidCapacity(input)) {
+            return moveToOutput(FILL_INPUT_SLOT, FILL_OUTPUT_SLOT);
+        }
 
         FluidStack offered = fluidTank.drain(TRANSFER_RATE, IFluidHandler.FluidAction.SIMULATE);
         if (offered.isEmpty()) {
