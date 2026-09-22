@@ -1,7 +1,7 @@
 {
   "type": "justguithings:pressing",
   "ingredient": {
-    "tag": "forge:ingots/iron"
+    "tag": "forge:plates/iron"
   },
   "input_count": 4,
   "result": {

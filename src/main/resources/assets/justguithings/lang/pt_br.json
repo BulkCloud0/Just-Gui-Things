@@ -257,5 +257,6 @@
   "jei.justguithings.fluid_fuel.energy": "Energia total: %s FE",
   "item.justguithings.iron_gear": "Engrenagem de Ferro",
   "item.justguithings.gold_gear": "Engrenagem de Ouro",
-  "item.justguithings.steel_gear": "Engrenagem de Aço"
+  "item.justguithings.steel_gear": "Engrenagem de Aço",
+  "item.justguithings.steel_plate": "Chapa de Aço"
 }

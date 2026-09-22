@@ -120,7 +120,7 @@ The Configurator stores its own explicit edit mode in item NBT. Existing and unt
 
 Stamping Press recipes use `justguithings:pressing`. Existing recipes remain one-item inputs by default; an optional positive `input_count` (maximum 64) requires and consumes that many matching items per operation. The machine still accepts partial matching stacks through Forge item automation so pipes and hoppers can accumulate the requested count before processing starts.
 
-JGT publishes iron, gold and steel gears through `forge:gears/<material>`. Additional gear recipes live in `recipes/compat/common` and activate only when both the matching `forge:ingots/<material>` and `forge:gears/<material>` tags are non-empty. Tag outputs keep the existing provider-preference behavior, so a compatible gear from the input material's mod is selected when available. No Java adapter or hard dependency is required.
+JGT publishes iron, gold and steel gears through `forge:gears/<material>` and a native steel plate through `forge:plates/steel`. Gear pressing consumes four matching plates, which avoids recipe ambiguity with the existing ingot-to-plate operations. Additional gear recipes live in `recipes/compat/common` and activate only when both the matching `forge:plates/<material>` and `forge:gears/<material>` tags are non-empty. Tag outputs keep the existing provider-preference behavior, so a compatible gear from the input material's mod is selected when available. No Java adapter or hard dependency is required.
 
 ## Optional-mod recipes
 

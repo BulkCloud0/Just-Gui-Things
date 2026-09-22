@@ -4,7 +4,7 @@
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:ingots/enderium"
+        "tag": "forge:plates/enderium"
       }
     },
     {
@@ -17,7 +17,7 @@
   ],
   "type": "justguithings:pressing",
   "ingredient": {
-    "tag": "forge:ingots/enderium"
+    "tag": "forge:plates/enderium"
   },
   "input_count": 4,
   "result": {

@@ -4,7 +4,7 @@
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:ingots/electrum"
+        "tag": "forge:plates/electrum"
       }
     },
     {
@@ -17,7 +17,7 @@
   ],
   "type": "justguithings:pressing",
   "ingredient": {
-    "tag": "forge:ingots/electrum"
+    "tag": "forge:plates/electrum"
   },
   "input_count": 4,
   "result": {

@@ -4,7 +4,7 @@
       "type": "forge:not",
       "value": {
         "type": "forge:tag_empty",
-        "tag": "forge:ingots/constantan"
+        "tag": "forge:plates/constantan"
       }
     },
     {
@@ -17,7 +17,7 @@
   ],
   "type": "justguithings:pressing",
   "ingredient": {
-    "tag": "forge:ingots/constantan"
+    "tag": "forge:plates/constantan"
   },
   "input_count": 4,
   "result": {

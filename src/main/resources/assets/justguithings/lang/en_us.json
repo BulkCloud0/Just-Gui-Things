@@ -257,5 +257,6 @@
   "jei.justguithings.fluid_fuel.energy": "Total energy: %s FE",
   "item.justguithings.iron_gear": "Iron Gear",
   "item.justguithings.gold_gear": "Gold Gear",
-  "item.justguithings.steel_gear": "Steel Gear"
+  "item.justguithings.steel_gear": "Steel Gear",
+  "item.justguithings.steel_plate": "Steel Plate"
 }
