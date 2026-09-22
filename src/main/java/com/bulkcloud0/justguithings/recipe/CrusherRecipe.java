@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.recipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
@@ -12,10 +13,45 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CrusherRecipe extends SingleInputProcessingRecipe {
-    public CrusherRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
+    @Nullable
+    private final RecipeOutput secondaryResult;
+
+    public CrusherRecipe(ResourceLocation id,
+                         Ingredient input,
+                         RecipeOutput result,
+                         @Nullable RecipeOutput secondaryResult,
+                         int processingTime,
+                         int energyPerTick) {
         super(id, input, result, processingTime, energyPerTick);
+        this.secondaryResult = secondaryResult;
+    }
+
+    public boolean hasSecondaryResult() {
+        return secondaryResult != null;
+    }
+
+    public ItemStack getSecondaryResultForInput(ItemStack inputStack) {
+        return secondaryResult == null ? ItemStack.EMPTY : secondaryResult.resolve(inputStack);
+    }
+
+    public List<ItemStack> getSecondaryResultDisplayStacks() {
+        if (secondaryResult == null) {
+            return Collections.emptyList();
+        }
+
+        List<ItemStack> outputs = new ArrayList<>();
+        for (ItemStack inputStack : getInputDisplayStacks()) {
+            ItemStack output = getSecondaryResultForInput(inputStack);
+            if (!output.isEmpty()) {
+                outputs.add(output);
+            }
+        }
+        return outputs;
     }
 
     @Override
@@ -37,6 +73,9 @@ public class CrusherRecipe extends SingleInputProcessingRecipe {
 
             Ingredient input = Ingredient.fromJson(json.get("ingredient"));
             RecipeOutput result = RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "result"));
+            RecipeOutput secondaryResult = json.has("secondary_result")
+                    ? RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "secondary_result"))
+                    : null;
             int processingTime = JSONUtils.getAsInt(json, "processing_time", 100);
             int energyPerTick = JSONUtils.getAsInt(json, "energy_per_tick", 20);
 
@@ -50,7 +89,7 @@ public class CrusherRecipe extends SingleInputProcessingRecipe {
                 throw new JsonSyntaxException("energy_per_tick must be greater than zero in " + recipeId);
             }
 
-            return new CrusherRecipe(recipeId, input, result, processingTime, energyPerTick);
+            return new CrusherRecipe(recipeId, input, result, secondaryResult, processingTime, energyPerTick);
         }
 
         @Nullable
@@ -58,15 +97,20 @@ public class CrusherRecipe extends SingleInputProcessingRecipe {
         public CrusherRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
+            RecipeOutput secondaryResult = buffer.readBoolean() ? RecipeOutput.fromNetwork(buffer) : null;
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
-            return new CrusherRecipe(recipeId, input, result, processingTime, energyPerTick);
+            return new CrusherRecipe(recipeId, input, result, secondaryResult, processingTime, energyPerTick);
         }
 
         @Override
         public void toNetwork(PacketBuffer buffer, CrusherRecipe recipe) {
             recipe.input.toNetwork(buffer);
             recipe.result.toNetwork(buffer);
+            buffer.writeBoolean(recipe.secondaryResult != null);
+            if (recipe.secondaryResult != null) {
+                recipe.secondaryResult.toNetwork(buffer);
+            }
             buffer.writeVarInt(recipe.processingTime);
             buffer.writeVarInt(recipe.energyPerTick);
         }

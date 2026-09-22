@@ -6,6 +6,9 @@
   "result": {
     "item": "minecraft:sand"
   },
+  "secondary_result": {
+    "item": "minecraft:flint"
+  },
   "processing_time": 60,
   "energy_per_tick": 10
 }

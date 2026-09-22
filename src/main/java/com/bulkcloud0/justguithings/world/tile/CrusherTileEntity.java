@@ -7,21 +7,26 @@ import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRecipe> {
+    private static final int INVENTORY_VERSION = 1;
+
     public static final int CAPACITY = 100_000;
     public static final int BUFFER_CAPACITY_PER_MODULE = 100_000;
     public static final int MAX_RECEIVE = 1_000;
@@ -60,7 +65,7 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
     private int activeBatchSize = 1;
 
     public CrusherTileEntity() {
-        super(ModTileEntities.CRUSHER.get(), CAPACITY, MAX_RECEIVE, 6, 0, 1, 1, 1,
+        super(ModTileEntities.CRUSHER.get(), CAPACITY, MAX_RECEIVE, 7, 0, 1, 1, 2,
                 DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
     }
 
@@ -73,10 +78,10 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
     @Override
     protected ResourceLocation getModuleTypeForSlot(int slot) {
         switch (slot) {
-            case 2: return MachineModuleTypes.SPEED;
-            case 3: return MachineModuleTypes.EFFICIENCY;
-            case 4: return MachineModuleTypes.BUFFER;
-            case 5: return MachineModuleTypes.BATCH;
+            case 3: return MachineModuleTypes.SPEED;
+            case 4: return MachineModuleTypes.EFFICIENCY;
+            case 5: return MachineModuleTypes.BUFFER;
+            case 6: return MachineModuleTypes.BATCH;
             default: return null;
         }
     }
@@ -88,7 +93,7 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
 
     @Override
     protected void onInventoryChanged(int slot) {
-        if (slot == 4) {
+        if (slot == 5) {
             energyStorage.setCapacity(getEnergyCapacity());
         }
     }
@@ -151,39 +156,66 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
 
     private int resolveBatchSize(CrusherRecipe recipe) {
         ItemStack input = inventory.getStackInSlot(0);
-        ItemStack result = recipe.assemble(new Inventory(input.copy()));
-        if (input.isEmpty() || result.isEmpty() || result.getCount() <= 0) {
+        if (input.isEmpty()) {
             return 0;
         }
 
-        ItemStack output = inventory.getStackInSlot(1);
-        int availableOutput;
+        ItemStack primary = recipe.getResultForInput(input);
+        if (primary.isEmpty() || primary.getCount() <= 0) {
+            return 0;
+        }
+
+        int desired = Math.min(1 + getBatchUpgradeCount(), input.getCount());
+        desired = Math.min(desired, getAvailableOperationsForOutput(1, primary));
+
+        ItemStack secondary = recipe.getSecondaryResultForInput(input);
+        if (!secondary.isEmpty()) {
+            desired = Math.min(desired, getAvailableOperationsForOutput(2, secondary));
+        }
+
+        return Math.max(0, desired);
+    }
+
+    private int getAvailableOperationsForOutput(int slot, ItemStack result) {
+        if (result.isEmpty() || result.getCount() <= 0) {
+            return 0;
+        }
+
+        ItemStack output = inventory.getStackInSlot(slot);
+        int available;
         if (output.isEmpty()) {
-            availableOutput = result.getMaxStackSize();
+            available = result.getMaxStackSize();
         } else {
             if (!ItemStack.isSame(output, result) || !ItemStack.tagMatches(output, result)) {
                 return 0;
             }
-            availableOutput = output.getMaxStackSize() - output.getCount();
+            available = output.getMaxStackSize() - output.getCount();
         }
-
-        int byOutput = availableOutput / result.getCount();
-        int desired = 1 + getBatchUpgradeCount();
-        return Math.max(0, Math.min(desired, Math.min(input.getCount(), byOutput)));
+        return Math.max(0, available / result.getCount());
     }
 
     private boolean canProcess(CrusherRecipe recipe, int batchSize) {
-        if (batchSize <= 0 || inventory.getStackInSlot(0).getCount() < batchSize) {
+        ItemStack input = inventory.getStackInSlot(0);
+        if (batchSize <= 0 || input.getCount() < batchSize) {
             return false;
         }
 
-        ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
-        if (result.isEmpty()) {
+        ItemStack primary = recipe.getResultForInput(input);
+        if (!canFitOutput(1, primary, batchSize)) {
+            return false;
+        }
+
+        ItemStack secondary = recipe.getSecondaryResultForInput(input);
+        return secondary.isEmpty() || canFitOutput(2, secondary, batchSize);
+    }
+
+    private boolean canFitOutput(int slot, ItemStack result, int batchSize) {
+        if (result.isEmpty() || result.getCount() <= 0) {
             return false;
         }
 
         int producedCount = result.getCount() * batchSize;
-        ItemStack output = inventory.getStackInSlot(1);
+        ItemStack output = inventory.getStackInSlot(slot);
         if (output.isEmpty()) {
             return producedCount <= result.getMaxStackSize();
         }
@@ -194,23 +226,37 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
     }
 
     private void processItem(CrusherRecipe recipe, int batchSize) {
-        ItemStack result = recipe.assemble(new Inventory(inventory.getStackInSlot(0).copy()));
-        if (result.isEmpty() || batchSize <= 0) {
+        ItemStack input = inventory.getStackInSlot(0).copy();
+        if (input.isEmpty() || batchSize <= 0) {
             return;
         }
 
+        ItemStack primary = recipe.getResultForInput(input);
+        ItemStack secondary = recipe.getSecondaryResultForInput(input);
+        if (primary.isEmpty()) {
+            return;
+        }
+
+        inventory.extractItem(0, batchSize, false);
+        insertOutput(1, primary, batchSize);
+        if (!secondary.isEmpty()) {
+            insertOutput(2, secondary, batchSize);
+        }
+    }
+
+    private void insertOutput(int slot, ItemStack result, int batchSize) {
         ItemStack produced = result.copy();
         produced.setCount(result.getCount() * batchSize);
-        inventory.extractItem(0, batchSize, false);
 
-        ItemStack output = inventory.getStackInSlot(1);
+        ItemStack output = inventory.getStackInSlot(slot);
         if (output.isEmpty()) {
-            inventory.setStackInSlot(1, produced);
-        } else {
-            ItemStack combined = output.copy();
-            combined.grow(produced.getCount());
-            inventory.setStackInSlot(1, combined);
+            inventory.setStackInSlot(slot, produced);
+            return;
         }
+
+        ItemStack combined = output.copy();
+        combined.grow(produced.getCount());
+        inventory.setStackInSlot(slot, combined);
     }
 
     public int getSpeedUpgradeCount() {
@@ -240,6 +286,41 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
 
     public IIntArray getDataAccess() {
         return dataAccess;
+    }
+
+    @Override
+    public void load(BlockState state, CompoundNBT nbt) {
+        super.load(state, migrateInventory(nbt));
+    }
+
+    private CompoundNBT migrateInventory(CompoundNBT nbt) {
+        if (nbt.getInt("CrusherInventoryVersion") >= INVENTORY_VERSION) {
+            return nbt;
+        }
+
+        CompoundNBT migrated = nbt.copy();
+        CompoundNBT inventoryNbt = migrated.getCompound("Inventory");
+        if (inventoryNbt.getInt("Size") <= 6) {
+            ListNBT items = inventoryNbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+            for (int index = 0; index < items.size(); index++) {
+                CompoundNBT item = items.getCompound(index);
+                int slot = item.getInt("Slot");
+                if (slot >= 2 && slot <= 5) {
+                    item.putInt("Slot", slot + 1);
+                }
+            }
+            inventoryNbt.putInt("Size", 7);
+            migrated.put("Inventory", inventoryNbt);
+        }
+        migrated.putInt("CrusherInventoryVersion", INVENTORY_VERSION);
+        return migrated;
+    }
+
+    @Override
+    public CompoundNBT save(CompoundNBT nbt) {
+        CompoundNBT saved = super.save(nbt);
+        saved.putInt("CrusherInventoryVersion", INVENTORY_VERSION);
+        return saved;
     }
 
     @Override
