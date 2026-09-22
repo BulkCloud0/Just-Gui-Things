@@ -252,5 +252,7 @@
   "message.justguithings.machine.item_auto_eject": "Machine item auto-eject: %s",
   "machine_auto_eject.justguithings.enabled": "Enabled",
   "machine_auto_eject.justguithings.disabled": "Disabled",
-  "message.justguithings.configurator.inspect_machine_redstone_auto_eject": "%s Machine | I/O: %s | Redstone: %s | Auto-Eject: %s"
+  "message.justguithings.configurator.inspect_machine_redstone_auto_eject": "%s Machine | I/O: %s | Redstone: %s | Auto-Eject: %s",
+  "jei.justguithings.fluid_fuel": "Fluid Fuels",
+  "jei.justguithings.fluid_fuel.energy": "Total energy: %s FE"
 }
