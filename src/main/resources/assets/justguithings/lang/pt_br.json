@@ -242,5 +242,6 @@
   "message.justguithings.configurator.auto_eject_target_required": "O modo Ejeção Automática só se aplica a máquinas de processamento compatíveis com ejeção de itens.",
   "message.justguithings.machine.item_auto_eject": "Ejeção automática de itens da máquina: %s",
   "machine_auto_eject.justguithings.enabled": "Ativada",
-  "machine_auto_eject.justguithings.disabled": "Desativada"
+  "machine_auto_eject.justguithings.disabled": "Desativada",
+  "message.justguithings.configurator.inspect_machine_redstone_auto_eject": "%s Máquina | E/S: %s | Redstone: %s | Ejeção Automática: %s"
 }

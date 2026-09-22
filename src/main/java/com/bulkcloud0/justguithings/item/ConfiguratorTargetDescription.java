@@ -60,6 +60,18 @@ public final class ConfiguratorTargetDescription {
         }
 
         BaseMachineTileEntity machine = (BaseMachineTileEntity) tile;
+        if (machine.supportsRedstoneControl() && machine.supportsItemAutoEject()) {
+            ITextComponent autoEject = new TranslationTextComponent(
+                    machine.isItemAutoEjectEnabled()
+                            ? "machine_auto_eject.justguithings.enabled"
+                            : "machine_auto_eject.justguithings.disabled");
+            return new TranslationTextComponent(
+                    "message.justguithings.configurator.inspect_machine_redstone_auto_eject",
+                    face,
+                    machine.getSideMode(direction).getDisplayName(),
+                    machine.getRedstoneMode().getDisplayName(),
+                    autoEject);
+        }
         if (machine.supportsRedstoneControl()) {
             return new TranslationTextComponent(
                     "message.justguithings.configurator.inspect_machine_redstone",

@@ -242,5 +242,6 @@
   "message.justguithings.configurator.auto_eject_target_required": "Machine Auto-Eject mode only applies to processing machines that support item auto-eject.",
   "message.justguithings.machine.item_auto_eject": "Machine item auto-eject: %s",
   "machine_auto_eject.justguithings.enabled": "Enabled",
-  "machine_auto_eject.justguithings.disabled": "Disabled"
+  "machine_auto_eject.justguithings.disabled": "Disabled",
+  "message.justguithings.configurator.inspect_machine_redstone_auto_eject": "%s Machine | I/O: %s | Redstone: %s | Auto-Eject: %s"
 }
