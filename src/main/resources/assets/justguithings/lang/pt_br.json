@@ -40,7 +40,7 @@
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
   "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Lavadora Industrial, Montador Industrial, Auto Crafter",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t e +10% no tempo de processamento por módulo; até 4 módulos.",
-  "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Montador Industrial, Auto Crafter",
+  "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Lavadora Industrial, Montador Industrial, Auto Crafter",
   "tooltip.justguithings.buffer_module.effect": "+100.000 FE de capacidade no Triturador por módulo.",
   "tooltip.justguithings.buffer_module.compatibility": "Compatível: Triturador",
   "tooltip.justguithings.batch_module.effect": "+1 item de entrada por operação do Triturador por módulo, até x5 no total.",
