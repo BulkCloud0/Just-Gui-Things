@@ -12,6 +12,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Coal Generator, Basic Energy Cable and Energy Cell
 - Item and fluid transport through Forge capabilities
 - Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir and Fluid Pump
+- Fluid Container Station for capability-driven filling and draining of Forge-compatible fluid containers
 - Endpoint routing for item and fluid pipes with filters, priorities, redstone conditions and source reserves
 - Shared conduit network/endpoint caching with loaded-chunk-safe topology scans, explicit per-face network segmentation and reactive cache invalidation
 - Multipart conduit arms with enlarged connector collars for clearer endpoint connections and easier face selection
@@ -46,7 +47,7 @@ Compatibility is architectural rather than based on mandatory mod-specific patch
 
 - Forge Energy via `IEnergyStorage`
 - Item automation via `IItemHandler`
-- Fluid automation via `IFluidHandler`
+- Fluid automation via `IFluidHandler`, including portable containers through `IFluidHandlerItem`
 - Forge/Minecraft tags for shared materials
 - Datapack-driven processing recipes
 - Optional integration layers only when another mod exposes behavior that standard Forge APIs cannot represent

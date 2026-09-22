@@ -193,6 +193,8 @@ The pipe's recovery buffer obeys destination filter and priority rules when retr
 
 External blocks remain integrated only through Forge `IFluidHandler`.
 
+The Fluid Container Station is capability-driven rather than recipe-driven. Its drain lane accepts portable containers that expose Forge `IFluidHandlerItem` and moves up to 250 mB/t into an internal 8,000 mB tank; its fill lane moves up to 250 mB/t from that tank into compatible portable containers. Each lane consumes 10 FE/t only when fluid actually moves. Completed containers move to dedicated output slots, so normal `IItemHandler` automation can extract them without a JGT-specific item contract. The station exposes the same internal tank through configurable `FLUID_INPUT` and pull-compatible `FLUID_OUTPUT` faces, while item input/output and energy remain standard sided Forge capabilities. Machine redstone control gates container transfer but does not hide or mutate the configured external capabilities.
+
 The Configurator uses the same resource-neutral conduit transfer labels for item and fluid pipes: `Pull + Push`, `Pull`, `Push`, and `Disabled` (localized in-game). Energy cables keep their player-facing `Input + Output`, `Input`, `Output`, and `Disabled` terminology because passive Forge Energy ingress/consumer output semantics differ from active item/fluid extraction and insertion. That energy-specific display mapping is centralized in `ConduitTransferMode`, so Configurator feedback, Configurator inspection and Routing Controller inspection cannot drift apart.
 
 
