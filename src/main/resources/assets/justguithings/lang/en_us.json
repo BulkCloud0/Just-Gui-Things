@@ -274,5 +274,10 @@
   "screen.justguithings.auto_crafter.returns": "Container returns",
   "message.justguithings.auto_crafter.locked": "Auto Crafter recipe locked.",
   "message.justguithings.auto_crafter.unlocked": "Auto Crafter recipe lock cleared.",
-  "message.justguithings.auto_crafter.invalid_recipe": "Arrange a valid 3x3 crafting recipe before locking."
+  "message.justguithings.auto_crafter.invalid_recipe": "Arrange a valid 3x3 crafting recipe before locking.",
+  "block.justguithings.vacuum_collector": "Vacuum Collector",
+  "item.justguithings.vacuum_collector": "Vacuum Collector",
+  "container.justguithings.vacuum_collector": "Vacuum Collector",
+  "screen.justguithings.vacuum_collector.range": "Collection range: %s blocks",
+  "screen.justguithings.vacuum_collector.cost": "Collection cost: %s FE/item"
 }

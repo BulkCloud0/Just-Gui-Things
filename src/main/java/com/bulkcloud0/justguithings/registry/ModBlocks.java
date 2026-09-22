@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.world.block.AutoCrafterBlock;
+import com.bulkcloud0.justguithings.world.block.VacuumCollectorBlock;
 import com.bulkcloud0.justguithings.world.block.BasicEnergyCableBlock;
 import com.bulkcloud0.justguithings.world.block.BasicFluidPipeBlock;
 import com.bulkcloud0.justguithings.world.block.BasicItemPipeBlock;
@@ -55,6 +56,9 @@ public final class ModBlocks {
                     .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> AUTO_CRAFTER = BLOCKS.register("auto_crafter",
             () -> new AutoCrafterBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+    public static final RegistryObject<Block> VACUUM_COLLECTOR = BLOCKS.register("vacuum_collector",
+            () -> new VacuumCollectorBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> ENERGY_CELL = BLOCKS.register("energy_cell",
             () -> new EnergyCellBlock(AbstractBlock.Properties.of(Material.METAL)
