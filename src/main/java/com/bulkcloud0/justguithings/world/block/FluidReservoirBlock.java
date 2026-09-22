@@ -34,6 +34,19 @@ public class FluidReservoirBlock extends Block {
     }
 
     @Override
+    public boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, World world, BlockPos pos) {
+        TileEntity tile = world.getBlockEntity(pos);
+        return tile instanceof FluidReservoirTileEntity
+                ? ((FluidReservoirTileEntity) tile).getAnalogSignal()
+                : 0;
+    }
+
+    @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player,
                                 Hand hand, BlockRayTraceResult hit) {
         if (FluidUtil.interactWithFluidHandler(player, hand, world, pos, hit.getDirection())) {

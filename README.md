@@ -12,6 +12,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Coal Generator, Basic Energy Cable and Energy Cell
 - Item and fluid transport through Forge capabilities
 - Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir, Fluid Pump and an 18-slot Item Buffer for configurable staging
+- Vanilla comparator output for Energy Cell, Fluid Reservoir and Item Buffer fill levels
 - Fluid Container Station for capability-driven filling and draining of Forge-compatible fluid containers
 - Endpoint routing for item and fluid pipes with filters, priorities, redstone conditions and source reserves
 - Shared conduit network/endpoint caching with loaded-chunk-safe topology scans, explicit per-face network segmentation and reactive cache invalidation

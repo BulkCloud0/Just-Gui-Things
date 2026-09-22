@@ -95,6 +95,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
                 int received = super.receiveEnergy(maxReceive, simulate);
                 if (!simulate && received > 0) {
                     setChanged();
+                    BaseMachineTileEntity.this.onEnergyChanged();
                 }
                 return received;
             }
@@ -110,6 +111,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
                 if (!simulate && extracted > 0) {
                     recordEnergyExtracted(extracted);
                     setChanged();
+                    BaseMachineTileEntity.this.onEnergyChanged();
                 }
                 return extracted;
             }
@@ -166,6 +168,9 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
     }
 
     protected void onInventoryChanged(int slot) {
+    }
+
+    protected void onEnergyChanged() {
     }
 
     public final int getModuleCount(ResourceLocation moduleType) {
@@ -463,6 +468,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
                     int refunded = extracted - inserted;
                     energyStorage.addEnergy(refunded);
                     refundEnergyExtractBudget(refunded);
+                    onEnergyChanged();
                 }
 
                 movedThisRound += inserted;
