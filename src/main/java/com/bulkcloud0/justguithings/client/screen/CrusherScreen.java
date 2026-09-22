@@ -43,6 +43,7 @@ public class CrusherScreen extends ContainerScreen<CrusherContainer> {
 
         drawSlot(matrixStack, left + 43, top + 34);
         drawSlot(matrixStack, left + 115, top + 34);
+        drawSlot(matrixStack, left + 133, top + 34);
         drawSlot(matrixStack, left + 53, top + 55);
         drawSlot(matrixStack, left + 71, top + 55);
         drawSlot(matrixStack, left + 89, top + 55);
@@ -64,9 +65,9 @@ public class CrusherScreen extends ContainerScreen<CrusherContainer> {
         }
 
         int energyHeight = this.menu.getEnergyScaled(48);
-        AbstractGui.fill(matrixStack, left + 147, top + 24, left + 158, top + 74, ENERGY_BG_COLOR);
+        AbstractGui.fill(matrixStack, left + 161, top + 24, left + 172, top + 74, ENERGY_BG_COLOR);
         if (energyHeight > 0) {
-            AbstractGui.fill(matrixStack, left + 149, top + 72 - energyHeight, left + 156, top + 72, ENERGY_COLOR);
+            AbstractGui.fill(matrixStack, left + 163, top + 72 - energyHeight, left + 170, top + 72, ENERGY_COLOR);
         }
     }
 

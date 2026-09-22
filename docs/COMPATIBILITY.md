@@ -68,6 +68,16 @@ The Industrial Mixer tank holds 8,000 mB and accepts only fluid types referenced
 
 Industrial Assembler recipes use `justguithings:assembly`. Each recipe defines an `ingredients` array with between 1 and 4 entries; every entry contains a Minecraft `ingredient` and an optional positive `count` (default `1`). The four machine input slots are order-independent: a complete match assigns each logical recipe ingredient to one distinct occupied slot, checks the required count for that slot, and requires the number of occupied input slots to equal the number of logical ingredients. Partial-input automation is accepted only when the currently occupied slots can still map injectively to the ingredients of at least one assembly recipe, which prevents obvious cross-recipe jams while keeping all four physical input slots interchangeable. Tagged Assembly outputs use the first logical recipe ingredient as the namespace preference, independent of which physical input slot contains that provider.
 
+Crusher recipes always define the primary `result` and may additionally define `secondary_result` using the same item-or-tag plus optional count contract. The secondary output is deterministic: omitting `secondary_result` preserves the original one-output behavior, while recipes that include it must have capacity in both Crusher output slots before processing can start. Tag-based primary and secondary outputs both prefer the input material provider namespace when possible. Batch processing scales both outputs together, OUTPUT faces expose both slots, and machine auto-eject shares its existing aggregate item budget across them. Existing Crusher inventories migrate their module slots when the secondary output slot is introduced, preserving installed modules in older worlds. JGT's gravel recipe demonstrates the contract by producing sand with flint as the secondary output.
+
+Example:
+
+```json
+"secondary_result": {
+  "item": "minecraft:flint"
+}
+```
+
 ## Machine-specific components
 
 Machine-specific components can be replaced through datapack tags without a Java dependency:

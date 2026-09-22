@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class CrusherContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 6;
+    private static final int MACHINE_SLOT_COUNT = 7;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -35,20 +35,25 @@ public class CrusherContainer extends Container {
         this.sideData = new SideConfigContainerData(tileEntity, tileEntity::getSideMode);
 
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 44, 35));
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 1, 116, 35) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 2, 54, 56));
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 3, 72, 56));
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 4, 90, 56));
-        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 5, 108, 56));
+        this.addSlot(outputSlot(tileEntity, 1, 116, 35));
+        this.addSlot(outputSlot(tileEntity, 2, 134, 35));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 3, 54, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 4, 72, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 5, 90, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 6, 108, 56));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
         addDataSlots(sideData);
+    }
+
+    private static SlotItemHandler outputSlot(CrusherTileEntity tileEntity, int slot, int x, int y) {
+        return new SlotItemHandler(tileEntity.getInventory(), slot, x, y) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        };
     }
 
     private static CrusherTileEntity getTileEntity(PlayerInventory playerInventory, PacketBuffer buffer) {
