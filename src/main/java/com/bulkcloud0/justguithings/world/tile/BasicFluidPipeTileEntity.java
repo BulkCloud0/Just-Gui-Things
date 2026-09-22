@@ -136,6 +136,12 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         return next;
     }
 
+    public int cycleTargetMaxStock(Direction direction) {
+        int maxStock = getMutableTargetRule(direction).cycleMaxStock();
+        setChanged();
+        return maxStock;
+    }
+
     public RoutingFilterSampleChange toggleSourceFilterSample(Direction direction, FluidStack sample) {
         RoutingFilterSampleChange change = getMutableSourceRule(direction).toggleFilterSample(sample);
         if (change != RoutingFilterSampleChange.FULL) {
@@ -356,6 +362,13 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
         FluidStack offer = simulatedDrain.copy();
         offer.setAmount(Math.min(sourceLimit, simulatedDrain.getAmount()));
 
+        int targetLimit = target.rule.getFillableAmount(
+                target.handler, offer, offer.getAmount());
+        if (targetLimit <= 0) {
+            return 0;
+        }
+        offer.setAmount(targetLimit);
+
         int accepted = target.handler.fill(offer, IFluidHandler.FluidAction.SIMULATE);
         if (accepted <= 0) {
             return 0;
@@ -425,13 +438,21 @@ public class BasicFluidPipeTileEntity extends AbstractConduitNetworkTileEntity<B
                     continue;
                 }
 
-                int accepted = target.handler.fill(buffered, IFluidHandler.FluidAction.SIMULATE);
+                int targetLimit = target.rule.getFillableAmount(
+                        target.handler, buffered, buffered.getAmount());
+                if (targetLimit <= 0) {
+                    continue;
+                }
+
+                FluidStack offer = buffered.copy();
+                offer.setAmount(targetLimit);
+                int accepted = target.handler.fill(offer, IFluidHandler.FluidAction.SIMULATE);
                 if (accepted <= 0) {
                     continue;
                 }
 
-                FluidStack transfer = buffered.copy();
-                transfer.setAmount(Math.min(accepted, buffered.getAmount()));
+                FluidStack transfer = offer.copy();
+                transfer.setAmount(Math.min(accepted, offer.getAmount()));
                 int inserted = target.handler.fill(transfer, IFluidHandler.FluidAction.EXECUTE);
                 inserted = Math.max(0, Math.min(inserted, transfer.getAmount()));
                 if (inserted <= 0) {

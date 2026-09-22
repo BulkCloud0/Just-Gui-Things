@@ -19,7 +19,8 @@ public enum RoutingControllerScope {
         if (this == TARGET) {
             return mode != RoutingControllerMode.MIN_STOCK;
         }
-        return mode != RoutingControllerMode.PRIORITY;
+        return mode != RoutingControllerMode.PRIORITY
+                && mode != RoutingControllerMode.MAX_STOCK;
     }
 
     public RoutingControllerMode normalize(RoutingControllerMode mode) {

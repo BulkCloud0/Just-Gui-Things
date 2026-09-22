@@ -152,6 +152,12 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
         return next;
     }
 
+    public int cycleTargetMaxStock(Direction direction) {
+        int maxStock = getMutableTargetRule(direction).cycleMaxStock();
+        setChanged();
+        return maxStock;
+    }
+
     public RoutingFilterSampleChange toggleSourceFilterSample(Direction direction, ItemStack sample) {
         RoutingFilterSampleChange change = getMutableSourceRule(direction).toggleFilterSample(sample);
         if (change != RoutingFilterSampleChange.FULL) {
@@ -341,8 +347,16 @@ public class BasicItemPipeTileEntity extends AbstractConduitNetworkTileEntity<Ba
             return 0;
         }
 
-        ItemStack simulatedRemainder = ItemTransferHelper.insert(target.handler, simulatedExtract, true);
-        int accepted = simulatedExtract.getCount() - simulatedRemainder.getCount();
+        int targetLimit = target.rule.getInsertableAmount(
+                target.handler, simulatedExtract, simulatedExtract.getCount());
+        if (targetLimit <= 0) {
+            return 0;
+        }
+
+        ItemStack offer = simulatedExtract.copy();
+        offer.setCount(targetLimit);
+        ItemStack simulatedRemainder = ItemTransferHelper.insert(target.handler, offer, true);
+        int accepted = offer.getCount() - simulatedRemainder.getCount();
         if (accepted <= 0) {
             return 0;
         }

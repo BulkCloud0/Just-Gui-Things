@@ -345,6 +345,7 @@ public class RoutingControllerItem extends TooltipItem {
                 filter.getSampleCount(), ItemRouteFilter.MAX_SAMPLES,
                 getNbtModeName(filter.isMatchNbt()),
                 rule.getRedstoneMode().getDisplayName(),
+                rule.getMaxStock(),
                 getItemSampleIds(filter),
                 getEndpointStateName(pipe.getSideMode(direction).canPush()
                         && rule.allowsRedstone(powered)));
@@ -380,6 +381,7 @@ public class RoutingControllerItem extends TooltipItem {
                 filter.getSampleCount(), FluidRouteFilter.MAX_SAMPLES,
                 getNbtModeName(filter.isMatchNbt()),
                 rule.getRedstoneMode().getDisplayName(),
+                rule.getMaxStock(),
                 getFluidSampleIds(filter),
                 getEndpointStateName(pipe.getSideMode(direction).canPush()
                         && rule.allowsRedstone(powered)));
