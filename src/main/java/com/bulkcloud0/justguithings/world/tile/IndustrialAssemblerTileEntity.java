@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.tile;
 
+import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.recipe.AssemblyRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -11,6 +12,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIntArray;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -22,11 +24,19 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
     public static final int MAX_RECEIVE = 1_500;
     public static final int DEFAULT_PROCESS_TICKS = 120;
     public static final int DEFAULT_ENERGY_PER_TICK = 50;
+    public static final int MAX_MODULES_PER_TYPE = 4;
 
     private final IIntArray dataAccess = new IIntArray() {
         @Override
         public int get(int index) {
-            return getProcessingData(index);
+            if (index <= 4) {
+                return getProcessingData(index);
+            }
+            switch (index) {
+                case 5: return getSpeedUpgradeCount();
+                case 6: return getEfficiencyUpgradeCount();
+                default: return 0;
+            }
         }
 
         @Override
@@ -36,18 +46,33 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
 
         @Override
         public int getCount() {
-            return 5;
+            return 7;
         }
     };
 
     public IndustrialAssemblerTileEntity() {
         super(ModTileEntities.INDUSTRIAL_ASSEMBLER.get(), CAPACITY, MAX_RECEIVE,
-                5, 0, 4, 4, 1, DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
+                7, 0, 4, 4, 1, DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
     }
 
     @Override
     protected boolean isItemValidForSlot(int slot, ItemStack stack) {
         return slot >= 0 && slot < AssemblyRecipe.MAX_INPUTS && canAcceptInput(slot, stack);
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
+        switch (slot) {
+            case 5: return MachineModuleTypes.SPEED;
+            case 6: return MachineModuleTypes.EFFICIENCY;
+            default: return null;
+        }
+    }
+
+    @Override
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return MAX_MODULES_PER_TYPE;
     }
 
     @Override
@@ -89,6 +114,22 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
     }
 
     @Override
+    protected int getEffectiveProcessingTime(AssemblyRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyTimeMultiplier = 100 + 10 * getEfficiencyUpgradeCount();
+        long scaled = (long) recipe.getProcessingTime() * efficiencyTimeMultiplier;
+        return Math.max(20, (int) ((scaled + speedMultiplier - 1L) / speedMultiplier));
+    }
+
+    @Override
+    protected int getEffectiveEnergyPerTick(AssemblyRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyMultiplier = Math.max(40, 100 - 15 * getEfficiencyUpgradeCount());
+        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
+        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+    }
+
+    @Override
     protected void processRecipe(AssemblyRecipe recipe) {
         Inventory recipeInventory = createRecipeInventory();
         ItemStack result = recipe.getResultForInventory(recipeInventory);
@@ -115,6 +156,14 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
             combined.grow(result.getCount());
             inventory.setStackInSlot(4, combined);
         }
+    }
+
+    public int getSpeedUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.SPEED));
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.EFFICIENCY));
     }
 
     public boolean canAcceptInput(int slot, ItemStack stack) {

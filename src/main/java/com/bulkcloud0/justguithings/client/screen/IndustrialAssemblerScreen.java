@@ -49,6 +49,8 @@ public class IndustrialAssemblerScreen extends ContainerScreen<IndustrialAssembl
         drawSlot(matrixStack, left + 52, top + 34);
         drawSlot(matrixStack, left + 70, top + 34);
         drawSlot(matrixStack, left + 115, top + 34);
+        drawSlot(matrixStack, left + 71, top + 55);
+        drawSlot(matrixStack, left + 89, top + 55);
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -87,6 +89,9 @@ public class IndustrialAssemblerScreen extends ContainerScreen<IndustrialAssembl
                 78.0F, 6.0F, TEXT_COLOR);
         font.draw(matrixStack,
                 menu.getCurrentEnergyPerTick() + " FE/t",
-                75.0F, 55.0F, TEXT_COLOR);
+                8.0F, 55.0F, TEXT_COLOR);
+        font.draw(matrixStack,
+                "S" + menu.getSpeedUpgradeCount() + " E" + menu.getEfficiencyUpgradeCount(),
+                108.0F, 55.0F, TEXT_COLOR);
     }
 }
