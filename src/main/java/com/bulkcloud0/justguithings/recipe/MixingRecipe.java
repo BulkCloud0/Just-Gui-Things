@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -36,7 +35,7 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
     private final Ingredient tertiary;
     private final int tertiaryCount;
     @Nullable
-    private final ResourceLocation fluidId;
+    private final FluidIngredient fluidIngredient;
     private final int fluidAmount;
     private final RecipeOutput result;
     private final int processingTime;
@@ -49,7 +48,7 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
                         int secondaryCount,
                         @Nullable Ingredient tertiary,
                         int tertiaryCount,
-                        @Nullable ResourceLocation fluidId,
+                        @Nullable FluidIngredient fluidIngredient,
                         int fluidAmount,
                         RecipeOutput result,
                         int processingTime,
@@ -61,7 +60,7 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
         this.secondaryCount = secondaryCount;
         this.tertiary = tertiary;
         this.tertiaryCount = tertiaryCount;
-        this.fluidId = fluidId;
+        this.fluidIngredient = fluidIngredient;
         this.fluidAmount = fluidAmount;
         this.result = result;
         this.processingTime = processingTime;
@@ -159,44 +158,28 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
     }
 
     public boolean hasFluidIngredient() {
-        return fluidId != null;
-    }
-
-    @Nullable
-    public ResourceLocation getFluidId() {
-        return fluidId;
+        return fluidIngredient != null;
     }
 
     public int getFluidAmount() {
         return fluidAmount;
     }
 
-    public FluidStack getFluidDisplayStack() {
-        if (fluidId == null) {
-            return FluidStack.EMPTY;
-        }
-        Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
-        return fluid == null || fluid == Fluids.EMPTY
-                ? FluidStack.EMPTY
-                : new FluidStack(fluid, fluidAmount);
+    public List<FluidStack> getFluidDisplayStacks() {
+        return fluidIngredient == null
+                ? java.util.Collections.emptyList()
+                : fluidIngredient.getDisplayStacks(fluidAmount);
     }
 
     public boolean matchesFluid(FluidStack stack) {
-        if (fluidId == null) {
+        if (fluidIngredient == null) {
             return true;
         }
-        if (stack.isEmpty() || stack.getAmount() < fluidAmount) {
-            return false;
-        }
-        ResourceLocation actualId = ForgeRegistries.FLUIDS.getKey(stack.getFluid());
-        return fluidId.equals(actualId);
+        return stack.getAmount() >= fluidAmount && fluidIngredient.test(stack);
     }
 
     public boolean matchesFluidType(Fluid fluid) {
-        if (fluidId == null || fluid == null || fluid == Fluids.EMPTY) {
-            return false;
-        }
-        return fluidId.equals(ForgeRegistries.FLUIDS.getKey(fluid));
+        return fluidIngredient != null && fluidIngredient.test(fluid);
     }
 
     public ItemStack getResultForPrimary(ItemStack primaryStack) {
@@ -266,17 +249,12 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             Ingredient tertiary = json.has("tertiary") ? Ingredient.fromJson(json.get("tertiary")) : null;
             int tertiaryCount = tertiary == null ? 0 : JSONUtils.getAsInt(json, "tertiary_count", 1);
 
-            ResourceLocation fluidId = null;
+            FluidIngredient fluidIngredient = null;
             int fluidAmount = 0;
             if (json.has("fluid")) {
                 JsonObject fluidJson = JSONUtils.getAsJsonObject(json, "fluid");
-                fluidId = new ResourceLocation(JSONUtils.getAsString(fluidJson, "fluid"));
+                fluidIngredient = FluidIngredient.fromJson(recipeId, fluidJson);
                 fluidAmount = JSONUtils.getAsInt(fluidJson, "amount", 1000);
-                Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
-                if (fluid == null || fluid == Fluids.EMPTY) {
-                    throw new JsonSyntaxException("Mixing recipe " + recipeId
-                            + " references unknown fluid " + fluidId);
-                }
                 if (fluidAmount <= 0) {
                     throw new JsonSyntaxException("Mixing recipe fluid amount must be greater than zero in "
                             + recipeId);
@@ -298,7 +276,7 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             }
 
             return new MixingRecipe(recipeId, primary, primaryCount, secondary, secondaryCount,
-                    tertiary, tertiaryCount, fluidId, fluidAmount, result, processingTime, energyPerTick);
+                    tertiary, tertiaryCount, fluidIngredient, fluidAmount, result, processingTime, energyPerTick);
         }
 
         @Nullable
@@ -314,17 +292,17 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
                 tertiary = Ingredient.fromNetwork(buffer);
                 tertiaryCount = buffer.readVarInt();
             }
-            ResourceLocation fluidId = null;
+            FluidIngredient fluidIngredient = null;
             int fluidAmount = 0;
             if (buffer.readBoolean()) {
-                fluidId = buffer.readResourceLocation();
+                fluidIngredient = FluidIngredient.fromNetwork(buffer);
                 fluidAmount = buffer.readVarInt();
             }
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
             return new MixingRecipe(recipeId, primary, primaryCount, secondary, secondaryCount,
-                    tertiary, tertiaryCount, fluidId, fluidAmount, result, processingTime, energyPerTick);
+                    tertiary, tertiaryCount, fluidIngredient, fluidAmount, result, processingTime, energyPerTick);
         }
 
         @Override
@@ -338,9 +316,9 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
                 recipe.tertiary.toNetwork(buffer);
                 buffer.writeVarInt(recipe.tertiaryCount);
             }
-            buffer.writeBoolean(recipe.fluidId != null);
-            if (recipe.fluidId != null) {
-                buffer.writeResourceLocation(recipe.fluidId);
+            buffer.writeBoolean(recipe.fluidIngredient != null);
+            if (recipe.fluidIngredient != null) {
+                recipe.fluidIngredient.toNetwork(buffer);
                 buffer.writeVarInt(recipe.fluidAmount);
             }
             recipe.result.toNetwork(buffer);

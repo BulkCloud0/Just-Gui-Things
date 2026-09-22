@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.machine.SidedFluidInputHandler;
+import com.bulkcloud0.justguithings.machine.SidedFluidOutputHandler;
 import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -46,7 +47,8 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             MachineSideMode.INPUT,
             MachineSideMode.OUTPUT,
             MachineSideMode.ENERGY,
-            MachineSideMode.FLUID_INPUT
+            MachineSideMode.FLUID_INPUT,
+            MachineSideMode.FLUID_OUTPUT
     };
 
     private final FluidTank fluidTank = new FluidTank(TANK_CAPACITY) {
@@ -143,6 +145,12 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     }
 
     private LazyOptional<IFluidHandler> createSidedFluidCapability(Direction side) {
+        if (getSideMode(side) == MachineSideMode.FLUID_OUTPUT) {
+            return LazyOptional.of(() ->
+                    new SidedFluidOutputHandler(
+                            fluidTank,
+                            () -> getSideMode(side) == MachineSideMode.FLUID_OUTPUT));
+        }
         return LazyOptional.of(() ->
                 new SidedFluidInputHandler(
                         fluidTank,
@@ -357,7 +365,9 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            if (side == null || getSideMode(side) != MachineSideMode.FLUID_INPUT) {
+            if (side == null
+                    || (getSideMode(side) != MachineSideMode.FLUID_INPUT
+                    && getSideMode(side) != MachineSideMode.FLUID_OUTPUT)) {
                 return LazyOptional.empty();
             }
             LazyOptional<IFluidHandler> capability = sidedFluidCapabilities.get(side);
