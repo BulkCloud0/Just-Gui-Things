@@ -279,6 +279,5 @@
   "item.justguithings.vacuum_collector": "Coletor a Vácuo",
   "container.justguithings.vacuum_collector": "Coletor a Vácuo",
   "screen.justguithings.vacuum_collector.range": "Alcance de coleta: %s blocos",
-  "screen.justguithings.vacuum_collector.cost": "Custo de coleta: %s FE/item",
-  "screen.justguithings.vacuum_collector.scan": "Limite: %s itens / %s ticks"
+  "screen.justguithings.vacuum_collector.cost": "Custo de coleta: %s FE/item"
 }

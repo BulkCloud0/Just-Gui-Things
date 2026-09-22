@@ -79,14 +79,6 @@ public class VacuumCollectorScreen extends ContainerScreen<VacuumCollectorContai
                 new TranslationTextComponent("screen.justguithings.vacuum_collector.cost",
                         VacuumCollectorTileEntity.ENERGY_PER_ITEM),
                 8.0F, 68.0F, TEXT_COLOR);
-        font.draw(matrixStack,
-                new TranslationTextComponent("screen.justguithings.vacuum_collector.scan",
-                        VacuumCollectorTileEntity.MAX_ITEMS_PER_SCAN,
-                        VacuumCollectorTileEntity.SCAN_INTERVAL_TICKS),
-                92.0F, 58.0F, TEXT_COLOR);
-        font.draw(matrixStack,
-                "FE " + menu.getEnergyStored() + "/" + VacuumCollectorTileEntity.CAPACITY,
-                92.0F, 68.0F, TEXT_COLOR);
         font.draw(matrixStack, inventory.getDisplayName(), 16.0F, inventoryLabelY, TEXT_COLOR);
     }
 }

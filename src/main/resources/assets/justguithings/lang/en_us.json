@@ -279,6 +279,5 @@
   "item.justguithings.vacuum_collector": "Vacuum Collector",
   "container.justguithings.vacuum_collector": "Vacuum Collector",
   "screen.justguithings.vacuum_collector.range": "Collection range: %s blocks",
-  "screen.justguithings.vacuum_collector.cost": "Collection cost: %s FE/item",
-  "screen.justguithings.vacuum_collector.scan": "Scan limit: %s items / %s ticks"
+  "screen.justguithings.vacuum_collector.cost": "Collection cost: %s FE/item"
 }
