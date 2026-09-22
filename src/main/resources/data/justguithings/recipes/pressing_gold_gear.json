@@ -5,7 +5,8 @@
   },
   "input_count": 4,
   "result": {
-    "item": "justguithings:gold_gear"
+    "tag": "forge:gears/gold",
+    "count": 1
   },
   "processing_time": 160,
   "energy_per_tick": 40

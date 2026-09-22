@@ -5,7 +5,8 @@
   },
   "input_count": 4,
   "result": {
-    "item": "justguithings:iron_gear"
+    "tag": "forge:gears/iron",
+    "count": 1
   },
   "processing_time": 160,
   "energy_per_tick": 40
