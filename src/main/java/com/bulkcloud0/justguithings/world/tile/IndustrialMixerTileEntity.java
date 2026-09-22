@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.world.tile;
 
+import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -25,11 +26,19 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     public static final int MAX_RECEIVE = 1_500;
     public static final int DEFAULT_PROCESS_TICKS = 160;
     public static final int DEFAULT_ENERGY_PER_TICK = 45;
+    public static final int MAX_MODULES_PER_TYPE = 4;
 
     private final IIntArray dataAccess = new IIntArray() {
         @Override
         public int get(int index) {
-            return getProcessingData(index);
+            if (index <= 4) {
+                return getProcessingData(index);
+            }
+            switch (index) {
+                case 5: return getSpeedUpgradeCount();
+                case 6: return getEfficiencyUpgradeCount();
+                default: return 0;
+            }
         }
 
         @Override
@@ -39,12 +48,12 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
 
         @Override
         public int getCount() {
-            return 5;
+            return 7;
         }
     };
 
     public IndustrialMixerTileEntity() {
-        super(ModTileEntities.INDUSTRIAL_MIXER.get(), CAPACITY, MAX_RECEIVE, 4, 0, 3, 3, 1,
+        super(ModTileEntities.INDUSTRIAL_MIXER.get(), CAPACITY, MAX_RECEIVE, 6, 0, 3, 3, 1,
                 DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
     }
 
@@ -60,6 +69,21 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             return canAcceptTertiary(stack);
         }
         return false;
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
+        switch (slot) {
+            case 4: return MachineModuleTypes.SPEED;
+            case 5: return MachineModuleTypes.EFFICIENCY;
+            default: return null;
+        }
+    }
+
+    @Override
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return MAX_MODULES_PER_TYPE;
     }
 
     @Override
@@ -100,6 +124,22 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     }
 
     @Override
+    protected int getEffectiveProcessingTime(MixingRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyTimeMultiplier = 100 + 10 * getEfficiencyUpgradeCount();
+        long scaled = (long) recipe.getProcessingTime() * efficiencyTimeMultiplier;
+        return Math.max(20, (int) ((scaled + speedMultiplier - 1L) / speedMultiplier));
+    }
+
+    @Override
+    protected int getEffectiveEnergyPerTick(MixingRecipe recipe) {
+        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
+        int efficiencyMultiplier = Math.max(40, 100 - 15 * getEfficiencyUpgradeCount());
+        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
+        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+    }
+
+    @Override
     protected void processRecipe(MixingRecipe recipe) {
         ItemStack result = recipe.getResultForPrimary(inventory.getStackInSlot(0));
         if (result.isEmpty()) {
@@ -120,6 +160,14 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             combined.grow(result.getCount());
             inventory.setStackInSlot(3, combined);
         }
+    }
+
+    public int getSpeedUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.SPEED));
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.EFFICIENCY));
     }
 
     public boolean canAcceptPrimary(ItemStack stack) {
