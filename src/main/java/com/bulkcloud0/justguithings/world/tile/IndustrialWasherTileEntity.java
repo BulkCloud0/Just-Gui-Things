@@ -288,6 +288,13 @@ public class IndustrialWasherTileEntity extends BaseProcessingMachineTileEntity<
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
+
+        // Fluid handlers choose input/output behavior when created. Rebuild them after
+        // side-config NBT is loaded so persisted FLUID_OUTPUT faces remain drain-capable.
+        for (Direction direction : Direction.values()) {
+            refreshAdditionalSidedCapabilities(direction);
+        }
+
         if (nbt.contains("Tank")) {
             fluidTank.readFromNBT(nbt.getCompound("Tank"));
         }
