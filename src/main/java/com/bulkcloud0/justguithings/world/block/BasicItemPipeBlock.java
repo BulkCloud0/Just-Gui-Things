@@ -200,6 +200,15 @@ public class BasicItemPipeBlock extends AbstractConduitBlock {
                         true);
                 break;
 
+            case MAX_STOCK:
+                int maxStock = pipe.cycleTargetMaxStock(direction);
+                player.displayClientMessage(
+                        new TranslationTextComponent(
+                                "message.justguithings.routing_controller.max_stock",
+                                face, maxStock),
+                        true);
+                break;
+
             case PRIORITY:
             default:
                 RoutingPriority priority = pipe.cycleTargetPriority(direction);

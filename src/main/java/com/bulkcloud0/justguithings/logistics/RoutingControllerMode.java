@@ -11,7 +11,8 @@ public enum RoutingControllerMode {
     REDSTONE,
     MIN_STOCK,
     COPY_RULE,
-    PASTE_RULE;
+    PASTE_RULE,
+    MAX_STOCK;
 
     public RoutingControllerMode next() {
         RoutingControllerMode[] values = values();

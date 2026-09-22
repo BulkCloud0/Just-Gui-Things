@@ -168,9 +168,12 @@ Each destination face stores one `ItemRoutingTargetRule` with:
 - up to 9 filter samples;
 - whitelist or blacklist behavior;
 - exact-NBT or item-only matching;
-- redstone condition: `ALWAYS`, `REQUIRE_SIGNAL`, or `REQUIRE_NO_SIGNAL`.
+- redstone condition: `ALWAYS`, `REQUIRE_SIGNAL`, or `REQUIRE_NO_SIGNAL`;
+- maximum stock presets: `0 -> 1 -> 8 -> 16 -> 32 -> 64 -> 0`, where `0` means unlimited.
 
-The network always tries HIGH targets before NORMAL and LOW targets. Round-robin fairness is preserved between targets at the same priority. If a higher-priority target is full, rejects the current item, or fails its filter/redstone rule, routing falls through to the next target and then lower priorities. If a destination accepts only part of the current per-tick item budget, the remaining budget continues through other eligible destinations in the same tick before falling to lower priorities.
+The network always tries HIGH targets before NORMAL and LOW targets. Round-robin fairness is preserved between targets at the same priority. If a higher-priority target is full, rejects the current item, has reached its configured maximum stock for that item identity, or fails its filter/redstone rule, routing falls through to the next target and then lower priorities. If a destination accepts only part of the current per-tick item budget, the remaining budget continues through other eligible destinations in the same tick before falling to lower priorities.
+
+Target maximum stock is counted across the entire exposed `IItemHandler` for the candidate item identity. With exact-NBT matching enabled, each item+NBT variant has its own cap; with NBT matching disabled, variants of the same item share the cap. Existing target rules load with a maximum stock of `0`, preserving unlimited insertion.
 
 ### Source rules
 
@@ -205,7 +208,7 @@ Basic Fluid Pipes reuse the same resource-neutral routing primitives as item pip
 
 The existing Routing Controller configures fluid endpoints with the same TARGET/SOURCE scopes:
 
-- target: priority, up to 9 fluid samples, whitelist/blacklist, NBT matching and redstone condition;
+- target: priority, up to 9 fluid samples, whitelist/blacklist, NBT matching, redstone condition and maximum fluid stock;
 - source: up to 9 fluid samples, whitelist/blacklist, NBT matching, redstone condition and minimum fluid reserve;
 - fluid reserve presets are `0 -> 250 -> 1000 -> 4000 -> 8000 -> 16000 mB`.
 
@@ -213,9 +216,11 @@ Fluid samples are resolved from the item in the other hand. JGT first queries Fo
 
 Minimum reserve is counted across all exposed tanks for the candidate fluid identity. With NBT matching enabled, tagged fluid variants reserve independently; with NBT matching disabled, the same fluid type shares one reserve. Fluid source endpoints are traversed round-robin, with the next scan starting after the last source that actually contributed.
 
+Fluid targets use matching maximum-stock presets of `0 -> 250 -> 1000 -> 4000 -> 8000 -> 16000 -> 0 mB`; `0` means unlimited. The cap is counted across all exposed tanks for the candidate fluid identity with the same NBT identity semantics as source reserves. Existing target rules therefore remain unlimited unless explicitly configured.
+
 If a destination accepts only part of the current per-tick fluid budget, the remaining budget continues through other eligible destinations in the same tick before falling to lower priorities.
 
-The pipe's recovery buffer obeys destination filter and priority rules when retrying a partial transfer. This prevents buffered fluid from bypassing endpoint routing policy.
+The pipe's recovery buffer obeys destination filter, priority and maximum-stock rules when retrying a partial transfer. This prevents buffered fluid from bypassing endpoint routing policy.
 
 External blocks remain integrated only through Forge `IFluidHandler`.
 
