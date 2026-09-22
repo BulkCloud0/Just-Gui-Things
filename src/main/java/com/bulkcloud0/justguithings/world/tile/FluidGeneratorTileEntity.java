@@ -237,7 +237,7 @@ public class FluidGeneratorTileEntity extends BaseMachineTileEntity {
 
     @Nullable
     private FluidFuelRecipe findFuelRecipe() {
-        if (level == null || fluidTank.isEmpty()) {
+        if (level == null || fluidTank.getFluid().isEmpty()) {
             return null;
         }
 
