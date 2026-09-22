@@ -38,7 +38,7 @@
   "tooltip.justguithings.energy_cell.portable": "Mantém FE/configuração das faces e expõe Forge Energy enquanto está como item.",
   "tooltip.justguithings.configurator.use": "Clique com o botão direito em uma face configurável para aplicar o modo selecionado do Configurador.",
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
-  "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Montador Industrial, Auto Crafter",
+  "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Lavadora Industrial, Montador Industrial, Auto Crafter",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t e +10% no tempo de processamento por módulo; até 4 módulos.",
   "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Montador Industrial, Auto Crafter",
   "tooltip.justguithings.buffer_module.effect": "+100.000 FE de capacidade no Triturador por módulo.",
@@ -279,5 +279,9 @@
   "item.justguithings.vacuum_collector": "Coletor a Vácuo",
   "container.justguithings.vacuum_collector": "Coletor a Vácuo",
   "screen.justguithings.vacuum_collector.range": "Alcance de coleta: %s blocos",
-  "screen.justguithings.vacuum_collector.cost": "Custo de coleta: %s FE/item"
+  "screen.justguithings.vacuum_collector.cost": "Custo de coleta: %s FE/item",
+  "block.justguithings.industrial_washer": "Lavadora Industrial",
+  "item.justguithings.industrial_washer": "Lavadora Industrial",
+  "container.justguithings.industrial_washer": "Lavadora Industrial",
+  "jei.justguithings.washing": "Lavagem Industrial"
 }

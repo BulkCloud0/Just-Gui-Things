@@ -8,6 +8,7 @@ import com.bulkcloud0.justguithings.world.container.CoalGeneratorContainer;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
 import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
+import com.bulkcloud0.justguithings.world.container.IndustrialWasherContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialAssemblerContainer;
 import com.bulkcloud0.justguithings.world.container.ItemBufferContainer;
 import com.bulkcloud0.justguithings.world.container.FluidReservoirContainer;
@@ -41,6 +42,8 @@ public final class ModContainers {
             CONTAINERS.register("stamping_press", () -> IForgeContainerType.create(StampingPressContainer::new));
     public static final RegistryObject<ContainerType<IndustrialMixerContainer>> INDUSTRIAL_MIXER =
             CONTAINERS.register("industrial_mixer", () -> IForgeContainerType.create(IndustrialMixerContainer::new));
+    public static final RegistryObject<ContainerType<IndustrialWasherContainer>> INDUSTRIAL_WASHER =
+            CONTAINERS.register("industrial_washer", () -> IForgeContainerType.create(IndustrialWasherContainer::new));
     public static final RegistryObject<ContainerType<IndustrialAssemblerContainer>> INDUSTRIAL_ASSEMBLER =
             CONTAINERS.register("industrial_assembler", () -> IForgeContainerType.create(IndustrialAssemblerContainer::new));
     public static final RegistryObject<ContainerType<AutoCrafterContainer>> AUTO_CRAFTER =

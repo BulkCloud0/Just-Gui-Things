@@ -38,7 +38,7 @@
   "tooltip.justguithings.energy_cell.portable": "Retains stored FE/side config and exposes Forge Energy while carried.",
   "tooltip.justguithings.configurator.use": "Right-click a configurable face to apply the selected Configurator mode.",
   "tooltip.justguithings.speed_module.effect": "+50% process speed multiplier per module; FE/t scales with speed.",
-  "tooltip.justguithings.speed_module.compatibility": "Compatible: Crusher, Stamping Press, Rod Mill, Wire Mill, Industrial Mixer, Industrial Assembler, Auto Crafter",
+  "tooltip.justguithings.speed_module.compatibility": "Compatible: Crusher, Stamping Press, Rod Mill, Wire Mill, Industrial Mixer, Industrial Washer, Industrial Assembler, Auto Crafter",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t and +10% processing time per module; up to 4 modules.",
   "tooltip.justguithings.efficiency_module.compatibility": "Compatible: Crusher, Stamping Press, Rod Mill, Wire Mill, Industrial Mixer, Industrial Assembler, Auto Crafter",
   "tooltip.justguithings.buffer_module.effect": "+100,000 FE Crusher capacity per module.",
@@ -279,5 +279,9 @@
   "item.justguithings.vacuum_collector": "Vacuum Collector",
   "container.justguithings.vacuum_collector": "Vacuum Collector",
   "screen.justguithings.vacuum_collector.range": "Collection range: %s blocks",
-  "screen.justguithings.vacuum_collector.cost": "Collection cost: %s FE/item"
+  "screen.justguithings.vacuum_collector.cost": "Collection cost: %s FE/item",
+  "block.justguithings.industrial_washer": "Industrial Washer",
+  "item.justguithings.industrial_washer": "Industrial Washer",
+  "container.justguithings.industrial_washer": "Industrial Washer",
+  "jei.justguithings.washing": "Industrial Washing"
 }
