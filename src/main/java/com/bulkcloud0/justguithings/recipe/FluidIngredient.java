@@ -30,7 +30,7 @@ public final class FluidIngredient {
         boolean hasFluid = json.has("fluid");
         boolean hasTag = json.has("tag");
         if (hasFluid == hasTag) {
-            throw new JsonSyntaxException("Mixing recipe " + recipeId
+            throw new JsonSyntaxException("Recipe " + recipeId
                     + " fluid ingredient must define exactly one of 'fluid' or 'tag'");
         }
 
@@ -38,7 +38,7 @@ public final class FluidIngredient {
             ResourceLocation fluidId = new ResourceLocation(JSONUtils.getAsString(json, "fluid"));
             Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
             if (fluid == null || fluid == Fluids.EMPTY) {
-                throw new JsonSyntaxException("Mixing recipe " + recipeId
+                throw new JsonSyntaxException("Recipe " + recipeId
                         + " references unknown fluid " + fluidId);
             }
             return new FluidIngredient(fluid, null);
@@ -84,6 +84,10 @@ public final class FluidIngredient {
             return candidate == fluid;
         }
         return tag != null && candidate.getTags().contains(tag);
+    }
+
+    public boolean isTagBased() {
+        return tag != null;
     }
 
     public List<FluidStack> getDisplayStacks(int amount) {
