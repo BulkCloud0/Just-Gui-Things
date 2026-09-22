@@ -10,6 +10,7 @@ import com.bulkcloud0.justguithings.world.block.CrusherBlock;
 import com.bulkcloud0.justguithings.world.block.EnergyCellBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialMixerBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialAssemblerBlock;
+import com.bulkcloud0.justguithings.world.block.ItemBufferBlock;
 import com.bulkcloud0.justguithings.world.block.FluidReservoirBlock;
 import com.bulkcloud0.justguithings.world.block.FluidPumpBlock;
 import com.bulkcloud0.justguithings.world.block.FluidContainerStationBlock;
@@ -53,6 +54,9 @@ public final class ModBlocks {
                     .strength(4.5F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> ENERGY_CELL = BLOCKS.register("energy_cell",
             () -> new EnergyCellBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+    public static final RegistryObject<Block> ITEM_BUFFER = BLOCKS.register("item_buffer",
+            () -> new ItemBufferBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> BASIC_ENERGY_CABLE = BLOCKS.register("basic_energy_cable",
             () -> new BasicEnergyCableBlock(AbstractBlock.Properties.of(Material.METAL)

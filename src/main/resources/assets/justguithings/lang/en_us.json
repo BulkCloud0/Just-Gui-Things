@@ -248,7 +248,7 @@
   "tooltip.justguithings.turbine_module.effect": "Doubles Steam Generator throughput while preserving fuel and water efficiency.",
   "tooltip.justguithings.turbine_module.compatibility": "Compatible: Steam Generator",
   "configurator_mode.justguithings.machine_auto_eject": "Machine Auto-Eject",
-  "message.justguithings.configurator.auto_eject_target_required": "Machine Auto-Eject mode only applies to processing machines that support item auto-eject.",
+  "message.justguithings.configurator.auto_eject_target_required": "Machine Auto-Eject mode applies only to machines that support item auto-eject.",
   "message.justguithings.machine.item_auto_eject": "Machine item auto-eject: %s",
   "machine_auto_eject.justguithings.enabled": "Enabled",
   "machine_auto_eject.justguithings.disabled": "Disabled",
@@ -258,5 +258,8 @@
   "item.justguithings.iron_gear": "Iron Gear",
   "item.justguithings.gold_gear": "Gold Gear",
   "item.justguithings.steel_gear": "Steel Gear",
-  "item.justguithings.steel_plate": "Steel Plate"
+  "item.justguithings.steel_plate": "Steel Plate",
+  "block.justguithings.item_buffer": "Item Buffer",
+  "container.justguithings.item_buffer": "Item Buffer",
+  "screen.justguithings.item_buffer.transfer": "Auto-eject: up to %s items/t"
 }

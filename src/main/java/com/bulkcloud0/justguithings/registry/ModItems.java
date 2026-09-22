@@ -35,6 +35,8 @@ public final class ModItems {
     public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
             () -> new EnergyCellBlockItem(ModBlocks.ENERGY_CELL.get(),
                     new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));
+    public static final RegistryObject<Item> ITEM_BUFFER = ITEMS.register("item_buffer",
+            () -> new BlockItem(ModBlocks.ITEM_BUFFER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> BASIC_ENERGY_CABLE = ITEMS.register("basic_energy_cable",
             () -> new BlockItem(ModBlocks.BASIC_ENERGY_CABLE.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> BASIC_ITEM_PIPE = ITEMS.register("basic_item_pipe",

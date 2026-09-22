@@ -11,7 +11,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Forge Energy storage and transport through standard capabilities
 - Coal Generator, Basic Energy Cable and Energy Cell
 - Item and fluid transport through Forge capabilities
-- Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir and Fluid Pump
+- Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir, Fluid Pump and an 18-slot Item Buffer for configurable staging
 - Fluid Container Station for capability-driven filling and draining of Forge-compatible fluid containers
 - Endpoint routing for item and fluid pipes with filters, priorities, redstone conditions and source reserves
 - Shared conduit network/endpoint caching with loaded-chunk-safe topology scans, explicit per-face network segmentation and reactive cache invalidation
@@ -27,7 +27,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Industrial Assembler for data-driven automation of machine components, upgrades and repeatable infrastructure using 1-4 counted inputs
 - Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
 - Machine specialization through modules such as the Resistive Furnace Power Coil
-- Configurator modes for per-face automation, active-machine redstone control, machine item auto-eject and conduit-to-conduit connection toggling
+- Configurator modes for per-face automation, active-machine redstone control, machine item auto-eject (including the Item Buffer) and conduit-to-conduit connection toggling
 - Data-driven recipes loaded through Minecraft's Recipe Manager
 - Forge tag compatibility for shared dusts, ingots, plates, gears, rods and wires
 - Optional-mod recipes guarded by Forge conditions
