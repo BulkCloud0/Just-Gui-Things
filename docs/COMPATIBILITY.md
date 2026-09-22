@@ -139,6 +139,14 @@ A missing optional mod must never prevent JGT from loading.
 
 Energy Cell, Fluid Reservoir, and Item Buffer expose vanilla comparator output for storage-aware automation. Empty storage reports 0, partial storage reports 1-14 using the vanilla-style fill curve, and completely full storage reports 15. Tile entities notify comparator neighbors only when the computed analog level changes, so continuous FE/fluid/item movement does not create per-tick redstone neighbor traffic while remaining responsive at threshold crossings.
 
+## Auto Crafter
+
+The Auto Crafter automates the standard Minecraft `IRecipeType.CRAFTING` recipe pool instead of introducing another JGT processing serializer. A player arranges one valid 3x3 crafting recipe in the machine and locks it. The lock stores the concrete recipe ID plus the exact item/NBT sample assigned to each grid slot, so shaped layouts remain deterministic and tag-compatible recipes do not silently switch material providers after automation begins.
+
+The nine crafting-grid slots intentionally hold only one item each. This keeps the machine from becoming another bulk inventory and makes upstream Item Buffers/pipes responsible for staging. Once locked, INPUT faces accept only the exact sample assigned to each non-empty template slot; empty template positions reject insertion. OUTPUT faces expose one primary result slot plus nine return slots used for crafting-container remainders such as buckets or other modded container items. The machine verifies that the primary result and all remaining items fit before consuming the grid, so a blocked return buffer pauses crafting without deleting inputs.
+
+The Auto Crafter uses standard Forge `IItemHandler` and Forge Energy capabilities, supports the existing Speed/Efficiency modules, machine redstone control and opt-in item auto-eject, and requires no optional-mod API. Because it consumes ordinary crafting recipes directly, compatible mods work automatically when they register normal `ICraftingRecipe` implementations. JEI continues to display those recipes in its standard crafting category rather than duplicating them as a JGT recipe type.
+
 ## Item Buffer
 
 The Item Buffer is an 18-slot staging inventory for machine lines and conduit networks. It exposes only Forge `IItemHandler` and does not add a JGT-specific inventory API. Each face can be configured as item `INPUT`, item `OUTPUT`, or `DISABLED`; the same internal slots back both views, so input faces insert into the shared staging inventory and output faces extract from it.

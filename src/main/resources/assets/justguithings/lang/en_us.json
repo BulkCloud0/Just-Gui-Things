@@ -38,9 +38,9 @@
   "tooltip.justguithings.energy_cell.portable": "Retains stored FE/side config and exposes Forge Energy while carried.",
   "tooltip.justguithings.configurator.use": "Right-click a configurable face to apply the selected Configurator mode.",
   "tooltip.justguithings.speed_module.effect": "+50% process speed multiplier per module; FE/t scales with speed.",
-  "tooltip.justguithings.speed_module.compatibility": "Compatible: Crusher, Stamping Press, Rod Mill, Wire Mill, Industrial Mixer, Industrial Assembler",
+  "tooltip.justguithings.speed_module.compatibility": "Compatible: Crusher, Stamping Press, Rod Mill, Wire Mill, Industrial Mixer, Industrial Assembler, Auto Crafter",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t and +10% processing time per module; up to 4 modules.",
-  "tooltip.justguithings.efficiency_module.compatibility": "Compatible: Crusher, Stamping Press, Rod Mill, Wire Mill, Industrial Mixer, Industrial Assembler",
+  "tooltip.justguithings.efficiency_module.compatibility": "Compatible: Crusher, Stamping Press, Rod Mill, Wire Mill, Industrial Mixer, Industrial Assembler, Auto Crafter",
   "tooltip.justguithings.buffer_module.effect": "+100,000 FE Crusher capacity per module.",
   "tooltip.justguithings.buffer_module.compatibility": "Compatible: Crusher",
   "tooltip.justguithings.batch_module.effect": "+1 input item per Crusher operation per module, up to x5 total.",
@@ -264,5 +264,15 @@
   "item.justguithings.steel_plate": "Steel Plate",
   "block.justguithings.item_buffer": "Item Buffer",
   "container.justguithings.item_buffer": "Item Buffer",
-  "screen.justguithings.item_buffer.transfer": "Auto-eject: up to %s items/t"
+  "screen.justguithings.item_buffer.transfer": "Auto-eject: up to %s items/t",
+  "block.justguithings.auto_crafter": "Auto Crafter",
+  "item.justguithings.auto_crafter": "Auto Crafter",
+  "container.justguithings.auto_crafter": "Auto Crafter",
+  "screen.justguithings.auto_crafter.toggle_lock": "Lock / Unlock",
+  "screen.justguithings.auto_crafter.locked": "Recipe lock: Locked",
+  "screen.justguithings.auto_crafter.unlocked": "Recipe lock: Unlocked",
+  "screen.justguithings.auto_crafter.returns": "Container returns",
+  "message.justguithings.auto_crafter.locked": "Auto Crafter recipe locked.",
+  "message.justguithings.auto_crafter.unlocked": "Auto Crafter recipe lock cleared.",
+  "message.justguithings.auto_crafter.invalid_recipe": "Arrange a valid 3x3 crafting recipe before locking."
 }

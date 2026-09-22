@@ -32,6 +32,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.INDUSTRIAL_MIXER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> INDUSTRIAL_ASSEMBLER = ITEMS.register("industrial_assembler",
             () -> new BlockItem(ModBlocks.INDUSTRIAL_ASSEMBLER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> AUTO_CRAFTER = ITEMS.register("auto_crafter",
+            () -> new BlockItem(ModBlocks.AUTO_CRAFTER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> ENERGY_CELL = ITEMS.register("energy_cell",
             () -> new EnergyCellBlockItem(ModBlocks.ENERGY_CELL.get(),
                     new Item.Properties().tab(ItemGroup.TAB_REDSTONE).stacksTo(1)));

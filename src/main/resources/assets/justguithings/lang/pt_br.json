@@ -38,9 +38,9 @@
   "tooltip.justguithings.energy_cell.portable": "Mantém FE/configuração das faces e expõe Forge Energy enquanto está como item.",
   "tooltip.justguithings.configurator.use": "Clique com o botão direito em uma face configurável para aplicar o modo selecionado do Configurador.",
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
-  "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Montador Industrial",
+  "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Montador Industrial, Auto Crafter",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t e +10% no tempo de processamento por módulo; até 4 módulos.",
-  "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Montador Industrial",
+  "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Montador Industrial, Auto Crafter",
   "tooltip.justguithings.buffer_module.effect": "+100.000 FE de capacidade no Triturador por módulo.",
   "tooltip.justguithings.buffer_module.compatibility": "Compatível: Triturador",
   "tooltip.justguithings.batch_module.effect": "+1 item de entrada por operação do Triturador por módulo, até x5 no total.",
@@ -264,5 +264,15 @@
   "item.justguithings.steel_plate": "Chapa de Aço",
   "block.justguithings.item_buffer": "Buffer de Itens",
   "container.justguithings.item_buffer": "Buffer de Itens",
-  "screen.justguithings.item_buffer.transfer": "Ejeção automática: até %s itens/t"
+  "screen.justguithings.item_buffer.transfer": "Ejeção automática: até %s itens/t",
+  "block.justguithings.auto_crafter": "Auto Crafter",
+  "item.justguithings.auto_crafter": "Auto Crafter",
+  "container.justguithings.auto_crafter": "Auto Crafter",
+  "screen.justguithings.auto_crafter.toggle_lock": "Travar / Liberar",
+  "screen.justguithings.auto_crafter.locked": "Trava de receita: Ativa",
+  "screen.justguithings.auto_crafter.unlocked": "Trava de receita: Inativa",
+  "screen.justguithings.auto_crafter.returns": "Retornos de recipientes",
+  "message.justguithings.auto_crafter.locked": "Receita do Auto Crafter travada.",
+  "message.justguithings.auto_crafter.unlocked": "Trava de receita do Auto Crafter removida.",
+  "message.justguithings.auto_crafter.invalid_recipe": "Monte uma receita válida de crafting 3x3 antes de travar."
 }
