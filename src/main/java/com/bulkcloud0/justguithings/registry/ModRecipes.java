@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.registry;
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.recipe.AssemblyRecipe;
+import com.bulkcloud0.justguithings.recipe.FluidFuelRecipe;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.recipe.HeatingRecipe;
 import com.bulkcloud0.justguithings.recipe.RodFormingRecipe;
@@ -32,6 +33,8 @@ public final class ModRecipes {
             IRecipeType.register(JustGuiThings.MOD_ID + ":wire_drawing");
     public static final IRecipeType<AssemblyRecipe> ASSEMBLY_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":assembly");
+    public static final IRecipeType<FluidFuelRecipe> FLUID_FUEL_TYPE =
+            IRecipeType.register(JustGuiThings.MOD_ID + ":fluid_fuel");
 
     public static final RegistryObject<IRecipeSerializer<CrusherRecipe>> CRUSHING_SERIALIZER =
             RECIPE_SERIALIZERS.register("crushing", CrusherRecipe.Serializer::new);
@@ -47,6 +50,8 @@ public final class ModRecipes {
             RECIPE_SERIALIZERS.register("wire_drawing", WireDrawingRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<AssemblyRecipe>> ASSEMBLY_SERIALIZER =
             RECIPE_SERIALIZERS.register("assembly", AssemblyRecipe.Serializer::new);
+    public static final RegistryObject<IRecipeSerializer<FluidFuelRecipe>> FLUID_FUEL_SERIALIZER =
+            RECIPE_SERIALIZERS.register("fluid_fuel", FluidFuelRecipe.Serializer::new);
 
     private ModRecipes() {}
 }
