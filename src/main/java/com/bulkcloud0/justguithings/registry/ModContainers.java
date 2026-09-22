@@ -9,6 +9,7 @@ import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialAssemblerContainer;
 import com.bulkcloud0.justguithings.world.container.FluidReservoirContainer;
 import com.bulkcloud0.justguithings.world.container.FluidPumpContainer;
+import com.bulkcloud0.justguithings.world.container.FluidContainerStationContainer;
 import com.bulkcloud0.justguithings.world.container.ResistiveFurnaceContainer;
 import com.bulkcloud0.justguithings.world.container.RodMillContainer;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
@@ -44,6 +45,8 @@ public final class ModContainers {
             CONTAINERS.register("fluid_reservoir", () -> IForgeContainerType.create(FluidReservoirContainer::new));
     public static final RegistryObject<ContainerType<FluidPumpContainer>> FLUID_PUMP =
             CONTAINERS.register("fluid_pump", () -> IForgeContainerType.create(FluidPumpContainer::new));
+    public static final RegistryObject<ContainerType<FluidContainerStationContainer>> FLUID_CONTAINER_STATION =
+            CONTAINERS.register("fluid_container_station", () -> IForgeContainerType.create(FluidContainerStationContainer::new));
     public static final RegistryObject<ContainerType<ResistiveFurnaceContainer>> RESISTIVE_FURNACE =
             CONTAINERS.register("resistive_furnace", () -> IForgeContainerType.create(ResistiveFurnaceContainer::new));
     public static final RegistryObject<ContainerType<RodMillContainer>> ROD_MILL =

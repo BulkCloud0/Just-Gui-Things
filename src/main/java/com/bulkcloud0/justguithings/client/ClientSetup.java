@@ -9,6 +9,7 @@ import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialAssemblerScreen;
 import com.bulkcloud0.justguithings.client.screen.FluidReservoirScreen;
 import com.bulkcloud0.justguithings.client.screen.FluidPumpScreen;
+import com.bulkcloud0.justguithings.client.screen.FluidContainerStationScreen;
 import com.bulkcloud0.justguithings.client.screen.ResistiveFurnaceScreen;
 import com.bulkcloud0.justguithings.client.screen.RodMillScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
@@ -38,6 +39,7 @@ public final class ClientSetup {
             ScreenManager.register(ModContainers.ENERGY_CELL.get(), EnergyCellScreen::new);
             ScreenManager.register(ModContainers.FLUID_RESERVOIR.get(), FluidReservoirScreen::new);
             ScreenManager.register(ModContainers.FLUID_PUMP.get(), FluidPumpScreen::new);
+            ScreenManager.register(ModContainers.FLUID_CONTAINER_STATION.get(), FluidContainerStationScreen::new);
             ScreenManager.register(ModContainers.RESISTIVE_FURNACE.get(), ResistiveFurnaceScreen::new);
             ScreenManager.register(ModContainers.ROD_MILL.get(), RodMillScreen::new);
             ScreenManager.register(ModContainers.WIRE_MILL.get(), WireMillScreen::new);

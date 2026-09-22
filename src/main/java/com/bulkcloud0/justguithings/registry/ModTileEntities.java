@@ -12,6 +12,7 @@ import com.bulkcloud0.justguithings.world.tile.IndustrialMixerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.IndustrialAssemblerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidReservoirTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidPumpTileEntity;
+import com.bulkcloud0.justguithings.world.tile.FluidContainerStationTileEntity;
 import com.bulkcloud0.justguithings.world.tile.ResistiveFurnaceTileEntity;
 import com.bulkcloud0.justguithings.world.tile.RodMillTileEntity;
 import com.bulkcloud0.justguithings.world.tile.StampingPressTileEntity;
@@ -52,6 +53,8 @@ public final class ModTileEntities {
             "fluid_reservoir", () -> TileEntityType.Builder.of(FluidReservoirTileEntity::new, ModBlocks.FLUID_RESERVOIR.get()).build(null));
     public static final RegistryObject<TileEntityType<FluidPumpTileEntity>> FLUID_PUMP = TILE_ENTITIES.register(
             "fluid_pump", () -> TileEntityType.Builder.of(FluidPumpTileEntity::new, ModBlocks.FLUID_PUMP.get()).build(null));
+    public static final RegistryObject<TileEntityType<FluidContainerStationTileEntity>> FLUID_CONTAINER_STATION = TILE_ENTITIES.register(
+            "fluid_container_station", () -> TileEntityType.Builder.of(FluidContainerStationTileEntity::new, ModBlocks.FLUID_CONTAINER_STATION.get()).build(null));
     public static final RegistryObject<TileEntityType<ResistiveFurnaceTileEntity>> RESISTIVE_FURNACE = TILE_ENTITIES.register(
             "resistive_furnace", () -> TileEntityType.Builder.of(ResistiveFurnaceTileEntity::new, ModBlocks.RESISTIVE_FURNACE.get()).build(null));
     public static final RegistryObject<TileEntityType<RodMillTileEntity>> ROD_MILL = TILE_ENTITIES.register(
