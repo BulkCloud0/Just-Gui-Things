@@ -44,6 +44,28 @@ The generic compatibility datapack under `data/justguithings/recipes/compat/comm
 
 Processing recipe inputs use Minecraft `Ingredient`. Tag-based outputs use `RecipeOutput`. When resolving a tagged output, JGT first prefers a compatible result from the same registry namespace as the input when one exists; otherwise candidates are ordered deterministically by registry name. This keeps recipes data-driven while avoiding dependence on a particular material provider. Industrial Mixer recipes may set optional `primary_count` and `secondary_count` fields (default `1`) to consume multiple items from either required input. Recipes may also define an optional `tertiary` ingredient with `tertiary_count` (default `1`) for three-material mixing; recipes that omit it remain binary and backward-compatible. Tagged Mixer outputs use the primary input as the namespace preference.
 
+Industrial Mixer recipes may additionally define one optional `fluid` object. The object must contain exactly one of `fluid` (an exact registry ID) or `tag` (a Forge/Minecraft fluid tag), plus an optional positive `amount` in mB that defaults to `1000`. Omitting the object preserves the existing item-only recipe behavior.
+
+Exact-fluid example:
+
+```json
+"fluid": {
+  "fluid": "minecraft:water",
+  "amount": 1000
+}
+```
+
+Tag-based example:
+
+```json
+"fluid": {
+  "tag": "minecraft:water",
+  "amount": 1000
+}
+```
+
+The Industrial Mixer tank holds 8,000 mB and accepts only fluid types referenced by currently loaded mixing recipes. A fluid-aware recipe is selected ahead of an item-only recipe with the same item inputs only when the tank already contains enough matching fluid; otherwise the legacy item-only recipe remains eligible. Required fluid is drained only when processing completes. JEI registers the fluid as a normal recipe input; tag-based ingredients rotate through all loaded matching fluids in the same displayed tank and participate in fluid-focused recipe/use searches.
+
 Industrial Assembler recipes use `justguithings:assembly`. Each recipe defines an `ingredients` array with between 1 and 4 entries; every entry contains a Minecraft `ingredient` and an optional positive `count` (default `1`). The four machine input slots are order-independent: a complete match assigns each logical recipe ingredient to one distinct occupied slot, checks the required count for that slot, and requires the number of occupied input slots to equal the number of logical ingredients. Partial-input automation is accepted only when the currently occupied slots can still map injectively to the ingredients of at least one assembly recipe, which prevents obvious cross-recipe jams while keeping all four physical input slots interchangeable. Tagged Assembly outputs use the first logical recipe ingredient as the namespace preference, independent of which physical input slot contains that provider.
 
 ## Machine-specific components
@@ -58,7 +80,7 @@ The built-in components are `Precision Roller Assembly` and `Tensioning Spindle`
 ## Side capabilities
 
 - `INPUT` and `OUTPUT` expose item handlers.
-- `FLUID_INPUT` and `FLUID_OUTPUT` expose directional fluid handlers.
+- `FLUID_INPUT` and `FLUID_OUTPUT` expose directional fluid handlers. On the Industrial Mixer, `FLUID_INPUT` fills the recipe tank and `FLUID_OUTPUT` is pull-only so pipes or third-party Forge automation can recover/drain tank contents without turning the Mixer into an active fluid source.
 - `ENERGY`, `ENERGY_OUTPUT`, and `ENERGY_BOTH` expose energy according to direction.
 - `ITEM_INPUT_ENERGY_OUTPUT` is an explicit composite side mode used by the Coal Generator: the face accepts valid item fuel and exports energy.
 

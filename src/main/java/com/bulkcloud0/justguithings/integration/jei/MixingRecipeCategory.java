@@ -7,6 +7,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
@@ -16,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -75,6 +77,12 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
             inputs.add(recipe.getTertiary());
         }
         ingredients.setInputIngredients(inputs);
+        List<FluidStack> fluidInputs = recipe.getFluidDisplayStacks();
+        if (!fluidInputs.isEmpty()) {
+            ingredients.setInputLists(
+                    VanillaTypes.FLUID,
+                    Collections.singletonList(fluidInputs));
+        }
         ingredients.setOutputs(VanillaTypes.ITEM, recipe.getResultDisplayStacks());
     }
 
@@ -91,6 +99,23 @@ public final class MixingRecipeCategory implements IRecipeCategory<MixingRecipe>
         itemStacks.set(1, variants.secondaryInputs);
         itemStacks.set(2, variants.tertiaryInputs);
         itemStacks.set(3, variants.outputs);
+
+        List<FluidStack> fluidInputs = recipe.getFluidDisplayStacks();
+        if (!fluidInputs.isEmpty()) {
+            IGuiFluidStackGroup fluidStacks = recipeLayout.getFluidStacks();
+            fluidStacks.setOverrideDisplayFocus(recipeLayout.getFocus(VanillaTypes.FLUID));
+            fluidStacks.init(
+                    0,
+                    true,
+                    30,
+                    5,
+                    10,
+                    48,
+                    recipe.getFluidAmount(),
+                    true,
+                    null);
+            fluidStacks.set(0, fluidInputs);
+        }
 
         if (hasMultipleOutputVariants(recipe)) {
             itemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
