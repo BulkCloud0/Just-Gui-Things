@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.BaseSingleInputProcessingMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.recipe.RodFormingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -44,18 +45,19 @@ public class RodMillTileEntity extends BaseSingleInputProcessingMachineTileEntit
 
     @Override
     protected int getEffectiveProcessingTime(RodFormingRecipe recipe) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        int efficiencyTimeMultiplier = 100 + 10 * getEfficiencyUpgradeCount();
-        long scaled = (long) recipe.getProcessingTime() * efficiencyTimeMultiplier;
-        return Math.max(20, (int) ((scaled + speedMultiplier - 1L) / speedMultiplier));
+        return MachineUpgradeScaling.getEffectiveProcessingTime(
+                recipe.getProcessingTime(),
+                getSpeedUpgradeCount(),
+                getEfficiencyUpgradeCount());
     }
 
     @Override
     protected int getEffectiveEnergyPerTick(RodFormingRecipe recipe) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        int efficiencyMultiplier = Math.max(40, 100 - 15 * getEfficiencyUpgradeCount());
-        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier;
-        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+        return MachineUpgradeScaling.getEffectiveEnergyPerTick(
+                recipe.getEnergyPerTick(),
+                getSpeedUpgradeCount(),
+                getEfficiencyUpgradeCount(),
+                1);
     }
 
     public int getSpeedUpgradeCount() {

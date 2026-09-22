@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
+import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -109,18 +110,19 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
 
     @Override
     protected int getEffectiveProcessingTime(CrusherRecipe recipe) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        int efficiencyTimeMultiplier = 100 + 10 * getEfficiencyUpgradeCount();
-        long scaled = (long) recipe.getProcessingTime() * efficiencyTimeMultiplier;
-        return Math.max(20, (int) ((scaled + speedMultiplier - 1L) / speedMultiplier));
+        return MachineUpgradeScaling.getEffectiveProcessingTime(
+                recipe.getProcessingTime(),
+                getSpeedUpgradeCount(),
+                getEfficiencyUpgradeCount());
     }
 
     @Override
     protected int getEffectiveEnergyPerTick(CrusherRecipe recipe) {
-        int speedMultiplier = 100 + 50 * getSpeedUpgradeCount();
-        int efficiencyMultiplier = Math.max(40, 100 - 15 * getEfficiencyUpgradeCount());
-        long scaled = (long) recipe.getEnergyPerTick() * speedMultiplier * efficiencyMultiplier * Math.max(1, activeBatchSize);
-        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+        return MachineUpgradeScaling.getEffectiveEnergyPerTick(
+                recipe.getEnergyPerTick(),
+                getSpeedUpgradeCount(),
+                getEfficiencyUpgradeCount(),
+                activeBatchSize);
     }
 
     @Override
