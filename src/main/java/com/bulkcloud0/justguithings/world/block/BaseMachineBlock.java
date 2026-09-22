@@ -90,6 +90,21 @@ public abstract class BaseMachineBlock<T extends BaseMachineTileEntity> extends 
                     } else {
                         ConfiguratorItem.displayMachineTargetRequired(player);
                     }
+                } else if (ConfiguratorItem.isMachineAutoEjectMode(held)) {
+                    if (tile.supportsItemAutoEject()) {
+                        boolean enabled = tile.toggleItemAutoEject();
+                        ITextComponent stateName = new TranslationTextComponent(
+                                enabled
+                                        ? "machine_auto_eject.justguithings.enabled"
+                                        : "machine_auto_eject.justguithings.disabled");
+                        player.displayClientMessage(
+                                new TranslationTextComponent(
+                                        "message.justguithings.machine.item_auto_eject",
+                                        stateName),
+                                true);
+                    } else {
+                        ConfiguratorItem.displayMachineAutoEjectTargetRequired(player);
+                    }
                 } else {
                     MachineSideMode mode = tile.cycleSideMode(hit.getDirection());
                     ITextComponent face = DirectionText.getDisplayName(hit.getDirection());

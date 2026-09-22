@@ -221,7 +221,7 @@
   "side_config.justguithings.mode.energy_both": "ES",
   "machine_side_mode.justguithings.item_input_energy_output": "Entrada de Itens + Saída de Energia",
   "side_config.justguithings.mode.item_input_energy_output": "ESE",
-  "tooltip.justguithings.configurator.mode": "Clique com o botão direito no ar para alternar entre E/S das Faces, Redstone da Máquina e Conexão de Conduítes.",
+  "tooltip.justguithings.configurator.mode": "Clique com o botão direito no ar para alternar entre E/S das Faces, Redstone da Máquina, Conexão de Conduítes e Ejeção Automática.",
   "tooltip.justguithings.configurator.current_mode": "Modo: %s",
   "configurator_mode.justguithings.side_io": "E/S das Faces",
   "configurator_mode.justguithings.machine_redstone": "Redstone da Máquina",
@@ -237,5 +237,10 @@
   "jei.justguithings.assembly": "Montagem Industrial",
   "item.justguithings.turbine_module": "Módulo de Turbina",
   "tooltip.justguithings.turbine_module.effect": "Dobra a vazão do Gerador a Vapor sem alterar a eficiência de combustível e água.",
-  "tooltip.justguithings.turbine_module.compatibility": "Compatível: Gerador a Vapor"
+  "tooltip.justguithings.turbine_module.compatibility": "Compatível: Gerador a Vapor",
+  "configurator_mode.justguithings.machine_auto_eject": "Ejeção Automática",
+  "message.justguithings.configurator.auto_eject_target_required": "O modo Ejeção Automática só se aplica a máquinas de processamento compatíveis com ejeção de itens.",
+  "message.justguithings.machine.item_auto_eject": "Ejeção automática de itens da máquina: %s",
+  "machine_auto_eject.justguithings.enabled": "Ativada",
+  "machine_auto_eject.justguithings.disabled": "Desativada"
 }

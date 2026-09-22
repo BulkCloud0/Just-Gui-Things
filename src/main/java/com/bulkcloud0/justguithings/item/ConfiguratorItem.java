@@ -47,10 +47,21 @@ public class ConfiguratorItem extends TooltipItem {
         return getMode(stack) == ConfiguratorMode.CONDUIT_CONNECTION;
     }
 
+    public static boolean isMachineAutoEjectMode(ItemStack stack) {
+        return getMode(stack) == ConfiguratorMode.MACHINE_AUTO_EJECT;
+    }
+
     public static void displayMachineTargetRequired(PlayerEntity player) {
         player.displayClientMessage(
                 new TranslationTextComponent(
                         "message.justguithings.configurator.machine_target_required"),
+                true);
+    }
+
+    public static void displayMachineAutoEjectTargetRequired(PlayerEntity player) {
+        player.displayClientMessage(
+                new TranslationTextComponent(
+                        "message.justguithings.configurator.auto_eject_target_required"),
                 true);
     }
 
@@ -127,7 +138,8 @@ public class ConfiguratorItem extends TooltipItem {
     public enum ConfiguratorMode {
         SIDE_IO,
         MACHINE_REDSTONE,
-        CONDUIT_CONNECTION;
+        CONDUIT_CONNECTION,
+        MACHINE_AUTO_EJECT;
 
         public ConfiguratorMode next() {
             ConfiguratorMode[] values = values();

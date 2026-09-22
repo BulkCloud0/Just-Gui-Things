@@ -221,7 +221,7 @@
   "side_config.justguithings.mode.energy_both": "EB",
   "machine_side_mode.justguithings.item_input_energy_output": "Item Input + Energy Output",
   "side_config.justguithings.mode.item_input_energy_output": "IEO",
-  "tooltip.justguithings.configurator.mode": "Right-click in the air to switch between Side I/O, Machine Redstone, and Conduit Connection.",
+  "tooltip.justguithings.configurator.mode": "Right-click in the air to switch between Side I/O, Machine Redstone, Conduit Connection, and Machine Auto-Eject.",
   "tooltip.justguithings.configurator.current_mode": "Mode: %s",
   "configurator_mode.justguithings.side_io": "Side I/O",
   "configurator_mode.justguithings.machine_redstone": "Machine Redstone",
@@ -237,5 +237,10 @@
   "jei.justguithings.assembly": "Industrial Assembly",
   "item.justguithings.turbine_module": "Turbine Module",
   "tooltip.justguithings.turbine_module.effect": "Doubles Steam Generator throughput while preserving fuel and water efficiency.",
-  "tooltip.justguithings.turbine_module.compatibility": "Compatible: Steam Generator"
+  "tooltip.justguithings.turbine_module.compatibility": "Compatible: Steam Generator",
+  "configurator_mode.justguithings.machine_auto_eject": "Machine Auto-Eject",
+  "message.justguithings.configurator.auto_eject_target_required": "Machine Auto-Eject mode only applies to processing machines that support item auto-eject.",
+  "message.justguithings.machine.item_auto_eject": "Machine item auto-eject: %s",
+  "machine_auto_eject.justguithings.enabled": "Enabled",
+  "machine_auto_eject.justguithings.disabled": "Disabled"
 }
