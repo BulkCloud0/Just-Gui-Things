@@ -135,6 +135,10 @@ Thermal, Mekanism, AllTheOres, and similar material providers should therefore w
 A missing optional mod must never prevent JGT from loading.
 
 
+## Storage comparator output
+
+Energy Cell, Fluid Reservoir, and Item Buffer expose vanilla comparator output for storage-aware automation. Empty storage reports 0, partial storage reports 1-14 using the vanilla-style fill curve, and completely full storage reports 15. Tile entities notify comparator neighbors only when the computed analog level changes, so continuous FE/fluid/item movement does not create per-tick redstone neighbor traffic while remaining responsive at threshold crossings.
+
 ## Item Buffer
 
 The Item Buffer is an 18-slot staging inventory for machine lines and conduit networks. It exposes only Forge `IItemHandler` and does not add a JGT-specific inventory API. Each face can be configured as item `INPUT`, item `OUTPUT`, or `DISABLED`; the same internal slots back both views, so input faces insert into the shared staging inventory and output faces extract from it.

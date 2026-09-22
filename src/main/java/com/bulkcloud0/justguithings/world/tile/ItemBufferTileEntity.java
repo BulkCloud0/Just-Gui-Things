@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.world.tile;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
+import com.bulkcloud0.justguithings.world.AnalogSignalHelper;
 import com.bulkcloud0.justguithings.world.container.ItemBufferContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -17,6 +18,8 @@ import javax.annotation.Nullable;
 public class ItemBufferTileEntity extends BaseMachineTileEntity {
     public static final int INVENTORY_SIZE = 18;
     public static final int AUTO_EJECT_RATE = 8;
+
+    private int lastAnalogSignal = -1;
 
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
@@ -34,6 +37,29 @@ public class ItemBufferTileEntity extends BaseMachineTileEntity {
         setSideMode(Direction.SOUTH, MachineSideMode.DISABLED);
         setSideMode(Direction.WEST, MachineSideMode.DISABLED);
         setSideMode(Direction.EAST, MachineSideMode.DISABLED);
+    }
+
+    public int getAnalogSignal() {
+        return AnalogSignalHelper.fromInventory(inventory);
+    }
+
+    @Override
+    protected void onInventoryChanged(int slot) {
+        notifyAnalogSignalIfChanged();
+    }
+
+    private void notifyAnalogSignalIfChanged() {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        int signal = getAnalogSignal();
+        if (signal == lastAnalogSignal) {
+            return;
+        }
+
+        lastAnalogSignal = signal;
+        AnalogSignalHelper.notifyOutputChanged(this);
     }
 
     @Override

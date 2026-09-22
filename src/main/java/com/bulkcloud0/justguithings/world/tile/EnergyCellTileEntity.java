@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.world.tile;
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
+import com.bulkcloud0.justguithings.world.AnalogSignalHelper;
 import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,6 +20,8 @@ import javax.annotation.Nullable;
 public class EnergyCellTileEntity extends BaseMachineTileEntity {
     public static final int CAPACITY = 1_000_000;
     public static final int MAX_TRANSFER = 2_000;
+
+    private int lastAnalogSignal = -1;
 
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
@@ -70,6 +73,29 @@ public class EnergyCellTileEntity extends BaseMachineTileEntity {
         setSideMode(Direction.SOUTH, MachineSideMode.ENERGY_BOTH);
         setSideMode(Direction.WEST, MachineSideMode.ENERGY_BOTH);
         setSideMode(Direction.EAST, MachineSideMode.ENERGY_BOTH);
+    }
+
+    public int getAnalogSignal() {
+        return AnalogSignalHelper.fromFill(energyStorage.getEnergyStored(), CAPACITY);
+    }
+
+    @Override
+    protected void onEnergyChanged() {
+        notifyAnalogSignalIfChanged();
+    }
+
+    private void notifyAnalogSignalIfChanged() {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        int signal = getAnalogSignal();
+        if (signal == lastAnalogSignal) {
+            return;
+        }
+
+        lastAnalogSignal = signal;
+        AnalogSignalHelper.notifyOutputChanged(this);
     }
 
     @Override

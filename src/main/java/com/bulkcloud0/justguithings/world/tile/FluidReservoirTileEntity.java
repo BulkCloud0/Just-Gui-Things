@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
+import com.bulkcloud0.justguithings.world.AnalogSignalHelper;
 import com.bulkcloud0.justguithings.world.container.FluidReservoirContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,10 +25,13 @@ import javax.annotation.Nullable;
 public class FluidReservoirTileEntity extends TileEntity implements INamedContainerProvider {
     public static final int CAPACITY = 16_000;
 
+    private int lastAnalogSignal = -1;
+
     private final FluidTank tank = new FluidTank(CAPACITY) {
         @Override
         protected void onContentsChanged() {
             setChanged();
+            notifyAnalogSignalIfChanged();
         }
     };
 
@@ -63,6 +67,24 @@ public class FluidReservoirTileEntity extends TileEntity implements INamedContai
 
     public IIntArray getDataAccess() {
         return dataAccess;
+    }
+
+    public int getAnalogSignal() {
+        return AnalogSignalHelper.fromFill(tank.getFluidAmount(), CAPACITY);
+    }
+
+    private void notifyAnalogSignalIfChanged() {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        int signal = getAnalogSignal();
+        if (signal == lastAnalogSignal) {
+            return;
+        }
+
+        lastAnalogSignal = signal;
+        AnalogSignalHelper.notifyOutputChanged(this);
     }
 
     @Override
