@@ -156,6 +156,14 @@ public class IndustrialMixerContainer extends Container {
         return data.get(6);
     }
 
+    public int getFluidAmount() {
+        return data.get(7);
+    }
+
+    public int getFluidScaled(int pixels) {
+        return (int) ((long) getFluidAmount() * pixels / IndustrialMixerTileEntity.TANK_CAPACITY);
+    }
+
     public MachineSideMode getSideMode(Direction direction) {
         return sideData.getMode(direction);
     }

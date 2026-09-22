@@ -2,6 +2,8 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.MachineSideMode;
+import com.bulkcloud0.justguithings.machine.SidedFluidInputHandler;
 import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
@@ -14,12 +16,21 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.Optional;
 
 public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<MixingRecipe> {
@@ -28,6 +39,31 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     public static final int DEFAULT_PROCESS_TICKS = 160;
     public static final int DEFAULT_ENERGY_PER_TICK = 45;
     public static final int MAX_MODULES_PER_TYPE = 4;
+    public static final int TANK_CAPACITY = 8_000;
+
+    private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
+            MachineSideMode.DISABLED,
+            MachineSideMode.INPUT,
+            MachineSideMode.OUTPUT,
+            MachineSideMode.ENERGY,
+            MachineSideMode.FLUID_INPUT
+    };
+
+    private final FluidTank fluidTank = new FluidTank(TANK_CAPACITY) {
+        @Override
+        public boolean isFluidValid(FluidStack stack) {
+            return canAcceptFluid(stack);
+        }
+
+        @Override
+        protected void onContentsChanged() {
+            setChanged();
+        }
+    };
+
+    private final EnumMap<Direction, LazyOptional<IFluidHandler>> sidedFluidCapabilities =
+            new EnumMap<>(Direction.class);
+    private int syncedFluidAmount;
 
     private final IIntArray dataAccess = new IIntArray() {
         @Override
@@ -38,24 +74,32 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             switch (index) {
                 case 5: return getSpeedUpgradeCount();
                 case 6: return getEfficiencyUpgradeCount();
+                case 7: return level != null && level.isClientSide
+                        ? syncedFluidAmount
+                        : fluidTank.getFluidAmount();
                 default: return 0;
             }
         }
 
         @Override
         public void set(int index, int value) {
-            setProcessingData(index, value);
+            if (index <= 4) {
+                setProcessingData(index, value);
+            } else if (index == 7) {
+                syncedFluidAmount = value;
+            }
         }
 
         @Override
         public int getCount() {
-            return 7;
+            return 8;
         }
     };
 
     public IndustrialMixerTileEntity() {
         super(ModTileEntities.INDUSTRIAL_MIXER.get(), CAPACITY, MAX_RECEIVE, 6, 0, 3, 3, 1,
                 DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
+        initializeFluidCapabilities();
     }
 
     @Override
@@ -88,6 +132,33 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     }
 
     @Override
+    protected MachineSideMode[] getAllowedSideModes() {
+        return ALLOWED_SIDE_MODES;
+    }
+
+    private void initializeFluidCapabilities() {
+        for (Direction direction : Direction.values()) {
+            sidedFluidCapabilities.put(direction, createSidedFluidCapability(direction));
+        }
+    }
+
+    private LazyOptional<IFluidHandler> createSidedFluidCapability(Direction side) {
+        return LazyOptional.of(() ->
+                new SidedFluidInputHandler(
+                        fluidTank,
+                        () -> getSideMode(side) == MachineSideMode.FLUID_INPUT));
+    }
+
+    @Override
+    protected void refreshAdditionalSidedCapabilities(Direction side) {
+        LazyOptional<IFluidHandler> old = sidedFluidCapabilities.put(
+                side, createSidedFluidCapability(side));
+        if (old != null) {
+            old.invalidate();
+        }
+    }
+
+    @Override
     protected Optional<MixingRecipe> findCurrentRecipe() {
         if (level == null || inventory.getStackInSlot(0).isEmpty() || inventory.getStackInSlot(1).isEmpty()) {
             return Optional.empty();
@@ -97,7 +168,20 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
                 inventory.getStackInSlot(0).copy(),
                 inventory.getStackInSlot(1).copy(),
                 inventory.getStackInSlot(2).copy());
-        return level.getRecipeManager().getRecipeFor(ModRecipes.MIXING_TYPE, recipeInventory, level);
+
+        for (MixingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.MIXING_TYPE)) {
+            if (recipe.hasFluidIngredient()
+                    && recipe.matches(recipeInventory, level)
+                    && recipe.matchesFluid(fluidTank.getFluid())) {
+                return Optional.of(recipe);
+            }
+        }
+        for (MixingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.MIXING_TYPE)) {
+            if (!recipe.hasFluidIngredient() && recipe.matches(recipeInventory, level)) {
+                return Optional.of(recipe);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -105,7 +189,8 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
         if (inventory.getStackInSlot(0).getCount() < recipe.getPrimaryCount()
                 || inventory.getStackInSlot(1).getCount() < recipe.getSecondaryCount()
                 || (recipe.hasTertiary()
-                && inventory.getStackInSlot(2).getCount() < recipe.getTertiaryCount())) {
+                && inventory.getStackInSlot(2).getCount() < recipe.getTertiaryCount())
+                || !recipe.matchesFluid(fluidTank.getFluid())) {
             return false;
         }
 
@@ -153,6 +238,9 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
         if (recipe.hasTertiary()) {
             inventory.extractItem(2, recipe.getTertiaryCount(), false);
         }
+        if (recipe.hasFluidIngredient()) {
+            fluidTank.drain(recipe.getFluidAmount(), IFluidHandler.FluidAction.EXECUTE);
+        }
 
         ItemStack output = inventory.getStackInSlot(3);
         if (output.isEmpty()) {
@@ -170,6 +258,22 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
 
     public int getEfficiencyUpgradeCount() {
         return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.EFFICIENCY));
+    }
+
+    public boolean canAcceptFluid(FluidStack stack) {
+        if (level == null || stack.isEmpty()) {
+            return false;
+        }
+        for (MixingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.MIXING_TYPE)) {
+            if (recipe.hasFluidIngredient() && recipe.matchesFluidType(stack.getFluid())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getFluidAmount() {
+        return fluidTank.getFluidAmount();
     }
 
     public boolean canAcceptPrimary(ItemStack stack) {
@@ -221,6 +325,17 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             inventory.setStackInSlot(3, inventory.getStackInSlot(2).copy());
             inventory.setStackInSlot(2, ItemStack.EMPTY);
         }
+
+        if (nbt.contains("Tank")) {
+            fluidTank.readFromNBT(nbt.getCompound("Tank"));
+        }
+    }
+
+    @Override
+    public CompoundNBT save(CompoundNBT nbt) {
+        super.save(nbt);
+        nbt.put("Tank", fluidTank.writeToNBT(new CompoundNBT()));
+        return nbt;
     }
 
     public IIntArray getDataAccess() {
@@ -236,5 +351,32 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     @Override
     public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
         return new IndustrialMixerContainer(windowId, playerInventory, this);
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            if (side == null || getSideMode(side) != MachineSideMode.FLUID_INPUT) {
+                return LazyOptional.empty();
+            }
+            LazyOptional<IFluidHandler> capability = sidedFluidCapabilities.get(side);
+            return capability == null ? LazyOptional.empty() : capability.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    protected void invalidateCaps() {
+        super.invalidateCaps();
+        for (LazyOptional<IFluidHandler> capability : sidedFluidCapabilities.values()) {
+            capability.invalidate();
+        }
+    }
+
+    @Override
+    protected void reviveCaps() {
+        super.reviveCaps();
+        initializeFluidCapabilities();
     }
 }
