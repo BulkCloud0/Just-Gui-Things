@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class IndustrialAssemblerContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 5;
+    private static final int MACHINE_SLOT_COUNT = 7;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -45,6 +45,8 @@ public class IndustrialAssemblerContainer extends Container {
                 return false;
             }
         });
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 5, 72, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 6, 90, 56));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -96,6 +98,10 @@ public class IndustrialAssemblerContainer extends Container {
                 }
             } else {
                 boolean moved = false;
+                int moduleSlot = tileEntity.findModuleSlot(stack);
+                if (moduleSlot >= 0) {
+                    moved = this.moveItemStackTo(stack, moduleSlot, moduleSlot + 1, false);
+                }
                 for (int inputSlot = 0; inputSlot < 4 && !moved; inputSlot++) {
                     if (tileEntity.canAcceptInput(inputSlot, stack)) {
                         moved = this.moveItemStackTo(stack, inputSlot, inputSlot + 1, false);
@@ -142,6 +148,14 @@ public class IndustrialAssemblerContainer extends Container {
 
     public int getCurrentEnergyPerTick() {
         return data.get(4);
+    }
+
+    public int getSpeedUpgradeCount() {
+        return data.get(5);
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return data.get(6);
     }
 
     public MachineSideMode getSideMode(Direction direction) {
