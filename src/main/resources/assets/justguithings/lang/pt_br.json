@@ -252,5 +252,7 @@
   "message.justguithings.machine.item_auto_eject": "Ejeção automática de itens da máquina: %s",
   "machine_auto_eject.justguithings.enabled": "Ativada",
   "machine_auto_eject.justguithings.disabled": "Desativada",
-  "message.justguithings.configurator.inspect_machine_redstone_auto_eject": "%s Máquina | E/S: %s | Redstone: %s | Ejeção Automática: %s"
+  "message.justguithings.configurator.inspect_machine_redstone_auto_eject": "%s Máquina | E/S: %s | Redstone: %s | Ejeção Automática: %s",
+  "jei.justguithings.fluid_fuel": "Combustíveis do Gerador de Fluido",
+  "jei.justguithings.fluid_fuel.energy": "Energia total: %s FE"
 }
