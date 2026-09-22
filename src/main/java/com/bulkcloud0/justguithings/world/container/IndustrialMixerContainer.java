@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class IndustrialMixerContainer extends Container {
-    private static final int MACHINE_SLOT_COUNT = 4;
+    private static final int MACHINE_SLOT_COUNT = 6;
     private static final int PLAYER_MAIN_END = MACHINE_SLOT_COUNT + 27;
     private static final int PLAYER_END = PLAYER_MAIN_END + 9;
 
@@ -43,6 +43,8 @@ public class IndustrialMixerContainer extends Container {
                 return false;
             }
         });
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 4, 72, 56));
+        this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 5, 90, 56));
 
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -89,6 +91,11 @@ public class IndustrialMixerContainer extends Container {
 
             if (index < MACHINE_SLOT_COUNT) {
                 if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, this.slots.size(), true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (tileEntity.findModuleSlot(stack) >= 0) {
+                int moduleSlot = tileEntity.findModuleSlot(stack);
+                if (!this.moveItemStackTo(stack, moduleSlot, moduleSlot + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (tileEntity.canAcceptPrimary(stack)) {
@@ -139,6 +146,14 @@ public class IndustrialMixerContainer extends Container {
 
     public int getCurrentEnergyPerTick() {
         return data.get(4);
+    }
+
+    public int getSpeedUpgradeCount() {
+        return data.get(5);
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return data.get(6);
     }
 
     public MachineSideMode getSideMode(Direction direction) {
