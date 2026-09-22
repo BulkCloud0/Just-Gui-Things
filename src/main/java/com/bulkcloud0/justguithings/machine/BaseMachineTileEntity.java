@@ -2,9 +2,11 @@ package com.bulkcloud0.justguithings.machine;
 
 import com.bulkcloud0.justguithings.energy.ModEnergyStorage;
 import com.bulkcloud0.justguithings.logistics.FairShareAllocator;
+import com.bulkcloud0.justguithings.logistics.ItemTransferHelper;
 import com.bulkcloud0.justguithings.api.machine.module.IMachineModule;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTags;
 import net.minecraft.block.BlockState;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -54,6 +56,7 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
 
     private final EnumMap<Direction, MachineSideMode> sideModes = new EnumMap<>(Direction.class);
     private MachineRedstoneMode redstoneMode = MachineRedstoneMode.ALWAYS;
+    private boolean itemAutoEjectEnabled;
     private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedItemCapabilities = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, LazyOptional<IEnergyStorage>> sidedEnergyCapabilities = new EnumMap<>(Direction.class);
 
@@ -276,6 +279,24 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         return false;
     }
 
+    public boolean supportsItemAutoEject() {
+        return false;
+    }
+
+    public final boolean isItemAutoEjectEnabled() {
+        return supportsItemAutoEject() && itemAutoEjectEnabled;
+    }
+
+    public final boolean toggleItemAutoEject() {
+        if (!supportsItemAutoEject()) {
+            return false;
+        }
+        itemAutoEjectEnabled = !itemAutoEjectEnabled;
+        setChanged();
+        syncToClient();
+        return itemAutoEjectEnabled;
+    }
+
     public final MachineRedstoneMode getRedstoneMode() {
         return redstoneMode;
     }
@@ -462,6 +483,104 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         return true;
     }
 
+    protected final int pushOutputItemsToNeighborsFairly(int maxItems) {
+        if (level == null || !isItemAutoEjectEnabled() || maxItems <= 0 || outputCount <= 0) {
+            return 0;
+        }
+
+        List<ItemPushTarget> targets = new ArrayList<>();
+        for (Direction direction : Direction.values()) {
+            MachineSideMode mode = getItemSideMode(direction, getSideMode(direction));
+            if (mode != MachineSideMode.OUTPUT) {
+                continue;
+            }
+
+            TileEntity neighbor = getLoadedBlockEntity(worldPosition.relative(direction));
+            if (neighbor == null) {
+                continue;
+            }
+
+            IItemHandler receiver = neighbor
+                    .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite())
+                    .orElse(null);
+            if (receiver != null && receiver.getSlots() > 0) {
+                targets.add(new ItemPushTarget(receiver));
+            }
+        }
+
+        if (targets.isEmpty()) {
+            return 0;
+        }
+
+        int transferred = 0;
+        int end = Math.min(inventory.getSlots(), outputStart + outputCount);
+        for (int slot = outputStart; slot < end && transferred < maxItems; slot++) {
+            int budget = maxItems - transferred;
+            ItemStack available = inventory.extractItem(slot, budget, true);
+            if (available.isEmpty()) {
+                continue;
+            }
+
+            int[] demands = new int[targets.size()];
+            for (int index = 0; index < targets.size(); index++) {
+                ItemStack remainder = ItemTransferHelper.insert(
+                        targets.get(index).handler, available, true);
+                demands[index] = available.getCount() - remainder.getCount();
+            }
+
+            int[] allocations = FairShareAllocator.allocate(available.getCount(), demands);
+            for (int index = 0; index < targets.size() && transferred < maxItems; index++) {
+                int planned = Math.min(allocations[index], maxItems - transferred);
+                if (planned <= 0) {
+                    continue;
+                }
+
+                ItemStack extracted = inventory.extractItem(slot, planned, false);
+                if (extracted.isEmpty()) {
+                    break;
+                }
+
+                ItemStack remainder = ItemTransferHelper.insert(
+                        targets.get(index).handler, extracted, false);
+                int inserted = extracted.getCount() - remainder.getCount();
+                if (!remainder.isEmpty()) {
+                    restoreOutputItem(slot, remainder);
+                }
+                transferred += inserted;
+            }
+        }
+
+        return transferred;
+    }
+
+    private void restoreOutputItem(int slot, ItemStack stack) {
+        if (stack.isEmpty()) {
+            return;
+        }
+
+        ItemStack current = inventory.getStackInSlot(slot);
+        if (current.isEmpty()) {
+            inventory.setStackInSlot(slot, stack.copy());
+            return;
+        }
+
+        if (ItemStack.isSame(current, stack)
+                && ItemStack.tagMatches(current, stack)
+                && current.getCount() + stack.getCount() <= current.getMaxStackSize()) {
+            ItemStack restored = current.copy();
+            restored.grow(stack.getCount());
+            inventory.setStackInSlot(slot, restored);
+            return;
+        }
+
+        InventoryHelper.dropItemStack(
+                level,
+                worldPosition.getX() + 0.5D,
+                worldPosition.getY() + 0.5D,
+                worldPosition.getZ() + 0.5D,
+                stack.copy());
+    }
+
     public int getEnergyCapacity() {
         return baseEnergyCapacity;
     }
@@ -519,6 +638,8 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
             redstoneMode = MachineRedstoneMode.ALWAYS;
         }
 
+        itemAutoEjectEnabled = supportsItemAutoEject() && nbt.getBoolean("ItemAutoEject");
+
         if (nbt.contains("SideConfig")) {
             CompoundNBT config = nbt.getCompound("SideConfig");
             int configVersion = config.contains("Version") ? config.getInt("Version") : 1;
@@ -539,6 +660,9 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         nbt.putInt("Energy", energyStorage.getEnergyStored());
         if (supportsRedstoneControl()) {
             nbt.putInt("RedstoneMode", redstoneMode.ordinal());
+        }
+        if (supportsItemAutoEject()) {
+            nbt.putBoolean("ItemAutoEject", itemAutoEjectEnabled);
         }
 
         CompoundNBT config = new CompoundNBT();
@@ -613,6 +737,14 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         private final IEnergyStorage handler;
 
         private EnergyPushTarget(IEnergyStorage handler) {
+            this.handler = handler;
+        }
+    }
+
+    private static final class ItemPushTarget {
+        private final IItemHandler handler;
+
+        private ItemPushTarget(IItemHandler handler) {
             this.handler = handler;
         }
     }
