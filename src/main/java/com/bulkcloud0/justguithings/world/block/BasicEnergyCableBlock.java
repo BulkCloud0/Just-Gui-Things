@@ -114,6 +114,8 @@ public class BasicEnergyCableBlock extends AbstractConduitBlock {
                     }
                 } else if (ConfiguratorItem.isMachineRedstoneMode(held)) {
                     ConfiguratorItem.displayMachineTargetRequired(player);
+                } else if (ConfiguratorItem.isMachineAutoEjectMode(held)) {
+                    ConfiguratorItem.displayMachineAutoEjectTargetRequired(player);
                 } else {
                     ConduitTransferMode mode = cable.cycleSideMode(direction);
                     AbstractConduitBlock.refreshConnections(world, pos);

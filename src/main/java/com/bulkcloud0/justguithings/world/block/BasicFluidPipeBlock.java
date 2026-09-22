@@ -119,6 +119,8 @@ public class BasicFluidPipeBlock extends AbstractConduitBlock {
                     }
                 } else if (ConfiguratorItem.isMachineRedstoneMode(held)) {
                     ConfiguratorItem.displayMachineTargetRequired(player);
+                } else if (ConfiguratorItem.isMachineAutoEjectMode(held)) {
+                    ConfiguratorItem.displayMachineAutoEjectTargetRequired(player);
                 } else {
                     ConduitTransferMode mode = pipe.cycleSideMode(direction);
                     AbstractConduitBlock.refreshConnections(world, pos);
