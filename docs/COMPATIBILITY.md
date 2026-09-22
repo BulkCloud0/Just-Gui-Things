@@ -147,6 +147,12 @@ The nine crafting-grid slots intentionally hold only one item each. This keeps t
 
 The Auto Crafter uses standard Forge `IItemHandler` and Forge Energy capabilities, supports the existing Speed/Efficiency modules, machine redstone control and opt-in item auto-eject, and requires no optional-mod API. Because it consumes ordinary crafting recipes directly, compatible mods work automatically when they register normal `ICraftingRecipe` implementations. JEI continues to display those recipes in its standard crafting category rather than duplicating them as a JGT recipe type.
 
+## Vacuum Collector
+
+The Vacuum Collector bridges dropped world items into normal JGT item logistics without adding a custom transport API. Every five server ticks it scans a fixed four-block radius for loaded `ItemEntity` drops, inserts at most 16 items into its nine-slot internal buffer, and spends 20 FE for each item actually accepted. A full buffer or insufficient energy leaves the remaining entity stack untouched. The bounded scan cadence and item budget keep collection work predictable instead of turning the block into a per-tick unbounded entity vacuum.
+
+The collector exposes no item-input face. Configurable faces support only Disabled, Item Output and Energy Input; its output uses the normal sided Forge `IItemHandler`, so Basic Item Pipes, hoppers and third-party Forge automation can extract collected stacks. Direct item auto-eject is optional and disabled by default, while machine redstone control gates world-item collection without preventing already-buffered output from being extracted or auto-ejected. Item identity and target-stock policy remain responsibilities of the existing routing layer rather than being duplicated inside the collector.
+
 ## Item Buffer
 
 The Item Buffer is an 18-slot staging inventory for machine lines and conduit networks. It exposes only Forge `IItemHandler` and does not add a JGT-specific inventory API. Each face can be configured as item `INPUT`, item `OUTPUT`, or `DISABLED`; the same internal slots back both views, so input faces insert into the shared staging inventory and output faces extract from it.

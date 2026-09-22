@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.registry;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
 import com.bulkcloud0.justguithings.world.tile.AutoCrafterTileEntity;
+import com.bulkcloud0.justguithings.world.tile.VacuumCollectorTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicEnergyCableTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicFluidPipeTileEntity;
 import com.bulkcloud0.justguithings.world.tile.BasicItemPipeTileEntity;
@@ -46,6 +47,8 @@ public final class ModTileEntities {
             "industrial_assembler", () -> TileEntityType.Builder.of(IndustrialAssemblerTileEntity::new, ModBlocks.INDUSTRIAL_ASSEMBLER.get()).build(null));
     public static final RegistryObject<TileEntityType<AutoCrafterTileEntity>> AUTO_CRAFTER = TILE_ENTITIES.register(
             "auto_crafter", () -> TileEntityType.Builder.of(AutoCrafterTileEntity::new, ModBlocks.AUTO_CRAFTER.get()).build(null));
+    public static final RegistryObject<TileEntityType<VacuumCollectorTileEntity>> VACUUM_COLLECTOR = TILE_ENTITIES.register(
+            "vacuum_collector", () -> TileEntityType.Builder.of(VacuumCollectorTileEntity::new, ModBlocks.VACUUM_COLLECTOR.get()).build(null));
     public static final RegistryObject<TileEntityType<EnergyCellTileEntity>> ENERGY_CELL = TILE_ENTITIES.register(
             "energy_cell", () -> TileEntityType.Builder.of(EnergyCellTileEntity::new, ModBlocks.ENERGY_CELL.get()).build(null));
     public static final RegistryObject<TileEntityType<ItemBufferTileEntity>> ITEM_BUFFER = TILE_ENTITIES.register(

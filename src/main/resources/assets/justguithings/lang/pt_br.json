@@ -274,5 +274,11 @@
   "screen.justguithings.auto_crafter.returns": "Retornos de recipientes",
   "message.justguithings.auto_crafter.locked": "Receita do Auto Crafter travada.",
   "message.justguithings.auto_crafter.unlocked": "Trava de receita do Auto Crafter removida.",
-  "message.justguithings.auto_crafter.invalid_recipe": "Monte uma receita válida de crafting 3x3 antes de travar."
+  "message.justguithings.auto_crafter.invalid_recipe": "Monte uma receita válida de crafting 3x3 antes de travar.",
+  "block.justguithings.vacuum_collector": "Coletor a Vácuo",
+  "item.justguithings.vacuum_collector": "Coletor a Vácuo",
+  "container.justguithings.vacuum_collector": "Coletor a Vácuo",
+  "screen.justguithings.vacuum_collector.range": "Alcance de coleta: %s blocos",
+  "screen.justguithings.vacuum_collector.cost": "Custo de coleta: %s FE/item",
+  "screen.justguithings.vacuum_collector.scan": "Limite: %s itens / %s ticks"
 }
