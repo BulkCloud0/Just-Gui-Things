@@ -16,7 +16,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Shared conduit network/endpoint caching with loaded-chunk-safe topology scans, explicit per-face network segmentation and reactive cache invalidation
 - Multipart conduit arms with enlarged connector collars for clearer endpoint connections and easier face selection
 - Energy endpoint routing with consumer priority, source/target redstone control, fair distribution and Configurator-based per-face input/output modes
-- Shared machine core for energy, inventory, side configuration and processing state
+- Shared machine core for energy, inventory, side configuration, processing state and opt-in direct item auto-eject
 - Crusher with data-driven recipes and Speed/Efficiency/Buffer/Batch modules
 - Coal Generator for early power and Steam Generator for water-fed intermediate generation
 - Charging Station for capability-driven charging of Forge Energy items
@@ -26,7 +26,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Industrial Assembler for data-driven automation of machine components, upgrades and repeatable infrastructure using 1-4 counted inputs
 - Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
 - Machine specialization through modules such as the Resistive Furnace Power Coil
-- Configurator modes for per-face automation, active-machine redstone control and conduit-to-conduit connection toggling
+- Configurator modes for per-face automation, active-machine redstone control, machine item auto-eject and conduit-to-conduit connection toggling
 - Data-driven recipes loaded through Minecraft's Recipe Manager
 - Forge tag compatibility for shared dusts, ingots, plates, rods and wires
 - Optional-mod recipes guarded by Forge conditions
