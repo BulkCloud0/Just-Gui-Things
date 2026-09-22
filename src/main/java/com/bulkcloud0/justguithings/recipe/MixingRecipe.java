@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -14,6 +15,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -32,6 +34,9 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
     @Nullable
     private final Ingredient tertiary;
     private final int tertiaryCount;
+    @Nullable
+    private final FluidIngredient fluidIngredient;
+    private final int fluidAmount;
     private final RecipeOutput result;
     private final int processingTime;
     private final int energyPerTick;
@@ -43,6 +48,8 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
                         int secondaryCount,
                         @Nullable Ingredient tertiary,
                         int tertiaryCount,
+                        @Nullable FluidIngredient fluidIngredient,
+                        int fluidAmount,
                         RecipeOutput result,
                         int processingTime,
                         int energyPerTick) {
@@ -53,6 +60,8 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
         this.secondaryCount = secondaryCount;
         this.tertiary = tertiary;
         this.tertiaryCount = tertiaryCount;
+        this.fluidIngredient = fluidIngredient;
+        this.fluidAmount = fluidAmount;
         this.result = result;
         this.processingTime = processingTime;
         this.energyPerTick = energyPerTick;
@@ -148,6 +157,31 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
         return tertiaryCount;
     }
 
+    public boolean hasFluidIngredient() {
+        return fluidIngredient != null;
+    }
+
+    public int getFluidAmount() {
+        return fluidAmount;
+    }
+
+    public List<FluidStack> getFluidDisplayStacks() {
+        return fluidIngredient == null
+                ? java.util.Collections.emptyList()
+                : fluidIngredient.getDisplayStacks(fluidAmount);
+    }
+
+    public boolean matchesFluid(FluidStack stack) {
+        if (fluidIngredient == null) {
+            return true;
+        }
+        return stack.getAmount() >= fluidAmount && fluidIngredient.test(stack);
+    }
+
+    public boolean matchesFluidType(Fluid fluid) {
+        return fluidIngredient != null && fluidIngredient.test(fluid);
+    }
+
     public ItemStack getResultForPrimary(ItemStack primaryStack) {
         return result.resolve(primaryStack);
     }
@@ -214,6 +248,19 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             }
             Ingredient tertiary = json.has("tertiary") ? Ingredient.fromJson(json.get("tertiary")) : null;
             int tertiaryCount = tertiary == null ? 0 : JSONUtils.getAsInt(json, "tertiary_count", 1);
+
+            FluidIngredient fluidIngredient = null;
+            int fluidAmount = 0;
+            if (json.has("fluid")) {
+                JsonObject fluidJson = JSONUtils.getAsJsonObject(json, "fluid");
+                fluidIngredient = FluidIngredient.fromJson(recipeId, fluidJson);
+                fluidAmount = JSONUtils.getAsInt(fluidJson, "amount", 1000);
+                if (fluidAmount <= 0) {
+                    throw new JsonSyntaxException("Mixing recipe fluid amount must be greater than zero in "
+                            + recipeId);
+                }
+            }
+
             RecipeOutput result = RecipeOutput.fromJson(JSONUtils.getAsJsonObject(json, "result"));
             int processingTime = JSONUtils.getAsInt(json, "processing_time", 160);
             int energyPerTick = JSONUtils.getAsInt(json, "energy_per_tick", 45);
@@ -229,7 +276,7 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             }
 
             return new MixingRecipe(recipeId, primary, primaryCount, secondary, secondaryCount,
-                    tertiary, tertiaryCount, result, processingTime, energyPerTick);
+                    tertiary, tertiaryCount, fluidIngredient, fluidAmount, result, processingTime, energyPerTick);
         }
 
         @Nullable
@@ -245,11 +292,17 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
                 tertiary = Ingredient.fromNetwork(buffer);
                 tertiaryCount = buffer.readVarInt();
             }
+            FluidIngredient fluidIngredient = null;
+            int fluidAmount = 0;
+            if (buffer.readBoolean()) {
+                fluidIngredient = FluidIngredient.fromNetwork(buffer);
+                fluidAmount = buffer.readVarInt();
+            }
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
             return new MixingRecipe(recipeId, primary, primaryCount, secondary, secondaryCount,
-                    tertiary, tertiaryCount, result, processingTime, energyPerTick);
+                    tertiary, tertiaryCount, fluidIngredient, fluidAmount, result, processingTime, energyPerTick);
         }
 
         @Override
@@ -262,6 +315,11 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             if (recipe.tertiary != null) {
                 recipe.tertiary.toNetwork(buffer);
                 buffer.writeVarInt(recipe.tertiaryCount);
+            }
+            buffer.writeBoolean(recipe.fluidIngredient != null);
+            if (recipe.fluidIngredient != null) {
+                recipe.fluidIngredient.toNetwork(buffer);
+                buffer.writeVarInt(recipe.fluidAmount);
             }
             recipe.result.toNetwork(buffer);
             buffer.writeVarInt(recipe.processingTime);
