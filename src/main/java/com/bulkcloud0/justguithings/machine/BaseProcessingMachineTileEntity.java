@@ -8,6 +8,8 @@ import net.minecraft.util.ResourceLocation;
 import java.util.Optional;
 
 public abstract class BaseProcessingMachineTileEntity<R extends MachineProcessingRecipe> extends BaseMachineTileEntity {
+    private static final int ITEM_AUTO_EJECT_RATE = 8;
+
     private final int defaultProcessTicks;
     private final int defaultEnergyPerTick;
 
@@ -69,10 +71,18 @@ public abstract class BaseProcessingMachineTileEntity<R extends MachineProcessin
     }
 
     @Override
+    public boolean supportsItemAutoEject() {
+        return true;
+    }
+
+    @Override
     public final void tick() {
         if (level == null || level.isClientSide) {
             return;
         }
+
+        pushOutputItemsToNeighborsFairly(ITEM_AUTO_EJECT_RATE);
+
         if (!isOperationEnabled()) {
             return;
         }
