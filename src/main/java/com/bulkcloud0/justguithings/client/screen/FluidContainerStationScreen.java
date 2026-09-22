@@ -1,7 +1,6 @@
 package com.bulkcloud0.justguithings.client.screen;
 
 import com.bulkcloud0.justguithings.world.container.FluidContainerStationContainer;
-import com.bulkcloud0.justguithings.world.tile.FluidContainerStationTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -88,9 +87,5 @@ public class FluidContainerStationScreen extends ContainerScreen<FluidContainerS
                 48.0F, 59.0F, TEXT);
         font.draw(matrixStack, ">", 82.0F, 38.0F, TEXT);
         font.draw(matrixStack, ">", 82.0F, 59.0F, TEXT);
-        font.draw(matrixStack,
-                I18n.get("screen.justguithings.fluid_container_station.transfer",
-                        FluidContainerStationTileEntity.TRANSFER_RATE),
-                8.0F, 64.0F, TEXT);
     }
 }

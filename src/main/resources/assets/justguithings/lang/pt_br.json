@@ -57,7 +57,6 @@
   "container.justguithings.fluid_container_station": "Estação de Recipientes de Fluido",
   "screen.justguithings.fluid_container_station.drain": "Esvaziar",
   "screen.justguithings.fluid_container_station.fill": "Encher",
-  "screen.justguithings.fluid_container_station.transfer": "Transferência: %s mB/t",
   "block.justguithings.resistive_furnace": "Fornalha Resistiva",
   "container.justguithings.resistive_furnace": "Fornalha Resistiva",
   "jei.justguithings.heating": "Aquecimento Resistivo",

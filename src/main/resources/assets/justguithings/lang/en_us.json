@@ -57,7 +57,6 @@
   "container.justguithings.fluid_container_station": "Fluid Container Station",
   "screen.justguithings.fluid_container_station.drain": "Drain",
   "screen.justguithings.fluid_container_station.fill": "Fill",
-  "screen.justguithings.fluid_container_station.transfer": "Transfer: %s mB/t",
   "block.justguithings.resistive_furnace": "Resistive Furnace",
   "container.justguithings.resistive_furnace": "Resistive Furnace",
   "jei.justguithings.heating": "Resistive Heating",
