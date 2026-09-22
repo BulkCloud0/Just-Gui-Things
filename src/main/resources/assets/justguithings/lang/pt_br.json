@@ -248,7 +248,7 @@
   "tooltip.justguithings.turbine_module.effect": "Dobra a vazão do Gerador a Vapor sem alterar a eficiência de combustível e água.",
   "tooltip.justguithings.turbine_module.compatibility": "Compatível: Gerador a Vapor",
   "configurator_mode.justguithings.machine_auto_eject": "Ejeção Automática",
-  "message.justguithings.configurator.auto_eject_target_required": "O modo Ejeção Automática só se aplica a máquinas de processamento compatíveis com ejeção de itens.",
+  "message.justguithings.configurator.auto_eject_target_required": "O modo Ejeção Automática só se aplica a máquinas compatíveis com ejeção automática de itens.",
   "message.justguithings.machine.item_auto_eject": "Ejeção automática de itens da máquina: %s",
   "machine_auto_eject.justguithings.enabled": "Ativada",
   "machine_auto_eject.justguithings.disabled": "Desativada",
@@ -258,5 +258,8 @@
   "item.justguithings.iron_gear": "Engrenagem de Ferro",
   "item.justguithings.gold_gear": "Engrenagem de Ouro",
   "item.justguithings.steel_gear": "Engrenagem de Aço",
-  "item.justguithings.steel_plate": "Chapa de Aço"
+  "item.justguithings.steel_plate": "Chapa de Aço",
+  "block.justguithings.item_buffer": "Buffer de Itens",
+  "container.justguithings.item_buffer": "Buffer de Itens",
+  "screen.justguithings.item_buffer.transfer": "Ejeção automática: até %s itens/t"
 }

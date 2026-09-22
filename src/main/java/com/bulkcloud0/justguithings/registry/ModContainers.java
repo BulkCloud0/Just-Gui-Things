@@ -7,6 +7,7 @@ import com.bulkcloud0.justguithings.world.container.CrusherContainer;
 import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialAssemblerContainer;
+import com.bulkcloud0.justguithings.world.container.ItemBufferContainer;
 import com.bulkcloud0.justguithings.world.container.FluidReservoirContainer;
 import com.bulkcloud0.justguithings.world.container.FluidPumpContainer;
 import com.bulkcloud0.justguithings.world.container.FluidContainerStationContainer;
@@ -42,6 +43,8 @@ public final class ModContainers {
             CONTAINERS.register("industrial_assembler", () -> IForgeContainerType.create(IndustrialAssemblerContainer::new));
     public static final RegistryObject<ContainerType<EnergyCellContainer>> ENERGY_CELL =
             CONTAINERS.register("energy_cell", () -> IForgeContainerType.create(EnergyCellContainer::new));
+    public static final RegistryObject<ContainerType<ItemBufferContainer>> ITEM_BUFFER =
+            CONTAINERS.register("item_buffer", () -> IForgeContainerType.create(ItemBufferContainer::new));
     public static final RegistryObject<ContainerType<FluidReservoirContainer>> FLUID_RESERVOIR =
             CONTAINERS.register("fluid_reservoir", () -> IForgeContainerType.create(FluidReservoirContainer::new));
     public static final RegistryObject<ContainerType<FluidPumpContainer>> FLUID_PUMP =
