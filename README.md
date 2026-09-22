@@ -26,6 +26,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Rod Mill for tag-driven ingot-to-rod forming
 - Wire Mill for tag-driven rod-to-wire processing
 - Industrial Assembler for data-driven automation of machine components, upgrades and repeatable infrastructure using 1-4 counted inputs
+- Auto Crafter for locked 3x3 vanilla/mod crafting recipes with Forge item automation and container-item return handling
 - Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
 - Machine specialization through modules such as the Resistive Furnace Power Coil
 - Configurator modes for per-face automation, active-machine redstone control, machine item auto-eject (including the Item Buffer) and conduit-to-conduit connection toggling

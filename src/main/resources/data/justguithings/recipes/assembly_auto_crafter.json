@@ -1,0 +1,14 @@
+{
+  "type": "justguithings:assembly",
+  "ingredients": [
+    { "ingredient": { "tag": "forge:plates/iron" }, "count": 4 },
+    { "ingredient": { "tag": "forge:gears/iron" }, "count": 2 },
+    { "ingredient": { "item": "minecraft:redstone" }, "count": 2 },
+    { "ingredient": { "item": "minecraft:crafting_table" }, "count": 1 }
+  ],
+  "result": {
+    "item": "justguithings:auto_crafter"
+  },
+  "processing_time": 120,
+  "energy_per_tick": 50
+}
