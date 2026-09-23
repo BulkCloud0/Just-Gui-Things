@@ -270,12 +270,9 @@ tasks.register('validateRecipePhysicalLimits') {
 
         def parser = new groovy.json.JsonSlurper()
 
-        Closure validateBounded = { Object rawValue,
-                                    long defaultValue,
-                                    long maxValue,
-                                    String field,
-                                    String relativePath ->
-            long value = defaultValue
+        Closure validateBounded = { rawValue, defaultValue, maxValue, field, relativePath ->
+            long value = ((Number) defaultValue).longValue()
+            long maximum = ((Number) maxValue).longValue()
             if (rawValue != null) {
                 if (!(rawValue instanceof Number)) {
                     throw new GradleException('Bundled recipe ' + relativePath
@@ -284,10 +281,10 @@ tasks.register('validateRecipePhysicalLimits') {
                 value = ((Number) rawValue).longValue()
             }
 
-            if (value < 1L || value > maxValue) {
+            if (value < 1L || value > maximum) {
                 throw new GradleException('Bundled recipe ' + relativePath
                         + ' has ' + field + '=' + value
-                        + '; expected 1-' + maxValue)
+                        + '; expected 1-' + maximum)
             }
         }
 
