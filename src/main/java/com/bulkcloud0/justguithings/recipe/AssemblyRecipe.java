@@ -25,6 +25,7 @@ import java.util.List;
 
 public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRecipe {
     public static final int MAX_INPUTS = 4;
+    public static final int MAX_INPUT_COUNT = 64;
 
     private final ResourceLocation id;
     private final List<Ingredient> ingredients;
@@ -244,9 +245,13 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
                 }
                 Ingredient ingredient = Ingredient.fromJson(input.get("ingredient"));
                 int count = JSONUtils.getAsInt(input, "count", 1);
-                if (ingredient.isEmpty() || count <= 0) {
+                if (ingredient.isEmpty()) {
                     throw new JsonSyntaxException("Assembly recipe " + recipeId
-                            + " has an empty ingredient or non-positive count");
+                            + " has an empty ingredient");
+                }
+                if (count <= 0 || count > MAX_INPUT_COUNT) {
+                    throw new JsonSyntaxException("Assembly recipe ingredient count must be between 1 and "
+                            + MAX_INPUT_COUNT + " in " + recipeId);
                 }
                 ingredients.add(ingredient);
                 counts.add(count);
@@ -274,8 +279,13 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
             List<Ingredient> ingredients = new ArrayList<>();
             List<Integer> counts = new ArrayList<>();
             for (int index = 0; index < inputCount; index++) {
-                ingredients.add(Ingredient.fromNetwork(buffer));
-                counts.add(buffer.readVarInt());
+                Ingredient ingredient = Ingredient.fromNetwork(buffer);
+                int count = buffer.readVarInt();
+                if (ingredient.isEmpty() || count <= 0 || count > MAX_INPUT_COUNT) {
+                    return null;
+                }
+                ingredients.add(ingredient);
+                counts.add(count);
             }
 
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);

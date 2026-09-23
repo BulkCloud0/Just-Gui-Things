@@ -41,7 +41,7 @@ public class IndustrialWasherTileEntity extends BaseProcessingMachineTileEntity<
     public static final int DEFAULT_PROCESS_TICKS = 100;
     public static final int DEFAULT_ENERGY_PER_TICK = 30;
     public static final int MAX_MODULES_PER_TYPE = 4;
-    public static final int TANK_CAPACITY = 4_000;
+    public static final int TANK_CAPACITY = WashingRecipe.MAX_FLUID_AMOUNT;
 
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;

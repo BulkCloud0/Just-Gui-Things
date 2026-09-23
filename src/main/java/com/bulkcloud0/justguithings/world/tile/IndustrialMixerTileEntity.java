@@ -41,7 +41,7 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
     public static final int DEFAULT_PROCESS_TICKS = 160;
     public static final int DEFAULT_ENERGY_PER_TICK = 45;
     public static final int MAX_MODULES_PER_TYPE = 4;
-    public static final int TANK_CAPACITY = 8_000;
+    public static final int TANK_CAPACITY = MixingRecipe.MAX_FLUID_AMOUNT;
 
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
