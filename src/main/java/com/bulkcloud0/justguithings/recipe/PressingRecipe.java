@@ -14,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import javax.annotation.Nullable;
 
 public class PressingRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 100_000;
     private final int inputCount;
 
     public PressingRecipe(ResourceLocation id,
@@ -63,6 +64,11 @@ public class PressingRecipe extends SingleInputProcessingRecipe {
                 throw new JsonSyntaxException("Pressing recipe time and FE/t must be greater than zero in " + recipeId);
             }
 
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Pressing recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new PressingRecipe(recipeId, input, result, inputCount, processingTime, energyPerTick);
         }
 
@@ -74,6 +80,9 @@ public class PressingRecipe extends SingleInputProcessingRecipe {
             int inputCount = buffer.readVarInt();
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             return new PressingRecipe(recipeId, input, result, inputCount, processingTime, energyPerTick);
         }
 
