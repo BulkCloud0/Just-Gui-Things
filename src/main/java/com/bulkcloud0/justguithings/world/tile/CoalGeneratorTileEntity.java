@@ -2,6 +2,8 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
+import com.bulkcloud0.justguithings.recipe.SolidFuelRecipe;
+import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CoalGeneratorContainer;
 import net.minecraft.block.BlockState;
@@ -9,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
@@ -22,7 +23,8 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
     public static final int CAPACITY = 100_000;
     public static final int GENERATION_PER_TICK = 40;
     public static final int MAX_OUTPUT_PER_TICK = 200;
-    public static final int COAL_BURN_TICKS = 1_600;
+    public static final int LEGACY_COAL_BURN_TICKS = 1_600;
+    public static final int LEGACY_COAL_ENERGY = LEGACY_COAL_BURN_TICKS * GENERATION_PER_TICK;
 
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
@@ -31,18 +33,20 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
             MachineSideMode.ITEM_INPUT_ENERGY_OUTPUT
     };
 
+    private int batchEnergyRemaining;
+    private int batchEnergyTotal;
+
     private final IIntArray dataAccess = new IIntArray() {
         @Override
         public int get(int index) {
             switch (index) {
-                case 0:
-                    return burnTicksRemaining;
-                case 1:
-                    return energyStorage.getEnergyStored() & 0xFFFF;
-                case 2:
-                    return (energyStorage.getEnergyStored() >>> 16) & 0xFFFF;
-                default:
-                    return 0;
+                case 0: return batchEnergyRemaining & 0xFFFF;
+                case 1: return (batchEnergyRemaining >>> 16) & 0xFFFF;
+                case 2: return batchEnergyTotal & 0xFFFF;
+                case 3: return (batchEnergyTotal >>> 16) & 0xFFFF;
+                case 4: return energyStorage.getEnergyStored() & 0xFFFF;
+                case 5: return (energyStorage.getEnergyStored() >>> 16) & 0xFFFF;
+                default: return 0;
             }
         }
 
@@ -50,12 +54,21 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
         public void set(int index, int value) {
             switch (index) {
                 case 0:
-                    burnTicksRemaining = value;
+                    batchEnergyRemaining = (batchEnergyRemaining & 0xFFFF0000) | (value & 0xFFFF);
                     break;
                 case 1:
-                    energyStorage.setEnergy((energyStorage.getEnergyStored() & 0xFFFF0000) | (value & 0xFFFF));
+                    batchEnergyRemaining = (batchEnergyRemaining & 0x0000FFFF) | ((value & 0xFFFF) << 16);
                     break;
                 case 2:
+                    batchEnergyTotal = (batchEnergyTotal & 0xFFFF0000) | (value & 0xFFFF);
+                    break;
+                case 3:
+                    batchEnergyTotal = (batchEnergyTotal & 0x0000FFFF) | ((value & 0xFFFF) << 16);
+                    break;
+                case 4:
+                    energyStorage.setEnergy((energyStorage.getEnergyStored() & 0xFFFF0000) | (value & 0xFFFF));
+                    break;
+                case 5:
                     energyStorage.setEnergy((energyStorage.getEnergyStored() & 0x0000FFFF) | ((value & 0xFFFF) << 16));
                     break;
                 default:
@@ -65,11 +78,9 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
 
         @Override
         public int getCount() {
-            return 3;
+            return 6;
         }
     };
-
-    private int burnTicksRemaining;
 
     public CoalGeneratorTileEntity() {
         super(ModTileEntities.COAL_GENERATOR.get(), CAPACITY, 0, MAX_OUTPUT_PER_TICK,
@@ -85,7 +96,7 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
 
     @Override
     protected boolean isItemValidForSlot(int slot, ItemStack stack) {
-        return slot == 0 && isCoalFuel(stack);
+        return slot == 0 && canAcceptFuel(stack);
     }
 
     @Override
@@ -134,14 +145,15 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
         boolean changed = false;
 
         if (isOperationEnabled()) {
-            if (burnTicksRemaining <= 0 && canGenerateTick()) {
-                tryConsumeFuel();
+            if (batchEnergyRemaining <= 0) {
+                changed |= tryConsumeFuel();
             }
 
-            if (burnTicksRemaining > 0 && canGenerateTick()) {
-                energyStorage.addEnergy(GENERATION_PER_TICK);
-                burnTicksRemaining--;
-                changed = true;
+            if (batchEnergyRemaining > 0) {
+                int generated = generateBatchEnergy();
+                if (generated > 0) {
+                    changed = true;
+                }
             }
         }
 
@@ -154,29 +166,73 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
         }
     }
 
-    private boolean canGenerateTick() {
-        return energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored() >= GENERATION_PER_TICK;
-    }
-
-    private void tryConsumeFuel() {
-        ItemStack fuel = inventory.getStackInSlot(0);
-        if (!fuel.isEmpty() && isCoalFuel(fuel)) {
-            inventory.extractItem(0, 1, false);
-            burnTicksRemaining = COAL_BURN_TICKS;
-            setChanged();
+    private int generateBatchEnergy() {
+        int amount = Math.min(GENERATION_PER_TICK, batchEnergyRemaining);
+        int free = energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored();
+        if (amount <= 0 || free < amount) {
+            return 0;
         }
+
+        energyStorage.addEnergy(amount);
+        batchEnergyRemaining -= amount;
+        if (batchEnergyRemaining <= 0) {
+            batchEnergyRemaining = 0;
+            batchEnergyTotal = 0;
+        }
+        return amount;
     }
 
-    public static boolean isCoalFuel(ItemStack stack) {
-        return !stack.isEmpty() && ItemTags.COALS.contains(stack.getItem());
+    private boolean tryConsumeFuel() {
+        ItemStack fuel = inventory.getStackInSlot(0);
+        SolidFuelRecipe recipe = findFuelRecipe(fuel);
+        if (recipe == null) {
+            return false;
+        }
+
+        int firstTick = Math.min(GENERATION_PER_TICK, recipe.getEnergy());
+        int free = energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored();
+        if (free < firstTick) {
+            return false;
+        }
+
+        inventory.extractItem(0, 1, false);
+        batchEnergyRemaining = recipe.getEnergy();
+        batchEnergyTotal = recipe.getEnergy();
+        return true;
+    }
+
+    @Nullable
+    private SolidFuelRecipe findFuelRecipe(ItemStack stack) {
+        if (level == null || stack.isEmpty()) {
+            return null;
+        }
+
+        SolidFuelRecipe best = null;
+        for (SolidFuelRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.SOLID_FUEL_TYPE)) {
+            if (!recipe.matchesStack(stack)) {
+                continue;
+            }
+            if (best == null || recipe.getId().toString().compareTo(best.getId().toString()) < 0) {
+                best = recipe;
+            }
+        }
+        return best;
+    }
+
+    public boolean canAcceptFuel(ItemStack stack) {
+        return findFuelRecipe(stack) != null;
     }
 
     public IIntArray getDataAccess() {
         return dataAccess;
     }
 
-    public int getBurnTicksRemaining() {
-        return burnTicksRemaining;
+    public int getBatchEnergyRemaining() {
+        return batchEnergyRemaining;
+    }
+
+    public int getBatchEnergyTotal() {
+        return batchEnergyTotal;
     }
 
     public int getEnergyStored() {
@@ -197,13 +253,25 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
-        burnTicksRemaining = nbt.getInt("BurnTicks");
+
+        if (nbt.contains("BatchEnergy")) {
+            batchEnergyRemaining = Math.max(0, nbt.getInt("BatchEnergy"));
+            batchEnergyTotal = Math.max(batchEnergyRemaining, nbt.getInt("BatchEnergyTotal"));
+        } else {
+            int legacyTicks = Math.max(0, nbt.getInt("BurnTicks"));
+            batchEnergyRemaining = legacyTicks * GENERATION_PER_TICK;
+            batchEnergyTotal = legacyTicks > 0
+                    ? Math.max(LEGACY_COAL_ENERGY, batchEnergyRemaining)
+                    : 0;
+        }
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         super.save(nbt);
-        nbt.putInt("BurnTicks", burnTicksRemaining);
+        nbt.putInt("BatchEnergy", batchEnergyRemaining);
+        nbt.putInt("BatchEnergyTotal", batchEnergyTotal);
+        nbt.putInt("BurnTicks", (batchEnergyRemaining + GENERATION_PER_TICK - 1) / GENERATION_PER_TICK);
         return nbt;
     }
 }

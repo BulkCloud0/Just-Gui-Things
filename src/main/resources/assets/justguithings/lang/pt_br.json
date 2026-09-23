@@ -288,5 +288,7 @@
   "item.justguithings.industrial_sawmill": "Serraria Industrial",
   "container.justguithings.industrial_sawmill": "Serraria Industrial",
   "item.justguithings.sawdust": "Serragem",
-  "jei.justguithings.sawing": "Corte Industrial"
+  "jei.justguithings.sawing": "Corte Industrial",
+  "jei.justguithings.solid_fuel": "Combustível Sólido",
+  "jei.justguithings.solid_fuel.energy": "%s FE no total"
 }

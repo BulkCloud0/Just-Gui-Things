@@ -30,7 +30,7 @@ public class CoalGeneratorContainer extends Container {
         this.addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 56, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return CoalGeneratorTileEntity.isCoalFuel(stack);
+                return tileEntity.canAcceptFuel(stack);
             }
         });
 
@@ -67,10 +67,10 @@ public class CoalGeneratorContainer extends Container {
         }
     }
 
-
     @Override
     public boolean stillValid(PlayerEntity player) {
-        if (tileEntity.getLevel() == null || tileEntity.getLevel().getBlockEntity(tileEntity.getBlockPos()) != tileEntity) {
+        if (tileEntity.getLevel() == null
+                || tileEntity.getLevel().getBlockEntity(tileEntity.getBlockPos()) != tileEntity) {
             return false;
         }
 
@@ -91,7 +91,7 @@ public class CoalGeneratorContainer extends Container {
                 if (!this.moveItemStackTo(stack, MACHINE_SLOT_COUNT, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (CoalGeneratorTileEntity.isCoalFuel(stack)) {
+            } else if (tileEntity.canAcceptFuel(stack)) {
                 if (!this.moveItemStackTo(stack, 0, MACHINE_SLOT_COUNT, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -120,18 +120,30 @@ public class CoalGeneratorContainer extends Container {
     }
 
     public int getEnergyStored() {
-        return (data.get(1) & 0xFFFF) | ((data.get(2) & 0xFFFF) << 16);
+        return (data.get(4) & 0xFFFF) | ((data.get(5) & 0xFFFF) << 16);
     }
 
     public int getEnergyScaled(int pixels) {
         return (int) ((long) getEnergyStored() * pixels / CoalGeneratorTileEntity.CAPACITY);
     }
 
+    public int getBatchEnergyRemaining() {
+        return (data.get(0) & 0xFFFF) | ((data.get(1) & 0xFFFF) << 16);
+    }
+
+    public int getBatchEnergyTotal() {
+        return (data.get(2) & 0xFFFF) | ((data.get(3) & 0xFFFF) << 16);
+    }
+
     public int getBurnScaled(int pixels) {
-        return data.get(0) * pixels / CoalGeneratorTileEntity.COAL_BURN_TICKS;
+        int total = getBatchEnergyTotal();
+        if (total <= 0) {
+            return 0;
+        }
+        return (int) Math.min(pixels, (long) getBatchEnergyRemaining() * pixels / total);
     }
 
     public boolean isBurning() {
-        return data.get(0) > 0;
+        return getBatchEnergyRemaining() > 0;
     }
 }

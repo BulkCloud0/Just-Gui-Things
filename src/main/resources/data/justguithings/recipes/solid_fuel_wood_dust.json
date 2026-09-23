@@ -1,0 +1,7 @@
+{
+  "type": "justguithings:solid_fuel",
+  "ingredient": {
+    "tag": "forge:dusts/wood"
+  },
+  "energy": 8000
+}
