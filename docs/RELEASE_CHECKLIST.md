@@ -14,8 +14,8 @@ This checklist defines the minimum gates for promoting `dev/core-industrial` to 
 - [ ] `validateRetiredIndustrialConcepts` passes.
 - [ ] The reobfuscated jar is uploaded as a GitHub Actions artifact.
 - [ ] Dedicated server startup reaches the Minecraft ready state without JEI.
-- [ ] Client startup reaches the sound-engine-ready state with JEI.
-- [ ] Client startup reaches the sound-engine-ready state without JEI.
+- [ ] Client startup reaches the resource-atlas-ready state with JEI.
+- [ ] Client startup reaches the resource-atlas-ready state without JEI.
 - [ ] Post-merge `dev/core-industrial` CI is green.
 - [ ] Final `main` CI is green before release publication.
 
