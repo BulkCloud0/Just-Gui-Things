@@ -33,7 +33,7 @@ public class FluidGeneratorTileEntity extends BaseMachineTileEntity {
     public static final int ENERGY_CAPACITY = 400_000;
     public static final int GENERATION_PER_TICK = 200;
     public static final int MAX_OUTPUT_PER_TICK = 500;
-    public static final int TANK_CAPACITY = 16_000;
+    public static final int TANK_CAPACITY = FluidFuelRecipe.MAX_FLUID_AMOUNT;
 
     private static final MachineSideMode[] ALLOWED_SIDE_MODES = {
             MachineSideMode.DISABLED,
