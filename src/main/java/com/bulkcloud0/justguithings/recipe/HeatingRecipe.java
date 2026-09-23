@@ -63,7 +63,8 @@ public class HeatingRecipe extends SingleInputProcessingRecipe {
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
-            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+            if (input.isEmpty() || processingTime <= 0 || energyPerTick <= 0
+                    || energyPerTick > MAX_ENERGY_PER_TICK) {
                 return null;
             }
             return new HeatingRecipe(recipeId, input, result, processingTime, energyPerTick);
