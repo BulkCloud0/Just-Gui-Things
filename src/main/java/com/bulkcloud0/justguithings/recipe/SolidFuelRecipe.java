@@ -124,6 +124,9 @@ public class SolidFuelRecipe implements IRecipe<IInventory> {
         public SolidFuelRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient ingredient = Ingredient.fromNetwork(buffer);
             int energy = buffer.readVarInt();
+            if (ingredient.isEmpty() || energy <= 0) {
+                return null;
+            }
             return new SolidFuelRecipe(recipeId, ingredient, energy);
         }
 
