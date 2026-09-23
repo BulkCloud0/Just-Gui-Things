@@ -137,13 +137,7 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
             return false;
         }
 
-        ItemStack output = inventory.getStackInSlot(4);
-        if (output.isEmpty()) {
-            return true;
-        }
-        return ItemStack.isSame(output, result)
-                && ItemStack.tagMatches(output, result)
-                && output.getCount() + result.getCount() <= output.getMaxStackSize();
+        return canFitItemOutput(4, result);
     }
 
     @Override
