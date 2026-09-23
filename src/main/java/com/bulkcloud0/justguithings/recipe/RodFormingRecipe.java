@@ -14,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import javax.annotation.Nullable;
 
 public class RodFormingRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 140_000;
     public RodFormingRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
         super(id, input, result, processingTime, energyPerTick);
     }
@@ -44,6 +45,11 @@ public class RodFormingRecipe extends SingleInputProcessingRecipe {
             if (processingTime <= 0 || energyPerTick <= 0) {
                 throw new JsonSyntaxException("Rod forming recipe time and FE/t must be greater than zero in " + recipeId);
             }
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Rod forming recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new RodFormingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
@@ -54,6 +60,9 @@ public class RodFormingRecipe extends SingleInputProcessingRecipe {
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             return new RodFormingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
