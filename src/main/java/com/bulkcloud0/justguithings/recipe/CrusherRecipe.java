@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class CrusherRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 500_000;
     @Nullable
     private final RecipeOutput secondaryResult;
 
@@ -89,6 +90,11 @@ public class CrusherRecipe extends SingleInputProcessingRecipe {
                 throw new JsonSyntaxException("energy_per_tick must be greater than zero in " + recipeId);
             }
 
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Crusher recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new CrusherRecipe(recipeId, input, result, secondaryResult, processingTime, energyPerTick);
         }
 
@@ -100,6 +106,9 @@ public class CrusherRecipe extends SingleInputProcessingRecipe {
             RecipeOutput secondaryResult = buffer.readBoolean() ? RecipeOutput.fromNetwork(buffer) : null;
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             return new CrusherRecipe(recipeId, input, result, secondaryResult, processingTime, energyPerTick);
         }
 
