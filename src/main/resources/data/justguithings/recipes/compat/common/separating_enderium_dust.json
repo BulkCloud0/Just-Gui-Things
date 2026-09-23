@@ -1,0 +1,53 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/enderium"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/lead"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/diamond"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ender_pearls"
+      }
+    }
+  ],
+  "type": "justguithings:separating",
+  "ingredient": {
+    "tag": "forge:dusts/enderium"
+  },
+  "input_count": 2,
+  "results": [
+    {
+      "tag": "forge:dusts/lead",
+      "count": 3
+    },
+    {
+      "tag": "forge:dusts/diamond",
+      "count": 1
+    },
+    {
+      "tag": "forge:ender_pearls",
+      "count": 2
+    }
+  ],
+  "processing_time": 320,
+  "energy_per_tick": 60
+}

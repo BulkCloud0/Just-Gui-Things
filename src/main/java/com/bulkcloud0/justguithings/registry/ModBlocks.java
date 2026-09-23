@@ -13,6 +13,7 @@ import com.bulkcloud0.justguithings.world.block.EnergyCellBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialMixerBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialWasherBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialSawmillBlock;
+import com.bulkcloud0.justguithings.world.block.IndustrialSeparatorBlock;
 import com.bulkcloud0.justguithings.world.block.IndustrialAssemblerBlock;
 import com.bulkcloud0.justguithings.world.block.ItemBufferBlock;
 import com.bulkcloud0.justguithings.world.block.FluidReservoirBlock;
@@ -58,6 +59,9 @@ public final class ModBlocks {
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> INDUSTRIAL_SAWMILL = BLOCKS.register("industrial_sawmill",
             () -> new IndustrialSawmillBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
+    public static final RegistryObject<Block> INDUSTRIAL_SEPARATOR = BLOCKS.register("industrial_separator",
+            () -> new IndustrialSeparatorBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(4.0F).harvestTool(ToolType.PICKAXE).harvestLevel(1)));
     public static final RegistryObject<Block> INDUSTRIAL_ASSEMBLER = BLOCKS.register("industrial_assembler",
             () -> new IndustrialAssemblerBlock(AbstractBlock.Properties.of(Material.METAL)

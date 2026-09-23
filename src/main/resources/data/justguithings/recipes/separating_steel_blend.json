@@ -1,0 +1,11 @@
+{
+  "type": "justguithings:separating",
+  "ingredient": { "item": "justguithings:steel_blend" },
+  "input_count": 2,
+  "results": [
+    { "tag": "forge:dusts/iron", "count": 1 },
+    { "tag": "forge:dusts/coal", "count": 1 }
+  ],
+  "processing_time": 160,
+  "energy_per_tick": 45
+}

@@ -8,6 +8,7 @@ import com.bulkcloud0.justguithings.recipe.SolidFuelRecipe;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
 import com.bulkcloud0.justguithings.recipe.WashingRecipe;
 import com.bulkcloud0.justguithings.recipe.SawingRecipe;
+import com.bulkcloud0.justguithings.recipe.SeparatingRecipe;
 import com.bulkcloud0.justguithings.recipe.HeatingRecipe;
 import com.bulkcloud0.justguithings.recipe.RodFormingRecipe;
 import com.bulkcloud0.justguithings.recipe.WireDrawingRecipe;
@@ -32,6 +33,8 @@ public final class ModRecipes {
             IRecipeType.register(JustGuiThings.MOD_ID + ":washing");
     public static final IRecipeType<SawingRecipe> SAWING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":sawing");
+    public static final IRecipeType<SeparatingRecipe> SEPARATING_TYPE =
+            IRecipeType.register(JustGuiThings.MOD_ID + ":separating");
     public static final IRecipeType<HeatingRecipe> HEATING_TYPE =
             IRecipeType.register(JustGuiThings.MOD_ID + ":heating");
     public static final IRecipeType<RodFormingRecipe> ROD_FORMING_TYPE =
@@ -55,6 +58,8 @@ public final class ModRecipes {
             RECIPE_SERIALIZERS.register("washing", WashingRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<SawingRecipe>> SAWING_SERIALIZER =
             RECIPE_SERIALIZERS.register("sawing", SawingRecipe.Serializer::new);
+    public static final RegistryObject<IRecipeSerializer<SeparatingRecipe>> SEPARATING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("separating", SeparatingRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<HeatingRecipe>> HEATING_SERIALIZER =
             RECIPE_SERIALIZERS.register("heating", HeatingRecipe.Serializer::new);
     public static final RegistryObject<IRecipeSerializer<RodFormingRecipe>> ROD_FORMING_SERIALIZER =

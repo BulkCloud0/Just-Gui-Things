@@ -112,6 +112,16 @@ Built-in recipes cut the six vanilla overworld log families into six matching pl
 
 The machine exposes standard sided Forge item and energy capabilities, supports Speed/Efficiency modules, machine redstone control and opt-in item auto-eject, and adds no special wood API. Modded wood families that cannot be mapped safely from a generic log tag to a specific plank output are extended through datapack recipes rather than hard-coded mod checks.
 
+## Industrial Separator
+
+The Industrial Separator uses the data-driven `justguithings:separating` recipe type to recover two or three deterministic item outputs from one counted composite input. A recipe defines one normal Minecraft `Ingredient`, an optional positive `input_count` (default `1`, maximum `64`), a `results` array containing exactly two or three `RecipeOutput` entries, processing time, and FE/t.
+
+This role is intentionally different from Crusher secondary outputs. Crushing performs size reduction on one material and may yield one byproduct; separation consumes a complete mixture batch and returns its constituent material families. All result slots must have room before the input count is consumed, so a blocked component output pauses the operation without deleting material. Tagged outputs use the input stack as provider context, preserving the same namespace-preference behavior used by other JGT processing recipes.
+
+Built-in separation recipes are exact reverses of JGT Mixer batches. Two `justguithings:steel_blend` recover one iron dust plus one coal dust. Common Forge-tag recipes reverse bronze, constantan, electrum, invar, signalum, lumium and enderium using the same batch counts already defined by their JGT mixing recipes. Every optional common recipe is guarded by the required Forge tags, so missing alloy/material providers cannot prevent JGT from loading.
+
+When several separating recipes match the current input, the narrower item ingredient wins first, then the larger currently-available `input_count`, then recipe ID. Partial matching stacks remain valid for Forge item automation so pipes can accumulate a required batch. The machine exposes three item output slots, standard sided Forge item/energy capabilities, Speed/Efficiency modules, machine redstone control and opt-in auto-eject. It introduces no optional-mod Java dependency and no new intermediate material form.
+
 ## Machine-specific components
 
 Machine-specific components can be replaced through datapack tags without a Java dependency:

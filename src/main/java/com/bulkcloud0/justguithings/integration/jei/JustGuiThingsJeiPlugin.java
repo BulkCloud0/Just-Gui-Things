@@ -6,6 +6,7 @@ import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialWasherScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialSawmillScreen;
+import com.bulkcloud0.justguithings.client.screen.IndustrialSeparatorScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialAssemblerScreen;
 import com.bulkcloud0.justguithings.client.screen.FluidGeneratorScreen;
 import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
@@ -42,6 +43,7 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
                 new MixingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new WashingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new SawingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
+                new SeparatingRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new FluidFuelRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new SolidFuelRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new AssemblyRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
@@ -59,6 +61,7 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.MIXING_TYPE), MixingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.WASHING_TYPE), WashingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.SAWING_TYPE), SawingRecipeCategory.UID);
+            registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.SEPARATING_TYPE), SeparatingRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.FLUID_FUEL_TYPE), FluidFuelRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.SOLID_FUEL_TYPE), SolidFuelRecipeCategory.UID);
             registration.addRecipes(world.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE), AssemblyRecipeCategory.UID);
@@ -75,6 +78,7 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModItems.INDUSTRIAL_MIXER.get()), MixingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.INDUSTRIAL_WASHER.get()), WashingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.INDUSTRIAL_SAWMILL.get()), SawingRecipeCategory.UID);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.INDUSTRIAL_SEPARATOR.get()), SeparatingRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.FLUID_GENERATOR.get()), FluidFuelRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.COAL_GENERATOR.get()), SolidFuelRecipeCategory.UID);
         registration.addRecipeCatalyst(new ItemStack(ModItems.INDUSTRIAL_ASSEMBLER.get()), AssemblyRecipeCategory.UID);
@@ -90,6 +94,7 @@ public final class JustGuiThingsJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(IndustrialMixerScreen.class, 75, 38, 30, 12, MixingRecipeCategory.UID);
         registration.addRecipeClickArea(IndustrialWasherScreen.class, 69, 38, 36, 12, WashingRecipeCategory.UID);
         registration.addRecipeClickArea(IndustrialSawmillScreen.class, 69, 38, 36, 12, SawingRecipeCategory.UID);
+        registration.addRecipeClickArea(IndustrialSeparatorScreen.class, 62, 38, 40, 12, SeparatingRecipeCategory.UID);
         registration.addRecipeClickArea(FluidGeneratorScreen.class, 126, 24, 14, 48, FluidFuelRecipeCategory.UID);
         registration.addRecipeClickArea(CoalGeneratorScreen.class, 80, 34, 8, 20, SolidFuelRecipeCategory.UID);
         registration.addRecipeClickArea(IndustrialAssemblerScreen.class, 91, 38, 19, 12, AssemblyRecipeCategory.UID);

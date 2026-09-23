@@ -34,6 +34,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.INDUSTRIAL_WASHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> INDUSTRIAL_SAWMILL = ITEMS.register("industrial_sawmill",
             () -> new BlockItem(ModBlocks.INDUSTRIAL_SAWMILL.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> INDUSTRIAL_SEPARATOR = ITEMS.register("industrial_separator",
+            () -> new BlockItem(ModBlocks.INDUSTRIAL_SEPARATOR.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> INDUSTRIAL_ASSEMBLER = ITEMS.register("industrial_assembler",
             () -> new BlockItem(ModBlocks.INDUSTRIAL_ASSEMBLER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> AUTO_CRAFTER = ITEMS.register("auto_crafter",
