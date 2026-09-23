@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.api.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.recipe.AssemblyRecipe;
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.IndustrialAssemblerContainer;
@@ -81,8 +82,39 @@ public class IndustrialAssemblerTileEntity extends BaseProcessingMachineTileEnti
         if (level == null) {
             return Optional.empty();
         }
-        return level.getRecipeManager().getRecipeFor(
-                ModRecipes.ASSEMBLY_TYPE, createRecipeInventory(), level);
+        Inventory recipeInventory = createRecipeInventory();
+        AssemblyRecipe best = null;
+        for (AssemblyRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE)) {
+            if (recipe.findMatchingSlots(recipeInventory) == null) {
+                continue;
+            }
+            if (best == null || compareAssemblyRecipes(recipe, best) < 0) {
+                best = recipe;
+            }
+        }
+        return Optional.ofNullable(best);
+    }
+
+    private int compareAssemblyRecipes(AssemblyRecipe left, AssemblyRecipe right) {
+        int specificity = RecipeSelectionHelper.compareIngredientSets(
+                left.getIngredients(), right.getIngredients());
+        if (specificity != 0) {
+            return specificity;
+        }
+
+        int leftCount = 0;
+        for (int index = 0; index < left.getInputCount(); index++) {
+            leftCount += left.getRequiredCount(index);
+        }
+        int rightCount = 0;
+        for (int index = 0; index < right.getInputCount(); index++) {
+            rightCount += right.getRequiredCount(index);
+        }
+        int countSpecificity = Integer.compare(rightCount, leftCount);
+        if (countSpecificity != 0) {
+            return countSpecificity;
+        }
+        return RecipeSelectionHelper.compareIds(left.getId(), right.getId());
     }
 
     private Inventory createRecipeInventory() {

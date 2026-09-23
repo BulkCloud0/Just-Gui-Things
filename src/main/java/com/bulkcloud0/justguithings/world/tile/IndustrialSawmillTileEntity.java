@@ -3,6 +3,7 @@ package com.bulkcloud0.justguithings.world.tile;
 import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
 import com.bulkcloud0.justguithings.recipe.SawingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -96,8 +97,16 @@ public class IndustrialSawmillTileEntity extends BaseProcessingMachineTileEntity
         if (level == null || input.isEmpty()) {
             return Optional.empty();
         }
-        return level.getRecipeManager().getRecipeFor(
-                ModRecipes.SAWING_TYPE, new Inventory(input.copy()), level);
+        SawingRecipe best = null;
+        for (SawingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.SAWING_TYPE)) {
+            if (!recipe.getInput().test(input)) {
+                continue;
+            }
+            if (best == null || RecipeSelectionHelper.compareSingleInput(recipe, best) < 0) {
+                best = recipe;
+            }
+        }
+        return Optional.ofNullable(best);
     }
 
     @Override

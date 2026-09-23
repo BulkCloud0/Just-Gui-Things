@@ -7,6 +7,7 @@ import com.bulkcloud0.justguithings.machine.SidedFluidInputHandler;
 import com.bulkcloud0.justguithings.machine.SidedFluidOutputHandler;
 import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.recipe.MixingRecipe;
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
@@ -177,19 +178,33 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
                 inventory.getStackInSlot(1).copy(),
                 inventory.getStackInSlot(2).copy());
 
+        MixingRecipe best = null;
         for (MixingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.MIXING_TYPE)) {
-            if (recipe.hasFluidIngredient()
-                    && recipe.matches(recipeInventory, level)
-                    && recipe.matchesFluid(fluidTank.getFluid())) {
-                return Optional.of(recipe);
+            if (!recipe.matches(recipeInventory, level) || !recipe.matchesFluid(fluidTank.getFluid())) {
+                continue;
+            }
+            if (best == null || compareMixingRecipes(recipe, best) < 0) {
+                best = recipe;
             }
         }
-        for (MixingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.MIXING_TYPE)) {
-            if (!recipe.hasFluidIngredient() && recipe.matches(recipeInventory, level)) {
-                return Optional.of(recipe);
-            }
+        return Optional.ofNullable(best);
+    }
+
+    private int compareMixingRecipes(MixingRecipe left, MixingRecipe right) {
+        if (left.hasFluidIngredient() != right.hasFluidIngredient()) {
+            return left.hasFluidIngredient() ? -1 : 1;
         }
-        return Optional.empty();
+
+        int specificity = RecipeSelectionHelper.compareIngredientSets(
+                left.getIngredients(), right.getIngredients());
+        if (specificity != 0) {
+            return specificity;
+        }
+
+        if (left.hasFluidIngredient() && left.isFluidTagBased() != right.isFluidTagBased()) {
+            return left.isFluidTagBased() ? 1 : -1;
+        }
+        return RecipeSelectionHelper.compareIds(left.getId(), right.getId());
     }
 
     @Override

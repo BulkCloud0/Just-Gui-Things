@@ -6,6 +6,7 @@ import com.bulkcloud0.justguithings.machine.MachineSideMode;
 import com.bulkcloud0.justguithings.machine.SidedFluidInputHandler;
 import com.bulkcloud0.justguithings.machine.SidedFluidOutputHandler;
 import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
 import com.bulkcloud0.justguithings.recipe.WashingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -181,12 +182,28 @@ public class IndustrialWasherTileEntity extends BaseProcessingMachineTileEntity<
         }
 
         Inventory recipeInventory = new Inventory(inventory.getStackInSlot(INPUT_SLOT).copy());
+        WashingRecipe best = null;
         for (WashingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.WASHING_TYPE)) {
-            if (recipe.matches(recipeInventory, level) && recipe.matchesFluid(fluidTank.getFluid())) {
-                return Optional.of(recipe);
+            if (!recipe.matches(recipeInventory, level) || !recipe.matchesFluid(fluidTank.getFluid())) {
+                continue;
+            }
+            if (best == null || compareWashingRecipes(recipe, best) < 0) {
+                best = recipe;
             }
         }
-        return Optional.empty();
+        return Optional.ofNullable(best);
+    }
+
+    private int compareWashingRecipes(WashingRecipe left, WashingRecipe right) {
+        int specificity = RecipeSelectionHelper.compareIngredients(left.getInput(), right.getInput());
+        if (specificity != 0) {
+            return specificity;
+        }
+
+        if (left.isFluidTagBased() != right.isFluidTagBased()) {
+            return left.isFluidTagBased() ? 1 : -1;
+        }
+        return RecipeSelectionHelper.compareIds(left.getId(), right.getId());
     }
 
     @Override
