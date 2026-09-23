@@ -12,6 +12,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -165,12 +166,18 @@ public class AutoCrafterTileEntity extends BaseProcessingMachineTileEntity<AutoC
         if (level == null || lockedRecipeId == null || !matchesLockedTemplate()) {
             return Optional.empty();
         }
-        CraftingInventory grid = createCraftingInventory();
-        Optional<ICraftingRecipe> recipe = level.getRecipeManager().getRecipeFor(IRecipeType.CRAFTING, grid, level);
-        if (!recipe.isPresent() || !lockedRecipeId.equals(recipe.get().getId())) {
+
+        Optional<? extends IRecipe<?>> recipeOptional = level.getRecipeManager().byKey(lockedRecipeId);
+        if (!recipeOptional.isPresent() || !(recipeOptional.get() instanceof ICraftingRecipe)) {
             return Optional.empty();
         }
-        return Optional.of(new CraftingOperation(recipe.get()));
+
+        ICraftingRecipe recipe = (ICraftingRecipe) recipeOptional.get();
+        CraftingInventory grid = createCraftingInventory();
+        if (!recipe.matches(grid, level)) {
+            return Optional.empty();
+        }
+        return Optional.of(new CraftingOperation(recipe));
     }
 
     @Override
