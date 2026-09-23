@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class FluidFuelRecipe implements IRecipe<IInventory> {
+    public static final int MAX_FLUID_AMOUNT = 16_000;
     private final ResourceLocation id;
     private final FluidIngredient fluidIngredient;
     private final int fluidAmount;
@@ -110,8 +111,9 @@ public class FluidFuelRecipe implements IRecipe<IInventory> {
             int fluidAmount = JSONUtils.getAsInt(fluidJson, "amount", 1000);
             int energy = JSONUtils.getAsInt(json, "energy");
 
-            if (fluidAmount <= 0) {
-                throw new JsonSyntaxException("Fluid fuel amount must be greater than zero in " + recipeId);
+            if (fluidAmount <= 0 || fluidAmount > MAX_FLUID_AMOUNT) {
+                throw new JsonSyntaxException("Fluid fuel amount must be between 1 and "
+                        + MAX_FLUID_AMOUNT + " mB in " + recipeId);
             }
             if (energy <= 0) {
                 throw new JsonSyntaxException("Fluid fuel energy must be greater than zero in " + recipeId);
@@ -126,6 +128,9 @@ public class FluidFuelRecipe implements IRecipe<IInventory> {
             FluidIngredient fluidIngredient = FluidIngredient.fromNetwork(buffer);
             int fluidAmount = buffer.readVarInt();
             int energy = buffer.readVarInt();
+            if (fluidAmount <= 0 || fluidAmount > MAX_FLUID_AMOUNT || energy <= 0) {
+                return null;
+            }
             return new FluidFuelRecipe(recipeId, fluidIngredient, fluidAmount, energy);
         }
 
