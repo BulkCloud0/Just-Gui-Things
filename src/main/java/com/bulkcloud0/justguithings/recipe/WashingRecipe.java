@@ -82,9 +82,9 @@ public class WashingRecipe extends SingleInputProcessingRecipe {
             if (input.isEmpty()) {
                 throw new JsonSyntaxException("Washing recipe " + recipeId + " has an empty input");
             }
-            if (fluidAmount <= 0) {
-                throw new JsonSyntaxException("Washing recipe fluid amount must be greater than zero in "
-                        + recipeId);
+            if (fluidAmount <= 0 || fluidAmount > MAX_FLUID_AMOUNT) {
+                throw new JsonSyntaxException("Washing recipe fluid amount must be between 1 and "
+                        + MAX_FLUID_AMOUNT + " mB in " + recipeId);
             }
             if (processingTime <= 0 || energyPerTick <= 0) {
                 throw new JsonSyntaxException("Washing recipe time and FE/t must be greater than zero in "
@@ -104,6 +104,9 @@ public class WashingRecipe extends SingleInputProcessingRecipe {
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (input.isEmpty() || fluidAmount <= 0 || fluidAmount > MAX_FLUID_AMOUNT) {
+                return null;
+            }
             return new WashingRecipe(recipeId, input, fluidIngredient, fluidAmount,
                     result, processingTime, energyPerTick);
         }
