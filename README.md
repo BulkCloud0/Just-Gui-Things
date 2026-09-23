@@ -74,6 +74,18 @@ See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for extension points and soft
 - Forge 36.2.42
 - Java 8 target
 - ForgeGradle 6
-- Gradle 8.4 toolchain
+- Gradle Wrapper 8.4
+
+## Build and verification
+
+CI and local builds use the repository-pinned Gradle Wrapper 8.4. Use JDK 17 to launch Gradle; the project compiles to the Java 8 target through the configured toolchain.
+
+```bash
+./gradlew clean build --stacktrace --no-daemon
+```
+
+On Windows use `gradlew.bat`. The reobfuscated mod jar is produced under `build/libs/`. Pull requests run the unit tests and repository verification guards; pushes to `dev/core-industrial` and `main` also perform dedicated-server and client-startup smoke tests. Set `-PjgtNoJei` on development run tasks to verify the optional no-JEI runtime path.
+
+See [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) before promoting `dev/core-industrial` to `main`.
 
 Development work happens on feature branches and is merged through pull requests.
