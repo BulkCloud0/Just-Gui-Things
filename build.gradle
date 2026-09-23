@@ -86,6 +86,32 @@ tasks.register('validateCompatRecipes') {
         }
 
         def parser = new groovy.json.JsonSlurper()
+
+        Map<String, Long> defaultEnergyPerTickByType = [
+                'justguithings:crushing': 20L,
+                'justguithings:pressing': 30L,
+                'justguithings:mixing': 45L,
+                'justguithings:washing': 30L,
+                'justguithings:sawing': 25L,
+                'justguithings:separating': 45L,
+                'justguithings:heating': 40L,
+                'justguithings:rod_forming': 55L,
+                'justguithings:wire_drawing': 50L,
+                'justguithings:assembly': 50L
+        ]
+        Map<String, Long> maxEnergyPerTickByType = [
+                'justguithings:crushing': 500000L,
+                'justguithings:pressing': 100000L,
+                'justguithings:mixing': 150000L,
+                'justguithings:washing': 120000L,
+                'justguithings:sawing': 80000L,
+                'justguithings:separating': 80000L,
+                'justguithings:heating': 120000L,
+                'justguithings:rod_forming': 140000L,
+                'justguithings:wire_drawing': 130000L,
+                'justguithings:assembly': 160000L
+        ]
+
         Set<String> sharedTagNamespaces = ['minecraft', 'forge', 'justguithings'] as Set<String>
         Set<String> coreItemNamespaces = ['minecraft', 'justguithings'] as Set<String>
 
@@ -307,7 +333,17 @@ tasks.register('validateRecipePhysicalLimits') {
                 return
             }
 
-            switch (recipe.type as String) {
+            String recipeType = recipe.type as String
+            if (maxEnergyPerTickByType.containsKey(recipeType)) {
+                validateBounded(
+                        recipe.containsKey('energy_per_tick') ? recipe.energy_per_tick : null,
+                        defaultEnergyPerTickByType.get(recipeType),
+                        maxEnergyPerTickByType.get(recipeType),
+                        'energy_per_tick',
+                        relativePath)
+            }
+
+            switch (recipeType) {
                 case 'justguithings:assembly':
                     List ingredients = recipe.ingredients instanceof List ? recipe.ingredients : []
                     ingredients.eachWithIndex { entry, int index ->
