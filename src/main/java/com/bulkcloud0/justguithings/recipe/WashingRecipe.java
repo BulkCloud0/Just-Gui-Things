@@ -17,6 +17,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class WashingRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_FLUID_AMOUNT = 4_000;
+
     private final FluidIngredient fluidIngredient;
     private final int fluidAmount;
 
