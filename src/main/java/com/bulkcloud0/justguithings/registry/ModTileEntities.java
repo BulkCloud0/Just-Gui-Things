@@ -12,6 +12,7 @@ import com.bulkcloud0.justguithings.world.tile.CrusherTileEntity;
 import com.bulkcloud0.justguithings.world.tile.EnergyCellTileEntity;
 import com.bulkcloud0.justguithings.world.tile.IndustrialMixerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.IndustrialWasherTileEntity;
+import com.bulkcloud0.justguithings.world.tile.IndustrialSawmillTileEntity;
 import com.bulkcloud0.justguithings.world.tile.IndustrialAssemblerTileEntity;
 import com.bulkcloud0.justguithings.world.tile.ItemBufferTileEntity;
 import com.bulkcloud0.justguithings.world.tile.FluidReservoirTileEntity;
@@ -46,6 +47,8 @@ public final class ModTileEntities {
             "industrial_mixer", () -> TileEntityType.Builder.of(IndustrialMixerTileEntity::new, ModBlocks.INDUSTRIAL_MIXER.get()).build(null));
     public static final RegistryObject<TileEntityType<IndustrialWasherTileEntity>> INDUSTRIAL_WASHER = TILE_ENTITIES.register(
             "industrial_washer", () -> TileEntityType.Builder.of(IndustrialWasherTileEntity::new, ModBlocks.INDUSTRIAL_WASHER.get()).build(null));
+    public static final RegistryObject<TileEntityType<IndustrialSawmillTileEntity>> INDUSTRIAL_SAWMILL = TILE_ENTITIES.register(
+            "industrial_sawmill", () -> TileEntityType.Builder.of(IndustrialSawmillTileEntity::new, ModBlocks.INDUSTRIAL_SAWMILL.get()).build(null));
     public static final RegistryObject<TileEntityType<IndustrialAssemblerTileEntity>> INDUSTRIAL_ASSEMBLER = TILE_ENTITIES.register(
             "industrial_assembler", () -> TileEntityType.Builder.of(IndustrialAssemblerTileEntity::new, ModBlocks.INDUSTRIAL_ASSEMBLER.get()).build(null));
     public static final RegistryObject<TileEntityType<AutoCrafterTileEntity>> AUTO_CRAFTER = TILE_ENTITIES.register(

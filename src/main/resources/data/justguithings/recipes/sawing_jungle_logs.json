@@ -1,0 +1,8 @@
+{
+  "type": "justguithings:sawing",
+  "ingredient": { "tag": "minecraft:jungle_logs" },
+  "result": { "item": "minecraft:jungle_planks", "count": 6 },
+  "secondary_result": { "tag": "forge:dusts/wood", "count": 1 },
+  "processing_time": 80,
+  "energy_per_tick": 25
+}

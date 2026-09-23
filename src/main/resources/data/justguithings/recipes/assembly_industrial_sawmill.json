@@ -1,0 +1,14 @@
+{
+  "type": "justguithings:assembly",
+  "ingredients": [
+    { "ingredient": { "tag": "forge:plates/iron" }, "count": 4 },
+    { "ingredient": { "tag": "forge:gears/iron" }, "count": 2 },
+    { "ingredient": { "item": "minecraft:redstone" }, "count": 2 },
+    { "ingredient": { "item": "minecraft:stonecutter" }, "count": 1 }
+  ],
+  "result": {
+    "item": "justguithings:industrial_sawmill"
+  },
+  "processing_time": 140,
+  "energy_per_tick": 50
+}
