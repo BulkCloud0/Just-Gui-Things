@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecipe {
+    public static final int MAX_ITEM_INPUT_COUNT = 64;
+    public static final int MAX_FLUID_AMOUNT = 8_000;
     private final ResourceLocation id;
     private final Ingredient primary;
     private final int primaryCount;
@@ -259,9 +261,9 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
                 JsonObject fluidJson = JSONUtils.getAsJsonObject(json, "fluid");
                 fluidIngredient = FluidIngredient.fromJson(recipeId, fluidJson);
                 fluidAmount = JSONUtils.getAsInt(fluidJson, "amount", 1000);
-                if (fluidAmount <= 0) {
-                    throw new JsonSyntaxException("Mixing recipe fluid amount must be greater than zero in "
-                            + recipeId);
+                if (fluidAmount <= 0 || fluidAmount > MAX_FLUID_AMOUNT) {
+                    throw new JsonSyntaxException("Mixing recipe fluid amount must be between 1 and "
+                            + MAX_FLUID_AMOUNT + " mB in " + recipeId);
                 }
             }
 
@@ -272,8 +274,11 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             if (primary.isEmpty() || secondary.isEmpty() || (tertiary != null && tertiary.isEmpty())) {
                 throw new JsonSyntaxException("Mixing recipe " + recipeId + " has an empty ingredient");
             }
-            if (primaryCount <= 0 || secondaryCount <= 0 || (tertiary != null && tertiaryCount <= 0)) {
-                throw new JsonSyntaxException("Mixing recipe ingredient counts must be greater than zero in " + recipeId);
+            if (primaryCount <= 0 || primaryCount > MAX_ITEM_INPUT_COUNT
+                    || secondaryCount <= 0 || secondaryCount > MAX_ITEM_INPUT_COUNT
+                    || (tertiary != null && (tertiaryCount <= 0 || tertiaryCount > MAX_ITEM_INPUT_COUNT))) {
+                throw new JsonSyntaxException("Mixing recipe ingredient counts must be between 1 and "
+                        + MAX_ITEM_INPUT_COUNT + " in " + recipeId);
             }
             if (processingTime <= 0 || energyPerTick <= 0) {
                 throw new JsonSyntaxException("Mixing recipe time and FE/t must be greater than zero in " + recipeId);
@@ -305,6 +310,13 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (primary.isEmpty() || secondary.isEmpty() || (tertiary != null && tertiary.isEmpty())
+                    || primaryCount <= 0 || primaryCount > MAX_ITEM_INPUT_COUNT
+                    || secondaryCount <= 0 || secondaryCount > MAX_ITEM_INPUT_COUNT
+                    || (tertiary != null && (tertiaryCount <= 0 || tertiaryCount > MAX_ITEM_INPUT_COUNT))
+                    || (fluidIngredient != null && (fluidAmount <= 0 || fluidAmount > MAX_FLUID_AMOUNT))) {
+                return null;
+            }
             return new MixingRecipe(recipeId, primary, primaryCount, secondary, secondaryCount,
                     tertiary, tertiaryCount, fluidIngredient, fluidAmount, result, processingTime, energyPerTick);
         }
