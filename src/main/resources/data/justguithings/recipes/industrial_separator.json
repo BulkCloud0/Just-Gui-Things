@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PGP",
+    "RCR",
+    "PGP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "G": { "tag": "forge:gears/iron" },
+    "R": { "item": "minecraft:redstone" },
+    "C": { "item": "minecraft:grindstone" }
+  },
+  "result": {
+    "item": "justguithings:industrial_separator"
+  }
+}

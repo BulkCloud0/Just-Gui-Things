@@ -1,0 +1,42 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/invar"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/iron"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/nickel"
+      }
+    }
+  ],
+  "type": "justguithings:separating",
+  "ingredient": {
+    "tag": "forge:dusts/invar"
+  },
+  "input_count": 3,
+  "results": [
+    {
+      "tag": "forge:dusts/iron",
+      "count": 2
+    },
+    {
+      "tag": "forge:dusts/nickel",
+      "count": 1
+    }
+  ],
+  "processing_time": 240,
+  "energy_per_tick": 45
+}

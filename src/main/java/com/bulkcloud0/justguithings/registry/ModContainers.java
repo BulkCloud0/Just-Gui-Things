@@ -10,6 +10,7 @@ import com.bulkcloud0.justguithings.world.container.EnergyCellContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialMixerContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialWasherContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialSawmillContainer;
+import com.bulkcloud0.justguithings.world.container.IndustrialSeparatorContainer;
 import com.bulkcloud0.justguithings.world.container.IndustrialAssemblerContainer;
 import com.bulkcloud0.justguithings.world.container.ItemBufferContainer;
 import com.bulkcloud0.justguithings.world.container.FluidReservoirContainer;
@@ -47,6 +48,8 @@ public final class ModContainers {
             CONTAINERS.register("industrial_washer", () -> IForgeContainerType.create(IndustrialWasherContainer::new));
     public static final RegistryObject<ContainerType<IndustrialSawmillContainer>> INDUSTRIAL_SAWMILL =
             CONTAINERS.register("industrial_sawmill", () -> IForgeContainerType.create(IndustrialSawmillContainer::new));
+    public static final RegistryObject<ContainerType<IndustrialSeparatorContainer>> INDUSTRIAL_SEPARATOR =
+            CONTAINERS.register("industrial_separator", () -> IForgeContainerType.create(IndustrialSeparatorContainer::new));
     public static final RegistryObject<ContainerType<IndustrialAssemblerContainer>> INDUSTRIAL_ASSEMBLER =
             CONTAINERS.register("industrial_assembler", () -> IForgeContainerType.create(IndustrialAssemblerContainer::new));
     public static final RegistryObject<ContainerType<AutoCrafterContainer>> AUTO_CRAFTER =

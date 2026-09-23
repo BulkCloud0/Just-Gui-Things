@@ -1,0 +1,42 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/electrum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/gold"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/silver"
+      }
+    }
+  ],
+  "type": "justguithings:separating",
+  "ingredient": {
+    "tag": "forge:dusts/electrum"
+  },
+  "input_count": 2,
+  "results": [
+    {
+      "tag": "forge:dusts/gold",
+      "count": 1
+    },
+    {
+      "tag": "forge:dusts/silver",
+      "count": 1
+    }
+  ],
+  "processing_time": 160,
+  "energy_per_tick": 45
+}

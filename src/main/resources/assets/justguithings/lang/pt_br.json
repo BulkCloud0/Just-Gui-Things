@@ -38,9 +38,9 @@
   "tooltip.justguithings.energy_cell.portable": "Mantém FE/configuração das faces e expõe Forge Energy enquanto está como item.",
   "tooltip.justguithings.configurator.use": "Clique com o botão direito em uma face configurável para aplicar o modo selecionado do Configurador.",
   "tooltip.justguithings.speed_module.effect": "+50% no multiplicador de velocidade por módulo; FE/t aumenta junto.",
-  "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Lavadora Industrial, Serraria Industrial, Montador Industrial, Auto Crafter",
+  "tooltip.justguithings.speed_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Lavadora Industrial, Serraria Industrial, Separador Industrial, Montador Industrial, Auto Crafter",
   "tooltip.justguithings.efficiency_module.effect": "-15% FE/t e +10% no tempo de processamento por módulo; até 4 módulos.",
-  "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Lavadora Industrial, Serraria Industrial, Montador Industrial, Auto Crafter",
+  "tooltip.justguithings.efficiency_module.compatibility": "Compatível: Triturador, Prensa de Estampagem, Laminador de Hastes, Laminador de Fios, Misturador Industrial, Lavadora Industrial, Serraria Industrial, Separador Industrial, Montador Industrial, Auto Crafter",
   "tooltip.justguithings.buffer_module.effect": "+100.000 FE de capacidade no Triturador por módulo.",
   "tooltip.justguithings.buffer_module.compatibility": "Compatível: Triturador",
   "tooltip.justguithings.batch_module.effect": "+1 item de entrada por operação do Triturador por módulo, até x5 no total.",
@@ -290,5 +290,9 @@
   "item.justguithings.sawdust": "Serragem",
   "jei.justguithings.sawing": "Corte Industrial",
   "jei.justguithings.solid_fuel": "Combustível Sólido",
-  "jei.justguithings.solid_fuel.energy": "%s FE no total"
+  "jei.justguithings.solid_fuel.energy": "%s FE no total",
+  "block.justguithings.industrial_separator": "Separador Industrial",
+  "item.justguithings.industrial_separator": "Separador Industrial",
+  "container.justguithings.industrial_separator": "Separador Industrial",
+  "jei.justguithings.separating": "Separação Industrial"
 }

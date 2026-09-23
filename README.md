@@ -30,6 +30,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Vacuum Collector for energy-backed collection of nearby dropped item entities into Forge item logistics
 - Industrial Washer for data-driven item + fluid treatment, including automated concrete-powder hydration
 - Industrial Sawmill for data-driven wood cutting with increased plank yield and interoperable sawdust byproduct
+- Industrial Separator for counted recovery of 2-3 components from mixed/alloy dust batches
 - Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
 - Machine specialization through modules such as the Resistive Furnace Power Coil
 - Configurator modes for per-face automation, active-machine redstone control, machine item auto-eject (including the Item Buffer) and conduit-to-conduit connection toggling
