@@ -51,6 +51,8 @@ dependencies {
 
     compileOnly fg.deobf('curse.maven:jei-238222:4371666')
     runtimeOnly fg.deobf('curse.maven:jei-238222:4371666')
+
+    testImplementation 'junit:junit:4.13.2'
 }
 
 tasks.named('jar', Jar).configure {
