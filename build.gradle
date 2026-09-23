@@ -258,6 +258,128 @@ tasks.register('validateCompatRecipes') {
         }
     }
 }
+tasks.register('validateRecipePhysicalLimits') {
+    group = 'verification'
+    description = 'Validates that bundled JGT machine recipes fit physical item/fluid storage capacities.'
+
+    doLast {
+        File recipesDir = file('src/main/resources/data/justguithings/recipes')
+        if (!recipesDir.exists()) {
+            return
+        }
+
+        def parser = new groovy.json.JsonSlurper()
+
+        Closure validateBounded = { rawValue, defaultValue, maxValue, field, relativePath ->
+            long value = ((Number) defaultValue).longValue()
+            long maximum = ((Number) maxValue).longValue()
+            if (rawValue != null) {
+                if (!(rawValue instanceof Number)) {
+                    throw new GradleException('Bundled recipe ' + relativePath
+                            + ' must use a numeric ' + field)
+                }
+                value = ((Number) rawValue).longValue()
+            }
+
+            if (value < 1L || value > maximum) {
+                throw new GradleException('Bundled recipe ' + relativePath
+                        + ' has ' + field + '=' + value
+                        + '; expected 1-' + maximum)
+            }
+        }
+
+        fileTree(recipesDir).matching { include '**/*.json' }.files.sort().each { File recipeFile ->
+            String relativePath = recipesDir.toPath()
+                    .relativize(recipeFile.toPath())
+                    .toString()
+                    .replace('\\', '/')
+
+            def recipe
+            try {
+                recipe = parser.parse(recipeFile)
+            } catch (Exception error) {
+                throw new GradleException('Invalid bundled recipe JSON: ' + relativePath, error)
+            }
+
+            if (!(recipe instanceof Map) || !(recipe.type instanceof String)) {
+                return
+            }
+
+            switch (recipe.type as String) {
+                case 'justguithings:assembly':
+                    List ingredients = recipe.ingredients instanceof List ? recipe.ingredients : []
+                    ingredients.eachWithIndex { entry, int index ->
+                        if (entry instanceof Map) {
+                            validateBounded(
+                                    entry.containsKey('count') ? entry.count : null,
+                                    1L,
+                                    64L,
+                                    'ingredient count at index ' + index,
+                                    relativePath)
+                        }
+                    }
+                    break
+
+                case 'justguithings:mixing':
+                    validateBounded(
+                            recipe.containsKey('primary_count') ? recipe.primary_count : null,
+                            1L,
+                            64L,
+                            'primary_count',
+                            relativePath)
+                    validateBounded(
+                            recipe.containsKey('secondary_count') ? recipe.secondary_count : null,
+                            1L,
+                            64L,
+                            'secondary_count',
+                            relativePath)
+                    if (recipe.tertiary != null) {
+                        validateBounded(
+                                recipe.containsKey('tertiary_count') ? recipe.tertiary_count : null,
+                                1L,
+                                64L,
+                                'tertiary_count',
+                                relativePath)
+                    }
+                    if (recipe.fluid instanceof Map) {
+                        validateBounded(
+                                recipe.fluid.containsKey('amount') ? recipe.fluid.amount : null,
+                                1000L,
+                                8000L,
+                                'fluid amount',
+                                relativePath)
+                    }
+                    break
+
+                case 'justguithings:washing':
+                    if (recipe.fluid instanceof Map) {
+                        validateBounded(
+                                recipe.fluid.containsKey('amount') ? recipe.fluid.amount : null,
+                                1000L,
+                                4000L,
+                                'fluid amount',
+                                relativePath)
+                    }
+                    break
+
+                case 'justguithings:fluid_fuel':
+                    if (recipe.fluid instanceof Map) {
+                        validateBounded(
+                                recipe.fluid.containsKey('amount') ? recipe.fluid.amount : null,
+                                1000L,
+                                16000L,
+                                'fluid amount',
+                                relativePath)
+                    }
+                    break
+
+                default:
+                    break
+            }
+        }
+    }
+}
+
 tasks.register('validateOptionalIntegrationBoundaries') {
     group = 'verification'
     description = 'Validates that optional mod APIs stay isolated behind dedicated integration packages.'
@@ -457,6 +579,7 @@ tasks.register('validateRetiredIndustrialConcepts') {
 
 tasks.named('processResources').configure {
     dependsOn tasks.named('validateCompatRecipes')
+    dependsOn tasks.named('validateRecipePhysicalLimits')
     dependsOn tasks.named('validateOptionalIntegrationBoundaries')
     dependsOn tasks.named('validateClientBoundaries')
     dependsOn tasks.named('validateRetiredIndustrialConcepts')
@@ -464,6 +587,7 @@ tasks.named('processResources').configure {
 
 tasks.named('check').configure {
     dependsOn tasks.named('validateCompatRecipes')
+    dependsOn tasks.named('validateRecipePhysicalLimits')
     dependsOn tasks.named('validateOptionalIntegrationBoundaries')
     dependsOn tasks.named('validateClientBoundaries')
     dependsOn tasks.named('validateRetiredIndustrialConcepts')
