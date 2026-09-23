@@ -222,14 +222,7 @@ public class IndustrialMixerTileEntity extends BaseProcessingMachineTileEntity<M
             return false;
         }
 
-        ItemStack output = inventory.getStackInSlot(3);
-        if (output.isEmpty()) {
-            return true;
-        }
-        if (!ItemStack.isSame(output, result) || !ItemStack.tagMatches(output, result)) {
-            return false;
-        }
-        return output.getCount() + result.getCount() <= output.getMaxStackSize();
+        return canFitItemOutput(3, result);
     }
 
     @Override

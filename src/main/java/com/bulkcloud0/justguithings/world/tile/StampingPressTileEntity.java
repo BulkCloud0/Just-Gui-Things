@@ -96,14 +96,7 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
             return false;
         }
 
-        ItemStack output = inventory.getStackInSlot(1);
-        if (output.isEmpty()) {
-            return true;
-        }
-        if (!ItemStack.isSame(output, result) || !ItemStack.tagMatches(output, result)) {
-            return false;
-        }
-        return output.getCount() + result.getCount() <= output.getMaxStackSize();
+        return canFitItemOutput(1, result);
     }
 
     @Override

@@ -394,6 +394,32 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
         return inventory;
     }
 
+    protected final boolean canFitItemOutput(int slot, ItemStack result) {
+        return canFitItemOutput(slot, result, 1);
+    }
+
+    protected final boolean canFitItemOutput(int slot, ItemStack result, int multiplier) {
+        if (slot < 0 || slot >= inventory.getSlots()
+                || result.isEmpty() || result.getCount() <= 0 || multiplier <= 0) {
+            return false;
+        }
+
+        long producedCount = (long) result.getCount() * multiplier;
+        ItemStack current = inventory.getStackInSlot(slot);
+        if (current.isEmpty()) {
+            int limit = Math.min(inventory.getSlotLimit(slot), result.getMaxStackSize());
+            return producedCount <= limit;
+        }
+
+        if (!ItemStack.isSame(current, result) || !ItemStack.tagMatches(current, result)) {
+            return false;
+        }
+
+        int limit = Math.min(inventory.getSlotLimit(slot), current.getMaxStackSize());
+        return current.getCount() <= limit
+                && producedCount <= (long) limit - current.getCount();
+    }
+
     @Nullable
     protected final TileEntity getLoadedBlockEntity(BlockPos pos) {
         if (level == null || !level.hasChunkAt(pos)) {
