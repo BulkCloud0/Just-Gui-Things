@@ -30,6 +30,8 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.STAMPING_PRESS.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> INDUSTRIAL_MIXER = ITEMS.register("industrial_mixer",
             () -> new BlockItem(ModBlocks.INDUSTRIAL_MIXER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
+    public static final RegistryObject<Item> INDUSTRIAL_WASHER = ITEMS.register("industrial_washer",
+            () -> new BlockItem(ModBlocks.INDUSTRIAL_WASHER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> INDUSTRIAL_ASSEMBLER = ITEMS.register("industrial_assembler",
             () -> new BlockItem(ModBlocks.INDUSTRIAL_ASSEMBLER.get(), new Item.Properties().tab(ItemGroup.TAB_REDSTONE)));
     public static final RegistryObject<Item> AUTO_CRAFTER = ITEMS.register("auto_crafter",

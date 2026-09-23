@@ -78,6 +78,14 @@ Example:
 }
 ```
 
+## Industrial Washer
+
+The Industrial Washer uses the data-driven `justguithings:washing` recipe type for fluid-assisted treatment of one item input into one item output. Each recipe defines a normal Minecraft item `Ingredient`, one exact or tag-based `FluidIngredient` with an amount in mB, a `RecipeOutput`, processing time, and FE/t. This is intentionally separate from Industrial Mixer recipes: washing applies a consumed fluid reagent to one material rather than combining multiple material inputs.
+
+The washer tank holds 4,000 mB and only accepts fluid types referenced by currently loaded washing recipes. Required fluid is checked throughout processing and drained only when an operation completes, preventing partial consumption if output becomes blocked. `FLUID_INPUT` faces fill the recipe tank, while `FLUID_OUTPUT` is pull-only recovery for pipes or third-party Forge automation. Item input/output and energy continue to use the standard sided Forge capabilities. Speed/Efficiency modules, machine redstone control, and opt-in item auto-eject reuse the shared machine contracts.
+
+Built-in washing recipes hydrate all 16 vanilla concrete-powder colors with water. Datapacks and optional integrations can add other item/tag + fluid/tag treatments without Java dependencies or new material-state systems.
+
 ## Machine-specific components
 
 Machine-specific components can be replaced through datapack tags without a Java dependency:
