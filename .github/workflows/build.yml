@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - main
+      - dev/core-industrial
   pull_request:
+
+permissions:
+  contents: read
 
 concurrency:
   group: build-${{ github.workflow }}-${{ github.ref }}
@@ -23,10 +27,77 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle 8.4
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Set up Gradle cache
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.4'
 
       - name: Build mod
-        run: gradle build --stacktrace --no-daemon
+        run: ./gradlew build --stacktrace --no-daemon
+
+      - name: Runtime smoke tests
+        if: github.event_name == 'push'
+        timeout-minutes: 20
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v xvfb-run >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb
+          fi
+
+          smoke_run() {
+            label="$1"
+            pattern="$2"
+            shift 2
+            output_file="${label}-smoke.out"
+            rm -rf run/logs
+            mkdir -p run
+            setsid "$@" > "$output_file" 2>&1 &
+            pid=$!
+            success=0
+
+            for _ in $(seq 1 150); do
+              if [[ -f run/logs/latest.log ]] && grep -Fq "$pattern" run/logs/latest.log; then
+                success=1
+                break
+              fi
+              if ! kill -0 "$pid" 2>/dev/null; then
+                break
+              fi
+              sleep 2
+            done
+
+            if kill -0 "$pid" 2>/dev/null; then
+              kill -INT -- "-$pid" 2>/dev/null || true
+              sleep 2
+              kill -KILL -- "-$pid" 2>/dev/null || true
+            fi
+            wait "$pid" 2>/dev/null || true
+
+            if [[ "$success" -eq 1 ]]; then
+              echo "$label smoke test reached: $pattern"
+              return 0
+            fi
+
+            echo "$label smoke test did not reach: $pattern"
+            tail -n 200 "$output_file" || true
+            tail -n 200 run/logs/latest.log || true
+            return 1
+          }
+
+          mkdir -p run
+          printf 'eula=true\n' > run/eula.txt
+          smoke_run server 'Done (' ./gradlew runServer -PjgtNoJei --stacktrace --no-daemon
+          smoke_run client-jei 'Sound engine started' env LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./gradlew runClient --stacktrace --no-daemon
+          smoke_run client-no-jei 'Sound engine started' env LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./gradlew runClient -PjgtNoJei --stacktrace --no-daemon
+
+      - name: Upload reobfuscated jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: justguithings-${{ github.sha }}
+          path: build/libs/justguithings-*.jar
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

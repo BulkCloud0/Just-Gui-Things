@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag; must match v + build.gradle version'
+        required: true
+        default: 'v0.1.0-alpha'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 for Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Resolve release version
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          project_version=$(sed -n "s/^version = '\([^']*\)'/\1/p" build.gradle)
+          if [[ -z "$project_version" ]]; then
+            echo 'Could not resolve build.gradle version' >&2
+            exit 1
+          fi
+
+          if [[ "$GITHUB_EVENT_NAME" == 'workflow_dispatch' ]]; then
+            if [[ "$GITHUB_REF" != 'refs/heads/main' ]]; then
+              echo 'Manual releases must be dispatched from main' >&2
+              exit 1
+            fi
+            tag='${{ inputs.version }}'
+          else
+            tag="$GITHUB_REF_NAME"
+          fi
+
+          expected_tag="v${project_version}"
+          if [[ "$tag" != "$expected_tag" ]]; then
+            echo "Release tag $tag does not match build version $expected_tag" >&2
+            exit 1
+          fi
+
+          echo "version=$project_version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Clean release build
+        run: ./gradlew clean build --stacktrace --no-daemon
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+          TAG: ${{ steps.release.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jar="build/libs/justguithings-${VERSION}.jar"
+          if [[ ! -f "$jar" ]]; then
+            echo "Expected release jar not found: $jar" >&2
+            find build/libs -maxdepth 1 -type f -print || true
+            exit 1
+          fi
+
+          sha256sum "$jar" > "${jar}.sha256"
+          flags=(--target "$GITHUB_SHA" --generate-notes --title "Just Gui Things $TAG")
+          if [[ "$VERSION" == *-* ]]; then
+            flags+=(--prerelease --latest=false)
+          fi
+          gh release create "$TAG" "$jar" "${jar}.sha256" "${flags[@]}"
