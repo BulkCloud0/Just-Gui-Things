@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/lumium"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/lumium"
+      }
+    }
+  ],
+  "type": "justguithings:rod_forming",
+  "ingredient": {
+    "tag": "forge:ingots/lumium"
+  },
+  "result": {
+    "tag": "forge:rods/lumium",
+    "count": 2
+  },
+  "processing_time": 160,
+  "energy_per_tick": 55
+}
