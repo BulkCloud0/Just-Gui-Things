@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.recipe.CrusherRecipe;
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.CrusherContainer;
@@ -150,8 +151,16 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
             return Optional.empty();
         }
 
-        Inventory recipeInventory = new Inventory(input.copy());
-        return level.getRecipeManager().getRecipeFor(ModRecipes.CRUSHING_TYPE, recipeInventory, level);
+        CrusherRecipe best = null;
+        for (CrusherRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.CRUSHING_TYPE)) {
+            if (!recipe.getInput().test(input)) {
+                continue;
+            }
+            if (best == null || RecipeSelectionHelper.compareSingleInput(recipe, best) < 0) {
+                best = recipe;
+            }
+        }
+        return Optional.ofNullable(best);
     }
 
     private int resolveBatchSize(CrusherRecipe recipe) {

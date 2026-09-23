@@ -44,6 +44,16 @@ The generic compatibility datapack under `data/justguithings/recipes/compat/comm
 
 Processing recipe inputs use Minecraft `Ingredient`. Tag-based outputs use `RecipeOutput`. When resolving a tagged output, JGT first prefers a compatible result from the same registry namespace as the input when one exists; otherwise candidates are ordered deterministically by registry name. This keeps recipes data-driven while avoiding dependence on a particular material provider. Industrial Mixer recipes may set optional `primary_count` and `secondary_count` fields (default `1`) to consume multiple items from either required input. Recipes may also define an optional `tertiary` ingredient with `tertiary_count` (default `1`) for three-material mixing; recipes that omit it remain binary and backward-compatible. Tagged Mixer outputs use the primary input as the namespace preference.
 
+### Deterministic recipe precedence
+
+When multiple JGT machine recipes match the same current inputs, selection no longer depends on the iteration order of Minecraft's recipe collections. Item `Ingredient` specificity is measured from the concrete display candidates exposed by the loaded ingredient: fewer candidates are preferred, while an ingredient with no concrete candidates is treated as least specific. Exact one-item recipes therefore beat broader populated tags in normal datapack use. Equal specificity is resolved by the recipe resource location in ascending lexical order.
+
+Single-input processing machines, Crusher, Industrial Sawmill and solid fuels use that item specificity directly. Stamping Press keeps partial matching inputs automation-valid, but processing only considers recipes whose `input_count` is currently available; for otherwise equal ingredients, the larger available `input_count` is treated as more constrained before the recipe-ID tie-break.
+
+For order-independent Assembly recipes and multi-input Mixer recipes, a recipe with more required logical ingredient slots is preferred, then the smaller Cartesian candidate space across those ingredients, then the sorted per-ingredient candidate widths. Assembly additionally prefers the larger total required item count when the ingredient specificity is otherwise equal. Mixer preserves its established rule that a currently satisfiable fluid-aware recipe wins over an item-only recipe; after item specificity, an exact fluid ingredient beats a fluid tag. Washer first applies item specificity, then exact-fluid-over-fluid-tag, then recipe ID. The Fluid Generator already follows exact-fluid-over-fluid-tag plus recipe-ID ordering.
+
+These rules only choose between recipes that already match the current machine state. Non-overlapping recipes are unaffected, no numeric priority field is introduced, and datapack authors can resolve a deliberate exact tie by choosing stable recipe IDs.
+
 Industrial Mixer recipes may additionally define one optional `fluid` object. The object must contain exactly one of `fluid` (an exact registry ID) or `tag` (a Forge/Minecraft fluid tag), plus an optional positive `amount` in mB that defaults to `1000`. Omitting the object preserves the existing item-only recipe behavior.
 
 Exact-fluid example:
@@ -84,7 +94,7 @@ The Coal Generator uses the data-driven `justguithings:solid_fuel` recipe type. 
 
 The built-in coal recipe preserves the legacy balance exactly: any item in `minecraft:coals` contributes 64,000 FE, equal to the previous 1,600 burn ticks at 40 FE/t. JGT also provides `forge:dusts/wood` as a biomass fuel worth 8,000 FE per item, allowing Industrial Sawmill sawdust and compatible third-party wood dusts to feed the existing generator without a new machine or optional-mod API.
 
-Recipe matching is deterministic by recipe ID when multiple solid-fuel recipes match the same stack. Existing worlds remain compatible: legacy `BurnTicks` data is converted to remaining batch energy at 40 FE per tick when no new-format batch data is present. The new save format stores both remaining and total batch energy so fuels with different energy values render correct progress without changing the generator's inventory or sided Forge capability layout.
+When multiple solid-fuel recipes match the same stack, the narrower item ingredient is selected first and recipe ID is the final deterministic tie-break. Existing worlds remain compatible: legacy `BurnTicks` data is converted to remaining batch energy at 40 FE per tick when no new-format batch data is present. The new save format stores both remaining and total batch energy so fuels with different energy values render correct progress without changing the generator's inventory or sided Forge capability layout.
 
 ## Industrial Washer
 

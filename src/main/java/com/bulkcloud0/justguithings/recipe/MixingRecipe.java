@@ -182,6 +182,10 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
         return fluidIngredient != null && fluidIngredient.test(fluid);
     }
 
+    public boolean isFluidTagBased() {
+        return fluidIngredient != null && fluidIngredient.isTagBased();
+    }
+
     public ItemStack getResultForPrimary(ItemStack primaryStack) {
         return result.resolve(primaryStack);
     }

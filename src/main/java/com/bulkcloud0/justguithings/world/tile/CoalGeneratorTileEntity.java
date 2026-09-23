@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.machine.BaseMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.MachineSideMode;
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
 import com.bulkcloud0.justguithings.recipe.SolidFuelRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -212,11 +213,20 @@ public class CoalGeneratorTileEntity extends BaseMachineTileEntity {
             if (!recipe.matchesStack(stack)) {
                 continue;
             }
-            if (best == null || recipe.getId().toString().compareTo(best.getId().toString()) < 0) {
+            if (best == null || compareFuelRecipes(recipe, best) < 0) {
                 best = recipe;
             }
         }
         return best;
+    }
+
+    private int compareFuelRecipes(SolidFuelRecipe left, SolidFuelRecipe right) {
+        int specificity = RecipeSelectionHelper.compareIngredients(
+                left.getIngredient(), right.getIngredient());
+        if (specificity != 0) {
+            return specificity;
+        }
+        return RecipeSelectionHelper.compareIds(left.getId(), right.getId());
     }
 
     public boolean canAcceptFuel(ItemStack stack) {

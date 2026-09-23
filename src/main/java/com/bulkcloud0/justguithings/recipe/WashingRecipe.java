@@ -54,6 +54,10 @@ public class WashingRecipe extends SingleInputProcessingRecipe {
         return fluidIngredient.test(fluid);
     }
 
+    public boolean isFluidTagBased() {
+        return fluidIngredient.isTagBased();
+    }
+
     public List<FluidStack> getFluidDisplayStacks() {
         return fluidIngredient.getDisplayStacks(fluidAmount);
     }

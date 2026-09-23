@@ -1,5 +1,6 @@
 package com.bulkcloud0.justguithings.machine;
 
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
 import com.bulkcloud0.justguithings.recipe.SingleInputProcessingRecipe;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -105,7 +106,16 @@ public abstract class BaseSingleInputProcessingMachineTileEntity<R extends Singl
         if (level == null || input.isEmpty()) {
             return Optional.empty();
         }
-        return level.getRecipeManager().getRecipeFor(recipeType, new Inventory(input.copy()), level);
+        R best = null;
+        for (R recipe : level.getRecipeManager().getAllRecipesFor(recipeType)) {
+            if (!recipe.getInput().test(input)) {
+                continue;
+            }
+            if (best == null || RecipeSelectionHelper.compareSingleInput(recipe, best) < 0) {
+                best = recipe;
+            }
+        }
+        return Optional.ofNullable(best);
     }
 
     public final boolean canAcceptInput(ItemStack stack) {

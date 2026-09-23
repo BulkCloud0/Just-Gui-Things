@@ -4,6 +4,7 @@ import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
 import com.bulkcloud0.justguithings.recipe.PressingRecipe;
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
 import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
@@ -80,7 +81,7 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
 
     @Override
     protected Optional<PressingRecipe> findCurrentRecipe() {
-        return findRecipe(inventory.getStackInSlot(0));
+        return findProcessableRecipe(inventory.getStackInSlot(0));
     }
 
     @Override
@@ -145,11 +146,46 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
         }
     }
 
-    private Optional<PressingRecipe> findRecipe(ItemStack input) {
+    private Optional<PressingRecipe> findProcessableRecipe(ItemStack input) {
         if (level == null || input.isEmpty()) {
             return Optional.empty();
         }
-        return level.getRecipeManager().getRecipeFor(ModRecipes.PRESSING_TYPE, new Inventory(input.copy()), level);
+
+        PressingRecipe best = null;
+        for (PressingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.PRESSING_TYPE)) {
+            if (!recipe.getInput().test(input) || input.getCount() < recipe.getInputCount()) {
+                continue;
+            }
+            if (best == null || comparePressingRecipes(recipe, best) < 0) {
+                best = recipe;
+            }
+        }
+        return Optional.ofNullable(best);
+    }
+
+    private int comparePressingRecipes(PressingRecipe left, PressingRecipe right) {
+        int specificity = RecipeSelectionHelper.compareIngredients(left.getInput(), right.getInput());
+        if (specificity != 0) {
+            return specificity;
+        }
+
+        int countSpecificity = Integer.compare(right.getInputCount(), left.getInputCount());
+        if (countSpecificity != 0) {
+            return countSpecificity;
+        }
+        return RecipeSelectionHelper.compareIds(left.getId(), right.getId());
+    }
+
+    private boolean hasMatchingInput(ItemStack input) {
+        if (level == null || input.isEmpty()) {
+            return false;
+        }
+        for (PressingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.PRESSING_TYPE)) {
+            if (recipe.getInput().test(input)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getSpeedUpgradeCount() {
@@ -161,7 +197,7 @@ public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<Pre
     }
 
     public boolean canAcceptInput(ItemStack stack) {
-        return findRecipe(stack).isPresent();
+        return hasMatchingInput(stack);
     }
 
     public IIntArray getDataAccess() {
