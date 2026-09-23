@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 150_000;
     public static final int MAX_ITEM_INPUT_COUNT = 64;
     public static final int MAX_FLUID_AMOUNT = 8_000;
     private final ResourceLocation id;
@@ -284,6 +285,11 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
                 throw new JsonSyntaxException("Mixing recipe time and FE/t must be greater than zero in " + recipeId);
             }
 
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Mixing recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new MixingRecipe(recipeId, primary, primaryCount, secondary, secondaryCount,
                     tertiary, tertiaryCount, fluidIngredient, fluidAmount, result, processingTime, energyPerTick);
         }
@@ -310,6 +316,9 @@ public class MixingRecipe implements IRecipe<IInventory>, MachineProcessingRecip
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             if (primary.isEmpty() || secondary.isEmpty() || (tertiary != null && tertiary.isEmpty())
                     || primaryCount <= 0 || primaryCount > MAX_ITEM_INPUT_COUNT
                     || secondaryCount <= 0 || secondaryCount > MAX_ITEM_INPUT_COUNT

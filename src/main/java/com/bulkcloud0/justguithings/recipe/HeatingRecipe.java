@@ -14,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import javax.annotation.Nullable;
 
 public class HeatingRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 120_000;
     public HeatingRecipe(ResourceLocation id, Ingredient input, RecipeOutput result, int processingTime, int energyPerTick) {
         super(id, input, result, processingTime, energyPerTick);
     }
@@ -47,6 +48,11 @@ public class HeatingRecipe extends SingleInputProcessingRecipe {
                 throw new JsonSyntaxException("Heating recipe time and FE/t must be greater than zero in " + recipeId);
             }
 
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Heating recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new HeatingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
@@ -57,6 +63,9 @@ public class HeatingRecipe extends SingleInputProcessingRecipe {
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             return new HeatingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 

@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 160_000;
     public static final int MAX_INPUTS = 4;
     public static final int MAX_INPUT_COUNT = 64;
 
@@ -265,6 +266,11 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
                         + " must use positive processing_time and energy_per_tick");
             }
 
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Assembly recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new AssemblyRecipe(recipeId, ingredients, counts, result, processingTime, energyPerTick);
         }
 
@@ -291,6 +297,9 @@ public class AssemblyRecipe implements IRecipe<IInventory>, MachineProcessingRec
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             return new AssemblyRecipe(recipeId, ingredients, counts, result, processingTime, energyPerTick);
         }
 

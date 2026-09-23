@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class SawingRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 80_000;
     @Nullable
     private final RecipeOutput secondaryResult;
 
@@ -83,6 +84,11 @@ public class SawingRecipe extends SingleInputProcessingRecipe {
             if (processingTime <= 0 || energyPerTick <= 0) {
                 throw new JsonSyntaxException("Sawing recipe time and FE/t must be greater than zero in " + recipeId);
             }
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Sawing recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new SawingRecipe(recipeId, input, result, secondary, processingTime, energyPerTick);
         }
 
@@ -94,6 +100,9 @@ public class SawingRecipe extends SingleInputProcessingRecipe {
             RecipeOutput secondary = buffer.readBoolean() ? RecipeOutput.fromNetwork(buffer) : null;
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             return new SawingRecipe(recipeId, input, result, secondary, processingTime, energyPerTick);
         }
 

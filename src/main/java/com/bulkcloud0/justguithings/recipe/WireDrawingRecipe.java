@@ -14,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import javax.annotation.Nullable;
 
 public class WireDrawingRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 130_000;
     public WireDrawingRecipe(ResourceLocation id, Ingredient input, RecipeOutput result,
                              int processingTime, int energyPerTick) {
         super(id, input, result, processingTime, energyPerTick);
@@ -49,6 +50,11 @@ public class WireDrawingRecipe extends SingleInputProcessingRecipe {
                 throw new JsonSyntaxException("Wire drawing recipe time and FE/t must be greater than zero in " + recipeId);
             }
 
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Wire drawing recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new WireDrawingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
@@ -59,6 +65,9 @@ public class WireDrawingRecipe extends SingleInputProcessingRecipe {
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             return new WireDrawingRecipe(recipeId, input, result, processingTime, energyPerTick);
         }
 
