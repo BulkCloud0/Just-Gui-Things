@@ -131,9 +131,9 @@ public class SeparatingRecipe extends SingleInputProcessingRecipe {
             Ingredient input = Ingredient.fromNetwork(buffer);
             int inputCount = buffer.readVarInt();
             int outputCount = buffer.readVarInt();
-            if (input.isEmpty() || inputCount <= 0 || inputCount > MAX_INPUT_COUNT
-                    || outputCount < MIN_OUTPUT_COUNT || outputCount > MAX_OUTPUT_COUNT) {
-                return null;
+            if (outputCount < MIN_OUTPUT_COUNT || outputCount > MAX_OUTPUT_COUNT) {
+                throw new IllegalArgumentException("Separating recipe " + recipeId
+                        + " has invalid network output count " + outputCount);
             }
 
             List<RecipeOutput> outputs = new ArrayList<>();
@@ -142,7 +142,9 @@ public class SeparatingRecipe extends SingleInputProcessingRecipe {
             }
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
-            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+            if (input.isEmpty() || inputCount <= 0 || inputCount > MAX_INPUT_COUNT
+                    || processingTime <= 0 || energyPerTick <= 0
+                    || energyPerTick > MAX_ENERGY_PER_TICK) {
                 return null;
             }
             return new SeparatingRecipe(recipeId, input, inputCount, outputs, processingTime, energyPerTick);
