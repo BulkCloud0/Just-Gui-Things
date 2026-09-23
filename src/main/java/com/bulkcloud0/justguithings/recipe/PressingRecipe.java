@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 
 public class PressingRecipe extends SingleInputProcessingRecipe {
     public static final int MAX_ENERGY_PER_TICK = 100_000;
+    public static final int MAX_INPUT_COUNT = 64;
     private final int inputCount;
 
     public PressingRecipe(ResourceLocation id,
@@ -57,7 +58,7 @@ public class PressingRecipe extends SingleInputProcessingRecipe {
             if (input.isEmpty()) {
                 throw new JsonSyntaxException("Pressing recipe " + recipeId + " has an empty ingredient");
             }
-            if (inputCount <= 0 || inputCount > 64) {
+            if (inputCount <= 0 || inputCount > MAX_INPUT_COUNT) {
                 throw new JsonSyntaxException("input_count must be between 1 and 64 in " + recipeId);
             }
             if (processingTime <= 0 || energyPerTick <= 0) {
@@ -80,7 +81,9 @@ public class PressingRecipe extends SingleInputProcessingRecipe {
             int inputCount = buffer.readVarInt();
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
-            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+            if (input.isEmpty() || inputCount <= 0 || inputCount > MAX_INPUT_COUNT
+                    || processingTime <= 0 || energyPerTick <= 0
+                    || energyPerTick > MAX_ENERGY_PER_TICK) {
                 return null;
             }
             return new PressingRecipe(recipeId, input, result, inputCount, processingTime, energyPerTick);

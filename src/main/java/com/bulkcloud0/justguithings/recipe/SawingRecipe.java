@@ -100,7 +100,8 @@ public class SawingRecipe extends SingleInputProcessingRecipe {
             RecipeOutput secondary = buffer.readBoolean() ? RecipeOutput.fromNetwork(buffer) : null;
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
-            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+            if (input.isEmpty() || processingTime <= 0 || energyPerTick <= 0
+                    || energyPerTick > MAX_ENERGY_PER_TICK) {
                 return null;
             }
             return new SawingRecipe(recipeId, input, result, secondary, processingTime, energyPerTick);

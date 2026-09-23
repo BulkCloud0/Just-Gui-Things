@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 
 public class SeparatingRecipe extends SingleInputProcessingRecipe {
     public static final int MAX_ENERGY_PER_TICK = 80_000;
+    public static final int MAX_INPUT_COUNT = 64;
+    public static final int MIN_OUTPUT_COUNT = 2;
+    public static final int MAX_OUTPUT_COUNT = 3;
     private final int inputCount;
     private final List<RecipeOutput> outputs;
 
@@ -91,12 +94,12 @@ public class SeparatingRecipe extends SingleInputProcessingRecipe {
             if (input.isEmpty()) {
                 throw new JsonSyntaxException("Separating recipe " + recipeId + " has an empty ingredient");
             }
-            if (inputCount <= 0 || inputCount > 64) {
+            if (inputCount <= 0 || inputCount > MAX_INPUT_COUNT) {
                 throw new JsonSyntaxException("Separating input_count must be between 1 and 64 in " + recipeId);
             }
 
             JsonArray resultsJson = json.getAsJsonArray("results");
-            if (resultsJson == null || resultsJson.size() < 2 || resultsJson.size() > 3) {
+            if (resultsJson == null || resultsJson.size() < MIN_OUTPUT_COUNT || resultsJson.size() > MAX_OUTPUT_COUNT) {
                 throw new JsonSyntaxException("Separating recipe " + recipeId + " requires exactly 2 or 3 results");
             }
 
@@ -128,13 +131,20 @@ public class SeparatingRecipe extends SingleInputProcessingRecipe {
             Ingredient input = Ingredient.fromNetwork(buffer);
             int inputCount = buffer.readVarInt();
             int outputCount = buffer.readVarInt();
+            if (outputCount < MIN_OUTPUT_COUNT || outputCount > MAX_OUTPUT_COUNT) {
+                throw new IllegalArgumentException("Separating recipe " + recipeId
+                        + " has invalid network output count " + outputCount);
+            }
+
             List<RecipeOutput> outputs = new ArrayList<>();
             for (int index = 0; index < outputCount; index++) {
                 outputs.add(RecipeOutput.fromNetwork(buffer));
             }
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
-            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+            if (input.isEmpty() || inputCount <= 0 || inputCount > MAX_INPUT_COUNT
+                    || processingTime <= 0 || energyPerTick <= 0
+                    || energyPerTick > MAX_ENERGY_PER_TICK) {
                 return null;
             }
             return new SeparatingRecipe(recipeId, input, inputCount, outputs, processingTime, energyPerTick);
