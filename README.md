@@ -20,7 +20,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Energy endpoint routing with consumer priority, source/target redstone control, fair distribution and Configurator-based per-face input/output modes
 - Shared machine core for energy, inventory, side configuration, processing state and opt-in direct item auto-eject
 - Crusher with data-driven primary/optional secondary outputs and Speed/Efficiency/Buffer/Batch modules
-- Coal Generator for early power, Steam Generator for water-fed generation, and a datapack-driven Fluid Generator for liquid fuels
+- Coal Generator for data-driven solid fuels, Steam Generator for water-fed generation, and a datapack-driven Fluid Generator for liquid fuels
 - Charging Station for capability-driven charging of Forge Energy items
 - Industrial Mixer with backward-compatible item-only recipes plus optional fluid/tag inputs, Stamping Press with counted inputs for plates/gears, and Resistive Furnace
 - Rod Mill for tag-driven ingot-to-rod forming

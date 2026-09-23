@@ -288,5 +288,7 @@
   "item.justguithings.industrial_sawmill": "Industrial Sawmill",
   "container.justguithings.industrial_sawmill": "Industrial Sawmill",
   "item.justguithings.sawdust": "Sawdust",
-  "jei.justguithings.sawing": "Industrial Sawing"
+  "jei.justguithings.sawing": "Industrial Sawing",
+  "jei.justguithings.solid_fuel": "Solid Fuel",
+  "jei.justguithings.solid_fuel.energy": "%s FE total"
 }

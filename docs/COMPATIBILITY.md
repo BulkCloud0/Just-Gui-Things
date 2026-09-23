@@ -78,6 +78,14 @@ Example:
 }
 ```
 
+## Solid fuel recipes
+
+The Coal Generator uses the data-driven `justguithings:solid_fuel` recipe type. Each recipe defines one normal Minecraft item `Ingredient` plus a positive total `energy` value in FE. The generator keeps its 40 FE/t generation rate and 200 FE/t external output budget; recipes change only how much total energy one consumed item contributes.
+
+The built-in coal recipe preserves the legacy balance exactly: any item in `minecraft:coals` contributes 64,000 FE, equal to the previous 1,600 burn ticks at 40 FE/t. JGT also provides `forge:dusts/wood` as a biomass fuel worth 8,000 FE per item, allowing Industrial Sawmill sawdust and compatible third-party wood dusts to feed the existing generator without a new machine or optional-mod API.
+
+Recipe matching is deterministic by recipe ID when multiple solid-fuel recipes match the same stack. Existing worlds remain compatible: legacy `BurnTicks` data is converted to remaining batch energy at 40 FE per tick when no new-format batch data is present. The new save format stores both remaining and total batch energy so fuels with different energy values render correct progress without changing the generator's inventory or sided Forge capability layout.
+
 ## Industrial Washer
 
 The Industrial Washer uses the data-driven `justguithings:washing` recipe type for fluid-assisted treatment of one item input into one item output. Each recipe defines a normal Minecraft item `Ingredient`, one exact or tag-based `FluidIngredient` with an amount in mB, a `RecipeOutput`, processing time, and FE/t. This is intentionally separate from Industrial Mixer recipes: washing applies a consumed fluid reagent to one material rather than combining multiple material inputs.
