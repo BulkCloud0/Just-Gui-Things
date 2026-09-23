@@ -18,8 +18,8 @@ public final class MachineUpgradeScaling {
         int efficiencyTimeMultiplier = BASE_PERCENT
                 + EFFICIENCY_TIME_PERCENT_PER_MODULE * efficiencyModuleCount;
         long scaled = (long) baseProcessingTime * efficiencyTimeMultiplier;
-        return Math.max(MIN_PROCESSING_TICKS,
-                (int) ((scaled + speedMultiplier - 1L) / speedMultiplier));
+        long effective = (scaled + speedMultiplier - 1L) / speedMultiplier;
+        return saturatePositiveInt(effective, MIN_PROCESSING_TICKS);
     }
 
     public static int getEffectiveEnergyPerTick(int baseEnergyPerTick,
@@ -34,6 +34,24 @@ public final class MachineUpgradeScaling {
                 * speedMultiplier
                 * efficiencyMultiplier
                 * Math.max(1, workUnits);
-        return Math.max(1, (int) ((scaled + 9_999L) / 10_000L));
+        long effective = (scaled + 9_999L) / 10_000L;
+        return saturatePositiveInt(effective, 1);
+    }
+
+    public static int getPowerCoilProcessingTime(int baseProcessingTime) {
+        long effective = ((long) baseProcessingTime + 1L) / 2L;
+        return saturatePositiveInt(effective, 1);
+    }
+
+    public static int getPowerCoilEnergyPerTick(int baseEnergyPerTick) {
+        long effective = ((long) baseEnergyPerTick * 5L + 1L) / 2L;
+        return saturatePositiveInt(effective, 1);
+    }
+
+    private static int saturatePositiveInt(long value, int minimum) {
+        if (value >= Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        return Math.max(minimum, (int) value);
     }
 }

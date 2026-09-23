@@ -2,6 +2,7 @@ package com.bulkcloud0.justguithings.world.tile;
 
 import com.bulkcloud0.justguithings.machine.BaseSingleInputProcessingMachineTileEntity;
 import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
+import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
 import com.bulkcloud0.justguithings.recipe.HeatingRecipe;
 import com.bulkcloud0.justguithings.registry.ModRecipes;
 import com.bulkcloud0.justguithings.registry.ModTileEntities;
@@ -44,7 +45,7 @@ public class ResistiveFurnaceTileEntity extends BaseSingleInputProcessingMachine
         if (!hasPowerCoil()) {
             return recipe.getProcessingTime();
         }
-        return Math.max(1, (recipe.getProcessingTime() + 1) / 2);
+        return MachineUpgradeScaling.getPowerCoilProcessingTime(recipe.getProcessingTime());
     }
 
     @Override
@@ -52,7 +53,7 @@ public class ResistiveFurnaceTileEntity extends BaseSingleInputProcessingMachine
         if (!hasPowerCoil()) {
             return recipe.getEnergyPerTick();
         }
-        return Math.max(1, (recipe.getEnergyPerTick() * 5 + 1) / 2);
+        return MachineUpgradeScaling.getPowerCoilEnergyPerTick(recipe.getEnergyPerTick());
     }
 
     public boolean hasPowerCoil() {
