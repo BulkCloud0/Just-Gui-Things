@@ -683,6 +683,10 @@ public abstract class BaseMachineTileEntity extends TileEntity implements ITicka
                 }
             }
         }
+
+        for (Direction direction : Direction.values()) {
+            refreshAdditionalSidedCapabilities(direction);
+        }
     }
 
     @Override
