@@ -46,6 +46,8 @@ Processing recipe inputs use Minecraft `Ingredient`. Tag-based outputs use `Reci
 
 Resolved machine outputs are preflighted against both the machine slot limit and the resolved item's own maximum stack size before processing consumes inputs. A datapack result whose declared count cannot fit in the destination slot therefore pauses processing instead of creating an overstack. Shared checks use widened arithmetic for produced counts so unusually large datapack values cannot bypass capacity validation through integer overflow.
 
+Recipe serializers also reject input batches that cannot fit their machine's physical storage. Industrial Assembler ingredient counts and Industrial Mixer item counts are limited to 1-64 per input slot. Mixer fluid amounts are limited to 1-8,000 mB, Industrial Washer fluid amounts to 1-4,000 mB, and Fluid Generator fuel batches to 1-16,000 mB. These are capacity guards rather than balance limits: valid existing recipes are unchanged, while datapacks that describe an operation the target machine can never physically hold fail during recipe loading instead of remaining permanently unprocessable.
+
 ### Deterministic recipe precedence
 
 When multiple JGT machine recipes match the same current inputs, selection no longer depends on the iteration order of Minecraft's recipe collections. Item `Ingredient` specificity is measured from the concrete display candidates exposed by the loaded ingredient: fewer candidates are preferred, while an ingredient with no concrete candidates is treated as least specific. Exact one-item recipes therefore beat broader populated tags in normal datapack use. Equal specificity is resolved by the recipe resource location in ascending lexical order.
