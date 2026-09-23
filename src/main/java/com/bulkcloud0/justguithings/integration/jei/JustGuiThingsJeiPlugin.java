@@ -1,6 +1,7 @@
 package com.bulkcloud0.justguithings.integration.jei;
 
 import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.client.screen.CoalGeneratorScreen;
 import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
 import com.bulkcloud0.justguithings.client.screen.IndustrialWasherScreen;

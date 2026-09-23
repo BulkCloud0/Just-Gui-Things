@@ -14,6 +14,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -49,7 +50,7 @@ public class SolidFuelRecipe implements IRecipe<IInventory> {
         return Arrays.stream(ingredient.getItems())
                 .filter(stack -> !stack.isEmpty())
                 .sorted(Comparator.comparing(stack -> {
-                    ResourceLocation id = stack.getItem().getRegistryName();
+                    ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
                     return id == null ? "" : id.toString();
                 }))
                 .map(ItemStack::copy)
