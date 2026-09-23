@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SeparatingRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 80_000;
     private final int inputCount;
     private final List<RecipeOutput> outputs;
 
@@ -113,6 +114,11 @@ public class SeparatingRecipe extends SingleInputProcessingRecipe {
                 throw new JsonSyntaxException("Separating recipe time and FE/t must be greater than zero in " + recipeId);
             }
 
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Separating recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new SeparatingRecipe(recipeId, input, inputCount, outputs, processingTime, energyPerTick);
         }
 
@@ -128,6 +134,9 @@ public class SeparatingRecipe extends SingleInputProcessingRecipe {
             }
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             return new SeparatingRecipe(recipeId, input, inputCount, outputs, processingTime, energyPerTick);
         }
 
