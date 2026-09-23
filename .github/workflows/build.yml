@@ -90,8 +90,8 @@ jobs:
           mkdir -p run
           printf 'eula=true\n' > run/eula.txt
           smoke_run server 'Done (' ./gradlew runServer -PjgtNoJei --stacktrace --no-daemon
-          smoke_run client-jei 'Sound engine started' env LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./gradlew runClient --stacktrace --no-daemon
-          smoke_run client-no-jei 'Sound engine started' env LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./gradlew runClient -PjgtNoJei --stacktrace --no-daemon
+          smoke_run client-jei 'minecraft:textures/atlas/mob_effects.png-atlas' env LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./gradlew runClient --stacktrace --no-daemon
+          smoke_run client-no-jei 'minecraft:textures/atlas/mob_effects.png-atlas' env LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./gradlew runClient -PjgtNoJei --stacktrace --no-daemon
 
       - name: Upload reobfuscated jar
         uses: actions/upload-artifact@v4
