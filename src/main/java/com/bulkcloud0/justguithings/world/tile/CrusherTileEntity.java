@@ -219,19 +219,7 @@ public class CrusherTileEntity extends BaseProcessingMachineTileEntity<CrusherRe
     }
 
     private boolean canFitOutput(int slot, ItemStack result, int batchSize) {
-        if (result.isEmpty() || result.getCount() <= 0) {
-            return false;
-        }
-
-        int producedCount = result.getCount() * batchSize;
-        ItemStack output = inventory.getStackInSlot(slot);
-        if (output.isEmpty()) {
-            return producedCount <= result.getMaxStackSize();
-        }
-        if (!ItemStack.isSame(output, result) || !ItemStack.tagMatches(output, result)) {
-            return false;
-        }
-        return output.getCount() + producedCount <= output.getMaxStackSize();
+        return canFitItemOutput(slot, result, batchSize);
     }
 
     private void processItem(CrusherRecipe recipe, int batchSize) {
