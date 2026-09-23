@@ -86,6 +86,14 @@ The washer tank holds 4,000 mB and only accepts fluid types referenced by curren
 
 Built-in washing recipes hydrate all 16 vanilla concrete-powder colors with water. Datapacks and optional integrations can add other item/tag + fluid/tag treatments without Java dependencies or new material-state systems.
 
+## Industrial Sawmill
+
+The Industrial Sawmill uses the data-driven `justguithings:sawing` recipe type for cutting one item input into one primary item output plus an optional deterministic secondary output. This role is intentionally separate from crushing: sawing represents material-preserving cutting and yield optimization rather than size reduction or ore pulverization.
+
+Built-in recipes cut the six vanilla overworld log families into six matching planks and one wood dust. JGT sawdust is published under `forge:dusts/wood`, allowing recipes and other mods that use the same Forge convention to share the byproduct without a Java dependency. Tagged outputs reuse the existing provider-aware `RecipeOutput` behavior, so optional integrations can prefer a sawdust item from the same material provider when the shared tag contains one.
+
+The machine exposes standard sided Forge item and energy capabilities, supports Speed/Efficiency modules, machine redstone control and opt-in item auto-eject, and adds no special wood API. Modded wood families that cannot be mapped safely from a generic log tag to a specific plank output are extended through datapack recipes rather than hard-coded mod checks.
+
 ## Machine-specific components
 
 Machine-specific components can be replaced through datapack tags without a Java dependency:
