@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class WashingRecipe extends SingleInputProcessingRecipe {
+    public static final int MAX_ENERGY_PER_TICK = 120_000;
     public static final int MAX_FLUID_AMOUNT = 4_000;
 
     private final FluidIngredient fluidIngredient;
@@ -93,6 +94,11 @@ public class WashingRecipe extends SingleInputProcessingRecipe {
                         + recipeId);
             }
 
+            if (energyPerTick > MAX_ENERGY_PER_TICK) {
+                throw new JsonSyntaxException("Washing recipe energy_per_tick must not exceed "
+                        + MAX_ENERGY_PER_TICK + " FE/t in " + recipeId);
+            }
+
             return new WashingRecipe(recipeId, input, fluidIngredient, fluidAmount,
                     result, processingTime, energyPerTick);
         }
@@ -106,6 +112,9 @@ public class WashingRecipe extends SingleInputProcessingRecipe {
             RecipeOutput result = RecipeOutput.fromNetwork(buffer);
             int processingTime = buffer.readVarInt();
             int energyPerTick = buffer.readVarInt();
+            if (processingTime <= 0 || energyPerTick <= 0 || energyPerTick > MAX_ENERGY_PER_TICK) {
+                return null;
+            }
             if (input.isEmpty() || fluidAmount <= 0 || fluidAmount > MAX_FLUID_AMOUNT) {
                 return null;
             }
