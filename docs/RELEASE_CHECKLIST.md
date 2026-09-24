@@ -17,7 +17,7 @@ This checklist defines the minimum gates for promoting `dev/core-industrial` to 
 - [ ] Client startup reaches the resource-atlas-ready state with JEI.
 - [ ] Client startup reaches the resource-atlas-ready state without JEI.
 - [ ] Post-merge `dev/core-industrial` CI is green.
-- [ ] Final `main` CI is green before release publication.
+- [ ] Final `main` push Build is green before release publication; the Release workflow enforces this for the exact current `main` SHA.
 - [ ] The release commit is still the current `main` HEAD when publication starts.
 
 ## Manual in-game candidate verification
@@ -41,7 +41,7 @@ Use the exact jar produced by the final CI artifact in a clean Forge 36.2.42 pro
 1. Confirm `build.gradle` version is the intended release version.
 2. Update `CHANGELOG.md` if the release scope changed.
 3. Promote `dev/core-industrial` to `main` only after the gates above are satisfied.
-4. Confirm the release candidate SHA is still the current `main` HEAD; the **Release** workflow rejects any other commit or tag.
+4. Confirm the release candidate SHA is still the current `main` HEAD; the **Release** workflow rejects any other commit or tag and requires a successful push Build for that exact SHA.
 5. From the GitHub Actions **Release** workflow on `main`, run the workflow with tag `v<build.gradle version>`.
 6. Confirm the GitHub Release contains both the reobfuscated jar and its `.sha256` checksum.
 7. Keep subsequent development on feature branches targeting `dev/core-industrial`.
