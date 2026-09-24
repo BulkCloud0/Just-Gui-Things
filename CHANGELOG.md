@@ -26,4 +26,6 @@ Initial Core Industrial alpha milestone.
 - Defensive recipe network validation.
 - Shared conduit caches with loaded-chunk-safe topology handling.
 - Unit coverage for processing scaling and fair-share energy allocation.
-- Reproducible archive settings, Gradle Wrapper 8.4, runtime startup smoke tests and release artifact automation.
+- Reproducible archive settings, Gradle Wrapper 8.4 and dedicated server/client startup smoke tests.
+- Release publication is gated on the exact current `main` SHA having a successful push Build.
+- The Release workflow downloads and publishes that validated CI jar, and requires a clean release build to match it byte-for-byte before publication.
