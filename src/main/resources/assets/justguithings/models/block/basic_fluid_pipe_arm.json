@@ -1,7 +1,7 @@
 {
   "textures": {
-    "pipe": "minecraft:block/blue_ice",
-    "particle": "minecraft:block/blue_ice"
+    "pipe": "justguithings:block/basic_fluid_pipe",
+    "particle": "justguithings:block/basic_fluid_pipe"
   },
   "elements": [
     { "from": [6, 6, 0], "to": [10, 10, 6], "faces": { "down": { "texture": "#pipe" }, "up": { "texture": "#pipe" }, "north": { "texture": "#pipe" }, "south": { "texture": "#pipe" }, "west": { "texture": "#pipe" }, "east": { "texture": "#pipe" } } },

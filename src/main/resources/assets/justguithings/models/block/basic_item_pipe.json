@@ -1,7 +1,7 @@
 {
   "textures": {
-    "pipe": "minecraft:block/hopper_outside",
-    "particle": "minecraft:block/hopper_outside"
+    "pipe": "justguithings:block/basic_item_pipe",
+    "particle": "justguithings:block/basic_item_pipe"
   },
   "elements": [
     {

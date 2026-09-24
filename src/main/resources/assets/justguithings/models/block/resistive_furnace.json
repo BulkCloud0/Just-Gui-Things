@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "minecraft:block/iron_block",
-    "up": "minecraft:block/iron_block",
-    "north": "minecraft:block/blast_furnace_front",
-    "south": "minecraft:block/iron_block",
-    "west": "minecraft:block/iron_block",
-    "east": "minecraft:block/iron_block",
-    "particle": "minecraft:block/iron_block"
+    "down": "justguithings:block/machine_casing_bottom",
+    "up": "justguithings:block/machine_casing_top",
+    "north": "justguithings:block/resistive_furnace_front",
+    "south": "justguithings:block/resistive_furnace_side",
+    "west": "justguithings:block/resistive_furnace_side",
+    "east": "justguithings:block/resistive_furnace_side",
+    "particle": "justguithings:block/resistive_furnace_side"
   }
 }

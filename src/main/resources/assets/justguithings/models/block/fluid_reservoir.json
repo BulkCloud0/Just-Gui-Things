@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "minecraft:block/iron_block",
-    "up": "minecraft:block/iron_block",
-    "north": "minecraft:block/light_blue_stained_glass",
-    "south": "minecraft:block/light_blue_stained_glass",
-    "west": "minecraft:block/light_blue_stained_glass",
-    "east": "minecraft:block/light_blue_stained_glass",
-    "particle": "minecraft:block/iron_block"
+    "down": "justguithings:block/machine_casing_bottom",
+    "up": "justguithings:block/fluid_reservoir_top",
+    "north": "justguithings:block/fluid_reservoir_side",
+    "south": "justguithings:block/fluid_reservoir_side",
+    "west": "justguithings:block/fluid_reservoir_side",
+    "east": "justguithings:block/fluid_reservoir_side",
+    "particle": "justguithings:block/fluid_reservoir_side"
   }
 }
