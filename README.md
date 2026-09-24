@@ -2,9 +2,9 @@
 
 A technology-focused Minecraft Forge mod for **Minecraft 1.16.5**.
 
-## Current milestone: Core Industrial
+## Current release line: Core Industrial alpha
 
-The project is building a reusable industrial foundation with broad Forge interoperability and no fixed machine tier ladder.
+The Core Industrial foundation is implemented with broad Forge interoperability, data-driven processing and no fixed machine tier ladder. The current release target is **0.1.0-alpha**.
 
 ### Implemented
 
@@ -39,7 +39,7 @@ The project is building a reusable industrial foundation with broad Forge intero
 - Optional-mod recipes guarded by Forge conditions
 - JEI categories for JGT processing recipes, including fluid-aware Industrial Mixer inputs
 - English and Brazilian Portuguese translations
-- GitHub Actions build validation
+- GitHub Actions build, runtime smoke and reproducible release-artifact validation
 
 ### Progression direction
 
@@ -58,23 +58,33 @@ Compatibility is architectural rather than based on mandatory mod-specific patch
 - Datapack-driven processing recipes
 - Optional integration layers only when another mod exposes behavior that standard Forge APIs cannot represent
 
+JEI is optional. JGT loads and runs without it; when present, JEI adds recipe categories for JGT processing machines.
+
 See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for extension points and soft-dependency rules.
 
 ### Next
 
-- Add additional machine-specific specialization modules only where they create a distinct production tradeoff
+Post-alpha development should remain role-driven rather than tier-driven:
+
+- Add machine-specific specialization modules only where they create a distinct production tradeoff
 - Continue production chains only when they add a clear industrial role
-- Continue profiling large conduit networks and refine network diagnostics only where they expose a concrete automation bottleneck
+- Continue profiling large conduit networks and refine diagnostics only where they expose a concrete automation bottleneck
 - Improve machine/cable/pipe textures and models
 - Continue broad compatibility through tags, capabilities and optional adapters
 
 ## Environment
 
+- Release target: 0.1.0-alpha
 - Minecraft 1.16.5
 - Forge 36.2.42
 - Java 8 target
 - ForgeGradle 6
 - Gradle Wrapper 8.4
+- JEI 7.8+ optional
+
+## Installation target
+
+Use a Minecraft 1.16.5 Forge 36.2.42 profile and place the JGT jar in the profile's `mods` directory. JEI is optional; install a compatible JEI 7.8+ build only if recipe-browser integration is desired.
 
 ## Build and verification
 
@@ -85,6 +95,8 @@ CI and local builds use the repository-pinned Gradle Wrapper 8.4. Use JDK 17 to 
 ```
 
 On Windows use `gradlew.bat`. The reobfuscated mod jar is produced under `build/libs/`. Pull requests run the unit tests and repository verification guards; pushes to `dev/core-industrial` and `main` also perform dedicated-server and client-startup smoke tests. Set `-PjgtNoJei` on development run tasks to verify the optional no-JEI runtime path.
+
+The Release workflow publishes the exact jar artifact validated by the successful `main` push Build and verifies a clean release build is byte-for-byte identical before publication.
 
 See [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) before promoting `dev/core-industrial` to `main`.
 
