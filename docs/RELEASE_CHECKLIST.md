@@ -2,7 +2,9 @@
 
 This checklist defines the minimum gates for promoting `dev/core-industrial` to `main` and publishing a JGT release.
 
-## Automated gates
+## Pre-promotion automated candidate gates
+
+These gates apply to the release-candidate SHA on `dev/core-industrial` before the promotion PR is merged.
 
 - [ ] Feature/release-readiness PR CI is green.
 - [ ] `./gradlew build --stacktrace --no-daemon` passes through the pinned Gradle Wrapper.
@@ -16,15 +18,11 @@ This checklist defines the minimum gates for promoting `dev/core-industrial` to 
 - [ ] Dedicated server startup reaches the Minecraft ready state without JEI.
 - [ ] Client startup reaches the resource-atlas-ready state with JEI.
 - [ ] Client startup reaches the resource-atlas-ready state without JEI.
-- [ ] Post-merge `dev/core-industrial` CI is green.
-- [ ] Final `main` push Build is green before release publication; the Release workflow enforces this for the exact current `main` SHA.
-- [ ] The release commit is still the current `main` HEAD when publication starts.
-- [ ] The Release workflow downloads the exact jar artifact produced by that successful `main` Build.
-- [ ] A clean release build is byte-for-byte identical to the validated `main` CI artifact before publication.
+- [ ] Post-merge `dev/core-industrial` push CI is green for the exact candidate SHA.
 
 ## Manual in-game candidate verification
 
-Use the exact jar produced by the final CI artifact in a clean Forge 36.2.42 profile. This is the same jar the Release workflow publishes after reproducibility verification.
+Use the exact jar produced by the successful `dev/core-industrial` push Build for the release-candidate SHA in a clean Forge 36.2.42 profile. This is the candidate jar that must be manually validated before promotion.
 
 - [ ] Start Minecraft 1.16.5 with JGT only and create/open a world.
 - [ ] Start Minecraft with JGT + JEI and confirm JGT JEI categories/recipes appear.
@@ -38,13 +36,26 @@ Use the exact jar produced by the final CI artifact in a clean Forge 36.2.42 pro
 - [ ] Join a dedicated server running the same JGT jar and exercise at least one powered processing line.
 - [ ] Check the client/server logs for JGT errors, missing registry entries, classloading failures and repeated severe warnings.
 
-## Release publication
+## Promotion gates
 
-1. Confirm `build.gradle` version is the intended release version.
-2. Update `CHANGELOG.md` if the release scope changed.
-3. Promote `dev/core-industrial` to `main` only after the gates above are satisfied.
-4. Confirm the release candidate SHA is still the current `main` HEAD; the **Release** workflow rejects any other commit or tag and requires a successful push Build for that exact SHA.
-5. From the GitHub Actions **Release** workflow on `main`, run the workflow with tag `v<build.gradle version>`.
-6. Confirm the Release workflow downloads the exact final `main` artifact, reproduces it byte-for-byte with a clean build, and publishes that validated artifact.
-7. Confirm the GitHub Release contains both the reobfuscated jar and its `.sha256` checksum.
-8. Keep subsequent development on feature branches targeting `dev/core-industrial`.
+Complete these only after the automated candidate gates and manual candidate verification above are satisfied.
+
+- [ ] Confirm `build.gradle` version is the intended release version.
+- [ ] Confirm `CHANGELOG.md` describes the intended release scope.
+- [ ] Reconfirm the exact heads of `dev/core-industrial`, `main` and the promotion PR.
+- [ ] Review the final `main...dev/core-industrial` diff.
+- [ ] Mark the promotion PR ready for review.
+- [ ] Merge `dev/core-industrial` to `main` only as an explicit release action.
+- [ ] Final `main` push Build is green for the exact promoted SHA, including runtime smoke tests and artifact upload.
+
+## Release publication gates
+
+The final `main` artifact is produced after promotion. The Release workflow publishes that exact validated artifact; it does not publish the pre-promotion `dev/core-industrial` artifact.
+
+- [ ] The release commit is still the current `main` HEAD when publication starts.
+- [ ] The Release workflow resolves a successful push-triggered Build for that exact `main` SHA.
+- [ ] The Release workflow downloads the exact jar artifact produced by that successful `main` Build.
+- [ ] A clean release build is byte-for-byte identical to the validated `main` CI artifact before publication.
+- [ ] Run the **Release** workflow from `main` with tag `v<build.gradle version>`.
+- [ ] Confirm the GitHub Release contains both the reobfuscated jar and its `.sha256` checksum.
+- [ ] Keep subsequent development on feature branches targeting `dev/core-industrial`.
