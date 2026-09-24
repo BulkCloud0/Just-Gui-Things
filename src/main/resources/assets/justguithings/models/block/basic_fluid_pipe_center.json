@@ -1,7 +1,7 @@
 {
   "textures": {
-    "pipe": "minecraft:block/blue_ice",
-    "particle": "minecraft:block/blue_ice"
+    "pipe": "justguithings:block/basic_fluid_pipe",
+    "particle": "justguithings:block/basic_fluid_pipe"
   },
   "elements": [
     {

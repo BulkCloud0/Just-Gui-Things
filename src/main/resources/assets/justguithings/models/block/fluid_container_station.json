@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "side": "minecraft:block/smithing_table_side",
-    "top": "minecraft:block/iron_block",
+    "side": "justguithings:block/fluid_container_station_side",
+    "top": "justguithings:block/machine_casing_top",
     "bottom": "justguithings:block/machine_casing_bottom"
   }
 }

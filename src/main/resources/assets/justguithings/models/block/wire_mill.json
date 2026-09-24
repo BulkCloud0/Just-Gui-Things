@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "minecraft:block/iron_block",
-    "up": "minecraft:block/iron_block",
-    "north": "minecraft:block/loom_side",
-    "south": "minecraft:block/iron_block",
-    "west": "minecraft:block/loom_side",
-    "east": "minecraft:block/loom_side",
-    "particle": "minecraft:block/iron_block"
+    "down": "justguithings:block/machine_casing_bottom",
+    "up": "justguithings:block/machine_casing_top",
+    "north": "justguithings:block/wire_mill_front",
+    "south": "justguithings:block/wire_mill_side",
+    "west": "justguithings:block/wire_mill_side",
+    "east": "justguithings:block/wire_mill_side",
+    "particle": "justguithings:block/wire_mill_side"
   }
 }
