@@ -19,10 +19,12 @@ This checklist defines the minimum gates for promoting `dev/core-industrial` to 
 - [ ] Post-merge `dev/core-industrial` CI is green.
 - [ ] Final `main` push Build is green before release publication; the Release workflow enforces this for the exact current `main` SHA.
 - [ ] The release commit is still the current `main` HEAD when publication starts.
+- [ ] The Release workflow downloads the exact jar artifact produced by that successful `main` Build.
+- [ ] A clean release build is byte-for-byte identical to the validated `main` CI artifact before publication.
 
 ## Manual in-game candidate verification
 
-Use the exact jar produced by the final CI artifact in a clean Forge 36.2.42 profile.
+Use the exact jar produced by the final CI artifact in a clean Forge 36.2.42 profile. This is the same jar the Release workflow publishes after reproducibility verification.
 
 - [ ] Start Minecraft 1.16.5 with JGT only and create/open a world.
 - [ ] Start Minecraft with JGT + JEI and confirm JGT JEI categories/recipes appear.
@@ -43,5 +45,6 @@ Use the exact jar produced by the final CI artifact in a clean Forge 36.2.42 pro
 3. Promote `dev/core-industrial` to `main` only after the gates above are satisfied.
 4. Confirm the release candidate SHA is still the current `main` HEAD; the **Release** workflow rejects any other commit or tag and requires a successful push Build for that exact SHA.
 5. From the GitHub Actions **Release** workflow on `main`, run the workflow with tag `v<build.gradle version>`.
-6. Confirm the GitHub Release contains both the reobfuscated jar and its `.sha256` checksum.
-7. Keep subsequent development on feature branches targeting `dev/core-industrial`.
+6. Confirm the Release workflow downloads the exact final `main` artifact, reproduces it byte-for-byte with a clean build, and publishes that validated artifact.
+7. Confirm the GitHub Release contains both the reobfuscated jar and its `.sha256` checksum.
+8. Keep subsequent development on feature branches targeting `dev/core-industrial`.
