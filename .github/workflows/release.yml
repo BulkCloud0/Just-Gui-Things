@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   release:
@@ -30,6 +31,25 @@ jobs:
           main_sha=$(git rev-parse refs/remotes/origin/main)
           if [[ "$release_sha" != "$main_sha" ]]; then
             echo "Release commit $release_sha does not match current main HEAD $main_sha" >&2
+            exit 1
+          fi
+
+      - name: Verify current main build is green
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          successful_runs=$(gh api --method GET \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/build.yml/runs" \
+            -f branch=main \
+            -f head_sha="$GITHUB_SHA" \
+            -f event=push \
+            -f status=success \
+            -f per_page=1 \
+            --jq '.total_count')
+          if [[ "$successful_runs" -lt 1 ]]; then
+            echo "No successful push Build run exists for current main HEAD $GITHUB_SHA" >&2
             exit 1
           fi
 
