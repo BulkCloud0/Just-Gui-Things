@@ -48,8 +48,7 @@ jobs:
             -f event=push \
             -f status=success \
             -f per_page=100 \
-            --jq '.workflow_runs[] | select(.path == ".github/workflows/build.yml") | .id' \
-            | head -n 1)
+            --jq '[.workflow_runs[] | select(.path == ".github/workflows/build.yml")][0].id // empty')
           if [[ -z "$build_run_id" ]]; then
             echo "No successful push Build run exists for current main HEAD $GITHUB_SHA" >&2
             exit 1
