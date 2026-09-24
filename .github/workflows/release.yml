@@ -21,6 +21,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify release commit is current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          release_sha=$(git rev-parse HEAD)
+          main_sha=$(git rev-parse refs/remotes/origin/main)
+          if [[ "$release_sha" != "$main_sha" ]]; then
+            echo "Release commit $release_sha does not match current main HEAD $main_sha" >&2
+            exit 1
+          fi
+
       - name: Set up Java 17 for Gradle
         uses: actions/setup-java@v4
         with:
