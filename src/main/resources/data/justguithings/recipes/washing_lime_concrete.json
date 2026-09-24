@@ -1,0 +1,11 @@
+{
+  "type": "justguithings:washing",
+  "input": { "item": "minecraft:lime_concrete_powder" },
+  "fluid": {
+    "tag": "minecraft:water",
+    "amount": 250
+  },
+  "result": { "item": "minecraft:lime_concrete" },
+  "processing_time": 60,
+  "energy_per_tick": 25
+}

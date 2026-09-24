@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/signalum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:wires/signalum"
+      }
+    }
+  ],
+  "type": "justguithings:wire_drawing",
+  "ingredient": {
+    "tag": "forge:rods/signalum"
+  },
+  "result": {
+    "tag": "forge:wires/signalum",
+    "count": 2
+  },
+  "processing_time": 150,
+  "energy_per_tick": 50
+}

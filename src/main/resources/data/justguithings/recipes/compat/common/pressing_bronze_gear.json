@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:plates/bronze"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gears/bronze"
+      }
+    }
+  ],
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:plates/bronze"
+  },
+  "input_count": 4,
+  "result": {
+    "tag": "forge:gears/bronze",
+    "count": 1
+  },
+  "processing_time": 160,
+  "energy_per_tick": 40
+}

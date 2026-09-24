@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PGP",
+    "FCF",
+    "PGP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "G": { "tag": "forge:gears/iron" },
+    "F": { "item": "justguithings:basic_fluid_pipe" },
+    "C": { "item": "minecraft:cauldron" }
+  },
+  "result": {
+    "item": "justguithings:industrial_washer"
+  }
+}

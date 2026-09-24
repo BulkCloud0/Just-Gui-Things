@@ -1,0 +1,162 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag; must match v + build.gradle version'
+        required: true
+        default: 'v0.1.0-alpha'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify release commit is current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          release_sha=$(git rev-parse HEAD)
+          main_sha=$(git rev-parse refs/remotes/origin/main)
+          if [[ "$release_sha" != "$main_sha" ]]; then
+            echo "Release commit $release_sha does not match current main HEAD $main_sha" >&2
+            exit 1
+          fi
+
+      - name: Verify current main build is green
+        id: main_build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          build_run_id=$(gh api --method GET \
+            "repos/${GITHUB_REPOSITORY}/actions/runs" \
+            -f branch=main \
+            -f head_sha="$GITHUB_SHA" \
+            -f event=push \
+            -f status=success \
+            -f per_page=100 \
+            --jq '[.workflow_runs[] | select(.path == ".github/workflows/build.yml")][0].id // empty')
+          if [[ -z "$build_run_id" ]]; then
+            echo "No successful push Build run exists for current main HEAD $GITHUB_SHA" >&2
+            exit 1
+          fi
+          echo "run_id=$build_run_id" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Java 17 for Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Resolve release version
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          project_version=$(sed -n "s/^version = '\([^']*\)'/\1/p" build.gradle)
+          if [[ -z "$project_version" ]]; then
+            echo 'Could not resolve build.gradle version' >&2
+            exit 1
+          fi
+
+          if [[ "$GITHUB_EVENT_NAME" == 'workflow_dispatch' ]]; then
+            if [[ "$GITHUB_REF" != 'refs/heads/main' ]]; then
+              echo 'Manual releases must be dispatched from main' >&2
+              exit 1
+            fi
+            tag='${{ inputs.version }}'
+          else
+            tag="$GITHUB_REF_NAME"
+          fi
+
+          expected_tag="v${project_version}"
+          if [[ "$tag" != "$expected_tag" ]]; then
+            echo "Release tag $tag does not match build version $expected_tag" >&2
+            exit 1
+          fi
+
+          echo "version=$project_version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Download validated main artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RUN_ID: ${{ steps.main_build.outputs.run_id }}
+          VERSION: ${{ steps.release.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf release-artifact
+          mkdir -p release-artifact
+          gh run download "$BUILD_RUN_ID" \
+            --name "justguithings-${GITHUB_SHA}" \
+            --dir release-artifact
+          ci_jar="release-artifact/justguithings-${VERSION}.jar"
+          if [[ ! -f "$ci_jar" ]]; then
+            echo "Expected validated CI jar not found: $ci_jar" >&2
+            find release-artifact -maxdepth 2 -type f -print || true
+            exit 1
+          fi
+
+      - name: Clean release build
+        run: ./gradlew clean build --stacktrace --no-daemon
+
+      - name: Verify release build matches validated artifact
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ci_jar="release-artifact/justguithings-${VERSION}.jar"
+          built_jar="build/libs/justguithings-${VERSION}.jar"
+          if [[ ! -f "$built_jar" ]]; then
+            echo "Expected clean-build jar not found: $built_jar" >&2
+            find build/libs -maxdepth 1 -type f -print || true
+            exit 1
+          fi
+          if ! cmp -s "$ci_jar" "$built_jar"; then
+            echo 'Clean release build does not match the validated main CI artifact' >&2
+            sha256sum "$ci_jar" "$built_jar" >&2
+            exit 1
+          fi
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+          TAG: ${{ steps.release.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jar="release-artifact/justguithings-${VERSION}.jar"
+          checksum="${jar}.sha256"
+
+          (
+            cd release-artifact
+            sha256sum "justguithings-${VERSION}.jar" > "justguithings-${VERSION}.jar.sha256"
+          )
+
+          flags=(--target "$GITHUB_SHA" --generate-notes --title "Just Gui Things $TAG")
+          if [[ "$VERSION" == *-* ]]; then
+            flags+=(--prerelease --latest=false)
+          fi
+          gh release create "$TAG" "$jar" "$checksum" "${flags[@]}"

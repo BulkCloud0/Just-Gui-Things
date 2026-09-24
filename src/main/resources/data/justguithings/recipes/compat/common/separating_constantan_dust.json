@@ -1,0 +1,42 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/constantan"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/copper"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/nickel"
+      }
+    }
+  ],
+  "type": "justguithings:separating",
+  "ingredient": {
+    "tag": "forge:dusts/constantan"
+  },
+  "input_count": 2,
+  "results": [
+    {
+      "tag": "forge:dusts/copper",
+      "count": 1
+    },
+    {
+      "tag": "forge:dusts/nickel",
+      "count": 1
+    }
+  ],
+  "processing_time": 160,
+  "energy_per_tick": 45
+}

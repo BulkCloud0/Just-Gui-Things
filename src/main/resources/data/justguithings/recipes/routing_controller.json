@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SWS",
+    "RCR",
+    "SWS"
+  ],
+  "key": {
+    "S": {
+      "tag": "forge:wires/steel"
+    },
+    "W": {
+      "tag": "forge:wires/gold"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "C": {
+      "item": "minecraft:comparator"
+    }
+  },
+  "result": {
+    "item": "justguithings:routing_controller"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/lumium"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:wires/lumium"
+      }
+    }
+  ],
+  "type": "justguithings:wire_drawing",
+  "ingredient": {
+    "tag": "forge:rods/lumium"
+  },
+  "result": {
+    "tag": "forge:wires/lumium",
+    "count": 2
+  },
+  "processing_time": 150,
+  "energy_per_tick": 50
+}

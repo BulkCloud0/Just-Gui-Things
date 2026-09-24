@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/platinum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:plates/platinum"
+      }
+    }
+  ],
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:ingots/platinum"
+  },
+  "result": {
+    "tag": "forge:plates/platinum",
+    "count": 1
+  },
+  "processing_time": 120,
+  "energy_per_tick": 30
+}

@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:plates/silver"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gears/silver"
+      }
+    }
+  ],
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:plates/silver"
+  },
+  "input_count": 4,
+  "result": {
+    "tag": "forge:gears/silver",
+    "count": 1
+  },
+  "processing_time": 160,
+  "energy_per_tick": 40
+}

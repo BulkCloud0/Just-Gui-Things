@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/silver"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:wires/silver"
+      }
+    }
+  ],
+  "type": "justguithings:wire_drawing",
+  "ingredient": {
+    "tag": "forge:rods/silver"
+  },
+  "result": {
+    "tag": "forge:wires/silver",
+    "count": 2
+  },
+  "processing_time": 150,
+  "energy_per_tick": 50
+}

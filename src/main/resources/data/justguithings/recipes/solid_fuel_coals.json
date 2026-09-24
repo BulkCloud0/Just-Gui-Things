@@ -1,0 +1,7 @@
+{
+  "type": "justguithings:solid_fuel",
+  "ingredient": {
+    "tag": "minecraft:coals"
+  },
+  "energy": 64000
+}

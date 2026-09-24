@@ -1,0 +1,639 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+version = '0.1.0-alpha'
+group = 'com.bulkcloud0.justguithings'
+
+base {
+    archivesName = 'justguithings'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+minecraft {
+    mappings channel: 'official', version: '1.16.5'
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                justguithings {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {}
+
+        server {
+            args '--nogui'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://www.cursemaven.com'
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.42'
+
+    compileOnly fg.deobf('curse.maven:jei-238222:4371666')
+    if (!project.hasProperty('jgtNoJei')) {
+        runtimeOnly fg.deobf('curse.maven:jei-238222:4371666')
+    }
+
+    testImplementation 'junit:junit:4.13.2'
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : 'justguithings',
+                'Specification-Vendor'    : 'BulkCloud0',
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.version,
+                'Implementation-Vendor'   : 'BulkCloud0'
+        ])
+    }
+    finalizedBy 'reobfJar'
+}
+
+tasks.withType(org.gradle.api.tasks.bundling.AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+
+tasks.register('validateCompatRecipes') {
+    group = 'verification'
+    description = 'Validates data-driven compatibility recipe boundaries and optional-mod guards.'
+
+    doLast {
+        File compatDir = file('src/main/resources/data/justguithings/recipes/compat')
+        if (!compatDir.exists()) {
+            return
+        }
+
+        def parser = new groovy.json.JsonSlurper()
+
+        Set<String> sharedTagNamespaces = ['minecraft', 'forge', 'justguithings'] as Set<String>
+        Set<String> coreItemNamespaces = ['minecraft', 'justguithings'] as Set<String>
+
+        Closure<String> namespaceOf = { String id ->
+            int separator = id.indexOf(':')
+            separator > 0 ? id.substring(0, separator) : ''
+        }
+
+        fileTree(compatDir).matching { include '**/*.json' }.files.sort().each { File recipeFile ->
+            String relativePath = compatDir.toPath()
+                    .relativize(recipeFile.toPath())
+                    .toString()
+                    .replace('\\', '/')
+            String compatScope = relativePath.contains('/')
+                    ? relativePath.substring(0, relativePath.indexOf('/'))
+                    : ''
+            boolean commonRecipe = compatScope == 'common'
+
+            if (compatScope.isEmpty()) {
+                throw new GradleException('Compatibility recipe must live under compat/common or compat/<modid>: ' + relativePath)
+            }
+
+            def recipe
+            try {
+                recipe = parser.parse(recipeFile)
+            } catch (Exception error) {
+                throw new GradleException('Invalid compatibility recipe JSON: ' + relativePath, error)
+            }
+
+            List conditions = recipe.conditions instanceof List ? recipe.conditions : []
+            Set<String> loadedMods = conditions.findAll {
+                it instanceof Map && it.type == 'forge:mod_loaded' && it.modid instanceof String
+            }.collect { it.modid as String } as Set<String>
+            Set<String> existingItems = conditions.findAll {
+                it instanceof Map && it.type == 'forge:item_exists' && it.item instanceof String
+            }.collect { it.item as String } as Set<String>
+            Set<String> nonEmptyTags = conditions.findAll {
+                it instanceof Map
+                        && it.type == 'forge:not'
+                        && it.value instanceof Map
+                        && it.value.type == 'forge:tag_empty'
+                        && it.value.tag instanceof String
+            }.collect { it.value.tag as String } as Set<String>
+
+            Set<String> referencedItems = [] as Set<String>
+            Set<String> referencedFluids = [] as Set<String>
+            Set<String> referencedTags = [] as Set<String>
+
+            Closure scan
+            scan = { value ->
+                if (value instanceof Map) {
+                    value.each { key, nested ->
+                        if (key == 'conditions') {
+                            return
+                        }
+                        if (key == 'item' && nested instanceof String) {
+                            referencedItems.add(nested as String)
+                        } else if (key == 'fluid' && nested instanceof String) {
+                            referencedFluids.add(nested as String)
+                        } else if (key == 'tag' && nested instanceof String) {
+                            referencedTags.add(nested as String)
+                        } else {
+                            scan(nested)
+                        }
+                    }
+                } else if (value instanceof List) {
+                    value.each { scan(it) }
+                }
+            }
+            scan(recipe)
+
+            Set<String> resultTags = [] as Set<String>
+            if (recipe.result instanceof Map && recipe.result.tag instanceof String) {
+                resultTags.add(recipe.result.tag as String)
+            }
+
+            resultTags.each { String tagId ->
+                if (!nonEmptyTags.contains(tagId)) {
+                    throw new GradleException('Compatibility recipe ' + relativePath
+                            + ' has tag output ' + tagId
+                            + ' without forge:not + forge:tag_empty')
+                }
+            }
+
+            if (commonRecipe) {
+                if (!loadedMods.isEmpty()) {
+                    throw new GradleException('compat/common recipe ' + relativePath
+                            + ' must not depend on forge:mod_loaded: ' + loadedMods)
+                }
+
+                referencedItems.each { String itemId ->
+                    String namespace = namespaceOf(itemId)
+                    if (!namespace.isEmpty() && !coreItemNamespaces.contains(namespace)) {
+                        throw new GradleException('compat/common recipe ' + relativePath
+                                + ' references mod-specific item ' + itemId)
+                    }
+                }
+
+                referencedFluids.each { String fluidId ->
+                    String namespace = namespaceOf(fluidId)
+                    if (!namespace.isEmpty() && !coreItemNamespaces.contains(namespace)) {
+                        throw new GradleException('compat/common recipe ' + relativePath
+                                + ' references mod-specific fluid ' + fluidId)
+                    }
+                }
+
+                referencedTags.each { String tagId ->
+                    String namespace = namespaceOf(tagId)
+                    if (!namespace.isEmpty() && !sharedTagNamespaces.contains(namespace)) {
+                        throw new GradleException('compat/common recipe ' + relativePath
+                                + ' references mod-specific tag ' + tagId)
+                    }
+                    if (namespace == 'forge' && !nonEmptyTags.contains(tagId)) {
+                        throw new GradleException('compat/common recipe ' + relativePath
+                                + ' references ' + tagId
+                                + ' without forge:not + forge:tag_empty')
+                    }
+                }
+
+                return
+            }
+
+            if (!loadedMods.contains(compatScope)) {
+                throw new GradleException('Compatibility recipe ' + relativePath
+                        + ' must declare forge:mod_loaded for its scope ' + compatScope)
+            }
+
+            referencedItems.findAll {
+                String namespace = namespaceOf(it)
+                !namespace.isEmpty() && !coreItemNamespaces.contains(namespace)
+            }.each { String itemId ->
+                String modId = namespaceOf(itemId)
+                if (!loadedMods.contains(modId)) {
+                    throw new GradleException('Compatibility recipe ' + relativePath
+                            + ' references ' + itemId
+                            + ' without forge:mod_loaded for ' + modId)
+                }
+                if (!existingItems.contains(itemId)) {
+                    throw new GradleException('Compatibility recipe ' + relativePath
+                            + ' references ' + itemId
+                            + ' without forge:item_exists')
+                }
+            }
+
+            referencedFluids.findAll {
+                String namespace = namespaceOf(it)
+                !namespace.isEmpty() && !coreItemNamespaces.contains(namespace)
+            }.each { String fluidId ->
+                String modId = namespaceOf(fluidId)
+                if (!loadedMods.contains(modId)) {
+                    throw new GradleException('Compatibility recipe ' + relativePath
+                            + ' references fluid ' + fluidId
+                            + ' without forge:mod_loaded for ' + modId)
+                }
+            }
+
+            referencedTags.each { String tagId ->
+                String namespace = namespaceOf(tagId)
+                if (!namespace.isEmpty() && !sharedTagNamespaces.contains(namespace)) {
+                    if (!loadedMods.contains(namespace)) {
+                        throw new GradleException('Compatibility recipe ' + relativePath
+                                + ' references tag ' + tagId
+                                + ' without forge:mod_loaded for ' + namespace)
+                    }
+                    if (!nonEmptyTags.contains(tagId)) {
+                        throw new GradleException('Compatibility recipe ' + relativePath
+                                + ' references optional tag ' + tagId
+                                + ' without forge:not + forge:tag_empty')
+                    }
+                }
+            }
+        }
+    }
+}
+tasks.register('validateRecipePhysicalLimits') {
+    group = 'verification'
+    description = 'Validates that bundled JGT machine recipes fit physical item/fluid/energy storage capacities.'
+
+    doLast {
+        File recipesDir = file('src/main/resources/data/justguithings/recipes')
+        if (!recipesDir.exists()) {
+            return
+        }
+
+        def parser = new groovy.json.JsonSlurper()
+
+        Map<String, Long> defaultEnergyPerTickByType = [
+                'justguithings:crushing': 20L,
+                'justguithings:pressing': 30L,
+                'justguithings:mixing': 45L,
+                'justguithings:washing': 30L,
+                'justguithings:sawing': 25L,
+                'justguithings:separating': 45L,
+                'justguithings:heating': 40L,
+                'justguithings:rod_forming': 55L,
+                'justguithings:wire_drawing': 50L,
+                'justguithings:assembly': 50L
+        ]
+        Map<String, Long> maxEnergyPerTickByType = [
+                'justguithings:crushing': 500000L,
+                'justguithings:pressing': 100000L,
+                'justguithings:mixing': 150000L,
+                'justguithings:washing': 120000L,
+                'justguithings:sawing': 80000L,
+                'justguithings:separating': 80000L,
+                'justguithings:heating': 120000L,
+                'justguithings:rod_forming': 140000L,
+                'justguithings:wire_drawing': 130000L,
+                'justguithings:assembly': 160000L
+        ]
+
+
+        Closure validateBounded = { rawValue, defaultValue, maxValue, field, relativePath ->
+            long value = ((Number) defaultValue).longValue()
+            long maximum = ((Number) maxValue).longValue()
+            if (rawValue != null) {
+                if (!(rawValue instanceof Number)) {
+                    throw new GradleException('Bundled recipe ' + relativePath
+                            + ' must use a numeric ' + field)
+                }
+                value = ((Number) rawValue).longValue()
+            }
+
+            if (value < 1L || value > maximum) {
+                throw new GradleException('Bundled recipe ' + relativePath
+                        + ' has ' + field + '=' + value
+                        + '; expected 1-' + maximum)
+            }
+        }
+
+        fileTree(recipesDir).matching { include '**/*.json' }.files.sort().each { File recipeFile ->
+            String relativePath = recipesDir.toPath()
+                    .relativize(recipeFile.toPath())
+                    .toString()
+                    .replace('\\', '/')
+
+            def recipe
+            try {
+                recipe = parser.parse(recipeFile)
+            } catch (Exception error) {
+                throw new GradleException('Invalid bundled recipe JSON: ' + relativePath, error)
+            }
+
+            if (!(recipe instanceof Map) || !(recipe.type instanceof String)) {
+                return
+            }
+
+            String recipeType = recipe.type as String
+            if (maxEnergyPerTickByType.containsKey(recipeType)) {
+                validateBounded(
+                        recipe.containsKey('energy_per_tick') ? recipe.energy_per_tick : null,
+                        defaultEnergyPerTickByType.get(recipeType),
+                        maxEnergyPerTickByType.get(recipeType),
+                        'energy_per_tick',
+                        relativePath)
+            }
+
+            switch (recipeType) {
+                case 'justguithings:assembly':
+                    List ingredients = recipe.ingredients instanceof List ? recipe.ingredients : []
+                    ingredients.eachWithIndex { entry, int index ->
+                        if (entry instanceof Map) {
+                            validateBounded(
+                                    entry.containsKey('count') ? entry.count : null,
+                                    1L,
+                                    64L,
+                                    'ingredient count at index ' + index,
+                                    relativePath)
+                        }
+                    }
+                    break
+
+                case 'justguithings:mixing':
+                    validateBounded(
+                            recipe.containsKey('primary_count') ? recipe.primary_count : null,
+                            1L,
+                            64L,
+                            'primary_count',
+                            relativePath)
+                    validateBounded(
+                            recipe.containsKey('secondary_count') ? recipe.secondary_count : null,
+                            1L,
+                            64L,
+                            'secondary_count',
+                            relativePath)
+                    if (recipe.tertiary != null) {
+                        validateBounded(
+                                recipe.containsKey('tertiary_count') ? recipe.tertiary_count : null,
+                                1L,
+                                64L,
+                                'tertiary_count',
+                                relativePath)
+                    }
+                    if (recipe.fluid instanceof Map) {
+                        validateBounded(
+                                recipe.fluid.containsKey('amount') ? recipe.fluid.amount : null,
+                                1000L,
+                                8000L,
+                                'fluid amount',
+                                relativePath)
+                    }
+                    break
+
+                case 'justguithings:washing':
+                    if (recipe.fluid instanceof Map) {
+                        validateBounded(
+                                recipe.fluid.containsKey('amount') ? recipe.fluid.amount : null,
+                                1000L,
+                                4000L,
+                                'fluid amount',
+                                relativePath)
+                    }
+                    break
+
+                case 'justguithings:fluid_fuel':
+                    if (recipe.fluid instanceof Map) {
+                        validateBounded(
+                                recipe.fluid.containsKey('amount') ? recipe.fluid.amount : null,
+                                1000L,
+                                16000L,
+                                'fluid amount',
+                                relativePath)
+                    }
+                    break
+
+                default:
+                    break
+            }
+        }
+    }
+}
+
+tasks.register('validateOptionalIntegrationBoundaries') {
+    group = 'verification'
+    description = 'Validates that optional mod APIs stay isolated behind dedicated integration packages.'
+
+    doLast {
+        File javaRoot = file('src/main/java/com/bulkcloud0/justguithings')
+        File modsTomlFile = file('src/main/resources/META-INF/mods.toml')
+
+        Map<String, Map<String, String>> optionalApis = [
+                'mezz.jei.'                  : [path: 'integration/jei/', modId: 'jei', side: 'CLIENT'],
+                'mekanism.'                  : [path: 'integration/mekanism/', modId: 'mekanism'],
+                'cofh.'                      : [path: 'integration/thermal/', modId: 'thermal'],
+                'com.allthemods.alltheores.' : [path: 'integration/alltheores/', modId: 'alltheores']
+        ]
+
+        Set<String> referencedOptionalMods = [] as Set<String>
+
+        if (javaRoot.exists()) {
+            fileTree(javaRoot).matching { include '**/*.java' }.files.sort().each { File sourceFile ->
+                String relativePath = javaRoot.toPath()
+                        .relativize(sourceFile.toPath())
+                        .toString()
+                        .replace('\\', '/')
+                String source = sourceFile.getText('UTF-8')
+
+                if (!relativePath.startsWith('integration/')
+                        && source.contains('com.bulkcloud0.justguithings.integration.')) {
+                    throw new GradleException('Core source ' + relativePath
+                            + ' references an optional integration package directly')
+                }
+
+                optionalApis.each { String apiPrefix, Map<String, String> rule ->
+                    if (source.contains(apiPrefix)) {
+                        referencedOptionalMods.add(rule.modId)
+                        if (!relativePath.startsWith(rule.path)) {
+                            throw new GradleException('Optional API ' + apiPrefix
+                                    + ' is referenced from ' + relativePath
+                                    + '; allowed only under ' + rule.path)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!modsTomlFile.exists()) {
+            throw new GradleException('Missing src/main/resources/META-INF/mods.toml')
+        }
+
+        List<Map<String, String>> dependencyBlocks = []
+        Map<String, String> currentDependency = null
+
+        modsTomlFile.readLines('UTF-8').each { String rawLine ->
+            String line = rawLine.trim()
+            if (line == '[[dependencies.justguithings]]') {
+                if (currentDependency != null) {
+                    dependencyBlocks.add(currentDependency)
+                }
+                currentDependency = [:]
+            } else if (line.startsWith('[[')) {
+                if (currentDependency != null) {
+                    dependencyBlocks.add(currentDependency)
+                    currentDependency = null
+                }
+            } else if (currentDependency != null && line.contains('=')) {
+                int separator = line.indexOf('=')
+                String key = line.substring(0, separator).trim()
+                String value = line.substring(separator + 1).trim()
+                if (value.length() >= 2 && value.startsWith('"') && value.endsWith('"')) {
+                    value = value.substring(1, value.length() - 1)
+                }
+                currentDependency.put(key, value)
+            }
+        }
+        if (currentDependency != null) {
+            dependencyBlocks.add(currentDependency)
+        }
+
+        referencedOptionalMods.each { String modId ->
+            List<Map<String, String>> matches = dependencyBlocks.findAll { it.modId == modId }
+            if (matches.size() != 1) {
+                throw new GradleException('Optional integration ' + modId
+                        + ' must have exactly one [[dependencies.justguithings]] entry in mods.toml')
+            }
+
+            Map<String, String> dependency = matches[0]
+            if (dependency.mandatory != 'false') {
+                throw new GradleException('Optional integration ' + modId
+                        + ' must remain mandatory=false in mods.toml')
+            }
+
+            Map<String, String> rule = optionalApis.values().find { it.modId == modId }
+            if (rule?.side != null && dependency.side != rule.side) {
+                throw new GradleException('Optional integration ' + modId
+                        + ' must use side=' + rule.side + ' in mods.toml')
+            }
+        }
+    }
+}
+
+tasks.register('validateClientBoundaries') {
+    group = 'verification'
+    description = 'Validates that dedicated-server-safe code does not reference client runtime/rendering classes.'
+
+    doLast {
+        File javaRoot = file('src/main/java/com/bulkcloud0/justguithings')
+        if (!javaRoot.exists()) {
+            return
+        }
+
+        List<String> clientRuntimeReferences = [
+                'net.minecraft.client.Minecraft',
+                'net.minecraft.client.gui.',
+                'net.minecraft.client.renderer.',
+                'net.minecraft.client.world.',
+                'net.minecraft.client.entity.player.ClientPlayerEntity',
+                'com.mojang.blaze3d.',
+                'com.bulkcloud0.justguithings.client.'
+        ]
+
+        fileTree(javaRoot).matching { include '**/*.java' }.files.sort().each { File sourceFile ->
+            String relativePath = javaRoot.toPath()
+                    .relativize(sourceFile.toPath())
+                    .toString()
+                    .replace('\\', '/')
+
+            boolean clientOnlySource = relativePath.startsWith('client/')
+                    || relativePath.startsWith('integration/jei/')
+            if (clientOnlySource) {
+                return
+            }
+
+            String source = sourceFile.getText('UTF-8')
+            clientRuntimeReferences.each { String clientReference ->
+                if (source.contains(clientReference)) {
+                    throw new GradleException('Dedicated-server-safe source ' + relativePath
+                            + ' references client-only runtime type/package ' + clientReference)
+                }
+            }
+        }
+    }
+}
+
+
+tasks.register('validateRetiredIndustrialConcepts') {
+    group = 'verification'
+    description = 'Validates that retired Quench, Tempered and Thermal Kiln concepts stay out of runtime source/resources.'
+
+    doLast {
+        File srcMain = file('src/main')
+        if (!srcMain.exists()) {
+            return
+        }
+
+        List<String> forbiddenFragments = [
+                'quench',
+                'tempered',
+                'thermal kiln',
+                'thermal_kiln',
+                'thermal-kiln',
+                'thermalkiln'
+        ]
+        Set<String> textExtensions = ['java', 'json', 'toml', 'mcmeta'] as Set<String>
+
+        fileTree(srcMain).files.sort().each { File candidate ->
+            String relativePath = srcMain.toPath()
+                    .relativize(candidate.toPath())
+                    .toString()
+                    .replace('\\', '/')
+            String normalizedPath = relativePath.toLowerCase(Locale.ROOT)
+
+            forbiddenFragments.each { String fragment ->
+                if (normalizedPath.contains(fragment)) {
+                    throw new GradleException('Retired industrial concept "' + fragment
+                            + '" found in src/main path ' + relativePath)
+                }
+            }
+
+            String fileName = candidate.name
+            int extensionSeparator = fileName.lastIndexOf('.')
+            String extension = extensionSeparator >= 0
+                    ? fileName.substring(extensionSeparator + 1).toLowerCase(Locale.ROOT)
+                    : ''
+            if (!textExtensions.contains(extension)) {
+                return
+            }
+
+            String source = candidate.getText('UTF-8').toLowerCase(Locale.ROOT)
+            forbiddenFragments.each { String fragment ->
+                if (source.contains(fragment)) {
+                    throw new GradleException('Retired industrial concept "' + fragment
+                            + '" found in src/main file ' + relativePath)
+                }
+            }
+        }
+    }
+}
+
+tasks.named('processResources').configure {
+    dependsOn tasks.named('validateCompatRecipes')
+    dependsOn tasks.named('validateRecipePhysicalLimits')
+    dependsOn tasks.named('validateOptionalIntegrationBoundaries')
+    dependsOn tasks.named('validateClientBoundaries')
+    dependsOn tasks.named('validateRetiredIndustrialConcepts')
+}
+
+tasks.named('check').configure {
+    dependsOn tasks.named('validateCompatRecipes')
+    dependsOn tasks.named('validateRecipePhysicalLimits')
+    dependsOn tasks.named('validateOptionalIntegrationBoundaries')
+    dependsOn tasks.named('validateClientBoundaries')
+    dependsOn tasks.named('validateRetiredIndustrialConcepts')
+}

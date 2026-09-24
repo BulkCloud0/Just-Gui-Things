@@ -1,0 +1,8 @@
+{
+  "type": "justguithings:fluid_fuel",
+  "fluid": {
+    "fluid": "minecraft:lava",
+    "amount": 1000
+  },
+  "energy": 200000
+}

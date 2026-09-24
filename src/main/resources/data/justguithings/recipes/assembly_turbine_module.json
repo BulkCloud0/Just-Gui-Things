@@ -1,0 +1,34 @@
+{
+  "type": "justguithings:assembly",
+  "ingredients": [
+    {
+      "ingredient": {
+        "tag": "forge:gears/iron"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "tag": "forge:rods/steel"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "tag": "forge:wires/gold"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "justguithings:basic_fluid_pipe"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:turbine_module"
+  },
+  "processing_time": 160,
+  "energy_per_tick": 60
+}

@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/invar"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/invar"
+      }
+    }
+  ],
+  "type": "justguithings:crushing",
+  "ingredient": {
+    "tag": "forge:ingots/invar"
+  },
+  "result": {
+    "tag": "forge:dusts/invar",
+    "count": 1
+  },
+  "processing_time": 80,
+  "energy_per_tick": 15
+}

@@ -1,0 +1,210 @@
+package com.bulkcloud0.justguithings.world.tile;
+
+import com.bulkcloud0.justguithings.machine.BaseProcessingMachineTileEntity;
+import com.bulkcloud0.justguithings.machine.module.MachineUpgradeScaling;
+import com.bulkcloud0.justguithings.machine.module.MachineModuleTypes;
+import com.bulkcloud0.justguithings.recipe.PressingRecipe;
+import com.bulkcloud0.justguithings.recipe.RecipeSelectionHelper;
+import com.bulkcloud0.justguithings.registry.ModRecipes;
+import com.bulkcloud0.justguithings.registry.ModTileEntities;
+import com.bulkcloud0.justguithings.world.container.StampingPressContainer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIntArray;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
+
+public class StampingPressTileEntity extends BaseProcessingMachineTileEntity<PressingRecipe> {
+    public static final int CAPACITY = 100_000;
+    public static final int MAX_RECEIVE = 1_000;
+    public static final int DEFAULT_PROCESS_TICKS = 120;
+    public static final int DEFAULT_ENERGY_PER_TICK = 30;
+    public static final int MAX_MODULES_PER_TYPE = 4;
+
+    private final IIntArray dataAccess = new IIntArray() {
+        @Override
+        public int get(int index) {
+            if (index <= 4) {
+                return getProcessingData(index);
+            }
+            switch (index) {
+                case 5: return getSpeedUpgradeCount();
+                case 6: return getEfficiencyUpgradeCount();
+                default: return 0;
+            }
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index <= 4) {
+                setProcessingData(index, value);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 7;
+        }
+    };
+
+    public StampingPressTileEntity() {
+        super(ModTileEntities.STAMPING_PRESS.get(), CAPACITY, MAX_RECEIVE, 4, 0, 1, 1, 1,
+                DEFAULT_PROCESS_TICKS, DEFAULT_ENERGY_PER_TICK);
+    }
+
+    @Override
+    protected boolean isItemValidForSlot(int slot, ItemStack stack) {
+        return slot == 0 && canAcceptInput(stack);
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getModuleTypeForSlot(int slot) {
+        switch (slot) {
+            case 2: return MachineModuleTypes.SPEED;
+            case 3: return MachineModuleTypes.EFFICIENCY;
+            default: return null;
+        }
+    }
+
+    @Override
+    protected int getModuleSlotLimit(int slot, ResourceLocation moduleType) {
+        return MAX_MODULES_PER_TYPE;
+    }
+
+    @Override
+    protected Optional<PressingRecipe> findCurrentRecipe() {
+        return findProcessableRecipe(inventory.getStackInSlot(0));
+    }
+
+    @Override
+    protected boolean canProcessRecipe(PressingRecipe recipe) {
+        ItemStack input = inventory.getStackInSlot(0);
+        if (input.getCount() < recipe.getInputCount()) {
+            return false;
+        }
+
+        ItemStack result = recipe.assemble(new Inventory(input.copy()));
+        if (result.isEmpty()) {
+            return false;
+        }
+
+        return canFitItemOutput(1, result);
+    }
+
+    @Override
+    protected int getEffectiveProcessingTime(PressingRecipe recipe) {
+        return MachineUpgradeScaling.getEffectiveProcessingTime(
+                recipe.getProcessingTime(),
+                getSpeedUpgradeCount(),
+                getEfficiencyUpgradeCount());
+    }
+
+    @Override
+    protected int getEffectiveEnergyPerTick(PressingRecipe recipe) {
+        return MachineUpgradeScaling.getEffectiveEnergyPerTick(
+                recipe.getEnergyPerTick(),
+                getSpeedUpgradeCount(),
+                getEfficiencyUpgradeCount(),
+                1);
+    }
+
+    @Override
+    protected void processRecipe(PressingRecipe recipe) {
+        ItemStack input = inventory.getStackInSlot(0);
+        if (input.getCount() < recipe.getInputCount()) {
+            return;
+        }
+
+        ItemStack result = recipe.assemble(new Inventory(input.copy()));
+        if (result.isEmpty()) {
+            return;
+        }
+
+        inventory.extractItem(0, recipe.getInputCount(), false);
+        ItemStack output = inventory.getStackInSlot(1);
+        if (output.isEmpty()) {
+            inventory.setStackInSlot(1, result.copy());
+        } else {
+            ItemStack combined = output.copy();
+            combined.grow(result.getCount());
+            inventory.setStackInSlot(1, combined);
+        }
+    }
+
+    private Optional<PressingRecipe> findProcessableRecipe(ItemStack input) {
+        if (level == null || input.isEmpty()) {
+            return Optional.empty();
+        }
+
+        PressingRecipe best = null;
+        for (PressingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.PRESSING_TYPE)) {
+            if (!recipe.getInput().test(input) || input.getCount() < recipe.getInputCount()) {
+                continue;
+            }
+            if (best == null || comparePressingRecipes(recipe, best) < 0) {
+                best = recipe;
+            }
+        }
+        return Optional.ofNullable(best);
+    }
+
+    private int comparePressingRecipes(PressingRecipe left, PressingRecipe right) {
+        int specificity = RecipeSelectionHelper.compareIngredients(left.getInput(), right.getInput());
+        if (specificity != 0) {
+            return specificity;
+        }
+
+        int countSpecificity = Integer.compare(right.getInputCount(), left.getInputCount());
+        if (countSpecificity != 0) {
+            return countSpecificity;
+        }
+        return RecipeSelectionHelper.compareIds(left.getId(), right.getId());
+    }
+
+    private boolean hasMatchingInput(ItemStack input) {
+        if (level == null || input.isEmpty()) {
+            return false;
+        }
+        for (PressingRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipes.PRESSING_TYPE)) {
+            if (recipe.getInput().test(input)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getSpeedUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.SPEED));
+    }
+
+    public int getEfficiencyUpgradeCount() {
+        return Math.min(MAX_MODULES_PER_TYPE, getModuleCount(MachineModuleTypes.EFFICIENCY));
+    }
+
+    public boolean canAcceptInput(ItemStack stack) {
+        return hasMatchingInput(stack);
+    }
+
+    public IIntArray getDataAccess() {
+        return dataAccess;
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return new TranslationTextComponent("container.justguithings.stamping_press");
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
+        return new StampingPressContainer(windowId, playerInventory, this);
+    }
+}

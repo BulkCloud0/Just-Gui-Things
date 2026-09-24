@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "IHI",
+    "IRI"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:nuggets/iron"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    }
+  },
+  "result": {
+    "item": "justguithings:basic_item_pipe",
+    "count": 8
+  }
+}

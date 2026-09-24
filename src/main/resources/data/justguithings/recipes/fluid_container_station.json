@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SGS",
+    "RPR",
+    "SWS"
+  ],
+  "key": {
+    "S": { "tag": "forge:ingots/steel" },
+    "G": { "tag": "forge:glass/colorless" },
+    "R": { "tag": "forge:dusts/redstone" },
+    "P": { "item": "justguithings:basic_fluid_pipe" },
+    "W": { "tag": "forge:wires/gold" }
+  },
+  "result": {
+    "item": "justguithings:fluid_container_station"
+  }
+}

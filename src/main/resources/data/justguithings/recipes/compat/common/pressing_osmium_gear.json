@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:plates/osmium"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gears/osmium"
+      }
+    }
+  ],
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:plates/osmium"
+  },
+  "input_count": 4,
+  "result": {
+    "tag": "forge:gears/osmium",
+    "count": 1
+  },
+  "processing_time": 160,
+  "energy_per_tick": 40
+}

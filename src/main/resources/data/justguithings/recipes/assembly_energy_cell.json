@@ -1,0 +1,28 @@
+{
+  "type": "justguithings:assembly",
+  "ingredients": [
+    {
+      "ingredient": {
+        "tag": "forge:ingots/steel"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "tag": "forge:dusts/redstone"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "tag": "forge:plates/gold"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:energy_cell"
+  },
+  "processing_time": 120,
+  "energy_per_tick": 50
+}

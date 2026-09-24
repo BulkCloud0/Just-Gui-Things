@@ -1,0 +1,26 @@
+{
+  "type": "justguithings:assembly",
+  "ingredients": [
+    {
+      "ingredient": { "tag": "forge:ingots/steel" },
+      "count": 4
+    },
+    {
+      "ingredient": { "item": "justguithings:basic_energy_cable" },
+      "count": 2
+    },
+    {
+      "ingredient": { "item": "justguithings:basic_fluid_pipe" },
+      "count": 1
+    },
+    {
+      "ingredient": { "item": "minecraft:blast_furnace" },
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "justguithings:fluid_generator"
+  },
+  "processing_time": 180,
+  "energy_per_tick": 70
+}

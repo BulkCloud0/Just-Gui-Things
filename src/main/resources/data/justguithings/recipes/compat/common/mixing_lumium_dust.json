@@ -1,0 +1,51 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/tin"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/silver"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/glowstone"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/lumium"
+      }
+    }
+  ],
+  "type": "justguithings:mixing",
+  "primary": {
+    "tag": "forge:dusts/tin"
+  },
+  "primary_count": 3,
+  "secondary": {
+    "tag": "forge:dusts/silver"
+  },
+  "secondary_count": 1,
+  "tertiary": {
+    "tag": "forge:dusts/glowstone"
+  },
+  "tertiary_count": 2,
+  "result": {
+    "tag": "forge:dusts/lumium",
+    "count": 4
+  },
+  "processing_time": 320,
+  "energy_per_tick": 45
+}

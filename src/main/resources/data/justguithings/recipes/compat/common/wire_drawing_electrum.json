@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/electrum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:wires/electrum"
+      }
+    }
+  ],
+  "type": "justguithings:wire_drawing",
+  "ingredient": {
+    "tag": "forge:rods/electrum"
+  },
+  "result": {
+    "tag": "forge:wires/electrum",
+    "count": 2
+  },
+  "processing_time": 150,
+  "energy_per_tick": 50
+}

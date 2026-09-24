@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PFP",
+    "RGR",
+    "PCP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "F": { "item": "minecraft:furnace" },
+    "R": { "tag": "forge:dusts/redstone" },
+    "G": { "tag": "forge:plates/gold" },
+    "C": { "item": "justguithings:basic_energy_cable" }
+  },
+  "result": {
+    "item": "justguithings:resistive_furnace"
+  }
+}

@@ -1,0 +1,62 @@
+package com.bulkcloud0.justguithings.client;
+
+import com.bulkcloud0.justguithings.JustGuiThings;
+import com.bulkcloud0.justguithings.client.screen.AutoCrafterScreen;
+import com.bulkcloud0.justguithings.client.screen.VacuumCollectorScreen;
+import com.bulkcloud0.justguithings.client.screen.ChargingStationScreen;
+import com.bulkcloud0.justguithings.client.screen.CoalGeneratorScreen;
+import com.bulkcloud0.justguithings.client.screen.CrusherScreen;
+import com.bulkcloud0.justguithings.client.screen.EnergyCellScreen;
+import com.bulkcloud0.justguithings.client.screen.IndustrialMixerScreen;
+import com.bulkcloud0.justguithings.client.screen.IndustrialWasherScreen;
+import com.bulkcloud0.justguithings.client.screen.IndustrialSawmillScreen;
+import com.bulkcloud0.justguithings.client.screen.IndustrialSeparatorScreen;
+import com.bulkcloud0.justguithings.client.screen.IndustrialAssemblerScreen;
+import com.bulkcloud0.justguithings.client.screen.ItemBufferScreen;
+import com.bulkcloud0.justguithings.client.screen.FluidReservoirScreen;
+import com.bulkcloud0.justguithings.client.screen.FluidPumpScreen;
+import com.bulkcloud0.justguithings.client.screen.FluidContainerStationScreen;
+import com.bulkcloud0.justguithings.client.screen.FluidGeneratorScreen;
+import com.bulkcloud0.justguithings.client.screen.ResistiveFurnaceScreen;
+import com.bulkcloud0.justguithings.client.screen.RodMillScreen;
+import com.bulkcloud0.justguithings.client.screen.StampingPressScreen;
+import com.bulkcloud0.justguithings.client.screen.SteamGeneratorScreen;
+import com.bulkcloud0.justguithings.client.screen.WireMillScreen;
+import com.bulkcloud0.justguithings.registry.ModContainers;
+import net.minecraft.client.gui.ScreenManager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+@Mod.EventBusSubscriber(modid = JustGuiThings.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+public final class ClientSetup {
+    private ClientSetup() {}
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            ScreenManager.register(ModContainers.COAL_GENERATOR.get(), CoalGeneratorScreen::new);
+            ScreenManager.register(ModContainers.STEAM_GENERATOR.get(), SteamGeneratorScreen::new);
+            ScreenManager.register(ModContainers.CHARGING_STATION.get(), ChargingStationScreen::new);
+            ScreenManager.register(ModContainers.CRUSHER.get(), CrusherScreen::new);
+            ScreenManager.register(ModContainers.STAMPING_PRESS.get(), StampingPressScreen::new);
+            ScreenManager.register(ModContainers.INDUSTRIAL_MIXER.get(), IndustrialMixerScreen::new);
+            ScreenManager.register(ModContainers.INDUSTRIAL_WASHER.get(), IndustrialWasherScreen::new);
+            ScreenManager.register(ModContainers.INDUSTRIAL_SAWMILL.get(), IndustrialSawmillScreen::new);
+            ScreenManager.register(ModContainers.INDUSTRIAL_SEPARATOR.get(), IndustrialSeparatorScreen::new);
+            ScreenManager.register(ModContainers.INDUSTRIAL_ASSEMBLER.get(), IndustrialAssemblerScreen::new);
+            ScreenManager.register(ModContainers.AUTO_CRAFTER.get(), AutoCrafterScreen::new);
+            ScreenManager.register(ModContainers.VACUUM_COLLECTOR.get(), VacuumCollectorScreen::new);
+            ScreenManager.register(ModContainers.ENERGY_CELL.get(), EnergyCellScreen::new);
+            ScreenManager.register(ModContainers.ITEM_BUFFER.get(), ItemBufferScreen::new);
+            ScreenManager.register(ModContainers.FLUID_RESERVOIR.get(), FluidReservoirScreen::new);
+            ScreenManager.register(ModContainers.FLUID_PUMP.get(), FluidPumpScreen::new);
+            ScreenManager.register(ModContainers.FLUID_CONTAINER_STATION.get(), FluidContainerStationScreen::new);
+            ScreenManager.register(ModContainers.FLUID_GENERATOR.get(), FluidGeneratorScreen::new);
+            ScreenManager.register(ModContainers.RESISTIVE_FURNACE.get(), ResistiveFurnaceScreen::new);
+            ScreenManager.register(ModContainers.ROD_MILL.get(), RodMillScreen::new);
+            ScreenManager.register(ModContainers.WIRE_MILL.get(), WireMillScreen::new);
+        });
+    }
+}

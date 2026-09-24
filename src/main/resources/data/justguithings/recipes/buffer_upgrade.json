@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RTR",
+    "TBT",
+    "RTR"
+  ],
+  "key": {
+    "R": { "tag": "forge:dusts/redstone" },
+    "T": { "tag": "forge:ingots/steel" },
+    "B": { "tag": "forge:storage_blocks/redstone" }
+  },
+  "result": {
+    "item": "justguithings:buffer_upgrade"
+  }
+}

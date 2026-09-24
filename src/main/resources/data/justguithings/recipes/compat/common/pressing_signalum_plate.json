@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/signalum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:plates/signalum"
+      }
+    }
+  ],
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:ingots/signalum"
+  },
+  "result": {
+    "tag": "forge:plates/signalum",
+    "count": 1
+  },
+  "processing_time": 120,
+  "energy_per_tick": 30
+}

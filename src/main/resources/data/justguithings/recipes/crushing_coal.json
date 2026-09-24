@@ -1,0 +1,7 @@
+{
+  "type": "justguithings:crushing",
+  "ingredient": { "item": "minecraft:coal" },
+  "result": { "item": "justguithings:coal_dust" },
+  "processing_time": 80,
+  "energy_per_tick": 15
+}

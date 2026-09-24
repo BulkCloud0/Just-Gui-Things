@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "RFR",
+    "PPP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "R": { "tag": "forge:dusts/redstone" },
+    "F": { "item": "minecraft:furnace" }
+  },
+  "result": { "item": "justguithings:industrial_mixer" }
+}

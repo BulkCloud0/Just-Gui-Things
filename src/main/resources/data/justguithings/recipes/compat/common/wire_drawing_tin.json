@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/tin"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:wires/tin"
+      }
+    }
+  ],
+  "type": "justguithings:wire_drawing",
+  "ingredient": {
+    "tag": "forge:rods/tin"
+  },
+  "result": {
+    "tag": "forge:wires/tin",
+    "count": 2
+  },
+  "processing_time": 150,
+  "energy_per_tick": 50
+}

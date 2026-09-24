@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/signalum"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:rods/signalum"
+      }
+    }
+  ],
+  "type": "justguithings:rod_forming",
+  "ingredient": {
+    "tag": "forge:ingots/signalum"
+  },
+  "result": {
+    "tag": "forge:rods/signalum",
+    "count": 2
+  },
+  "processing_time": 160,
+  "energy_per_tick": 55
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PSP",
+    "RCR",
+    "PEP"
+  ],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "S": { "tag": "justguithings:machine_components/tensioning_spindles" },
+    "R": { "tag": "forge:dusts/redstone" },
+    "C": { "item": "minecraft:comparator" },
+    "E": { "item": "justguithings:basic_energy_cable" }
+  },
+  "result": {
+    "item": "justguithings:wire_mill"
+  }
+}

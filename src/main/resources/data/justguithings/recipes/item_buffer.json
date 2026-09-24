@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PGP",
+    "ICI",
+    "PGP"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/iron"
+    },
+    "G": {
+      "tag": "forge:gears/iron"
+    },
+    "I": {
+      "item": "justguithings:basic_item_pipe"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    }
+  },
+  "result": {
+    "item": "justguithings:item_buffer"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/constantan"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/constantan"
+      }
+    }
+  ],
+  "type": "justguithings:heating",
+  "ingredient": {
+    "tag": "forge:dusts/constantan"
+  },
+  "result": {
+    "tag": "forge:ingots/constantan",
+    "count": 1
+  },
+  "processing_time": 140,
+  "energy_per_tick": 45
+}

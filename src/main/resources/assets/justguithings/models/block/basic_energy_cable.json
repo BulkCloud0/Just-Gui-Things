@@ -1,0 +1,20 @@
+{
+  "textures": {
+    "cable": "justguithings:block/basic_energy_cable",
+    "particle": "justguithings:block/basic_energy_cable"
+  },
+  "elements": [
+    {
+      "from": [6, 6, 0],
+      "to": [10, 10, 16],
+      "faces": {
+        "down": { "texture": "#cable" },
+        "up": { "texture": "#cable" },
+        "north": { "texture": "#cable" },
+        "south": { "texture": "#cable" },
+        "west": { "texture": "#cable" },
+        "east": { "texture": "#cable" }
+      }
+    }
+  ]
+}

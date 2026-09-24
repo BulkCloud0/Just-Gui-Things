@@ -1,24 +1,103 @@
 # Just Gui Things
 
-Industrial technology mod for Minecraft 1.16.5 built with Minecraft Forge.
+A technology-focused Minecraft Forge mod for **Minecraft 1.16.5**.
 
-## Direction
+## Current release line: Core Industrial alpha
 
-The project aims for a progression-driven tech experience inspired by large industrial mods while keeping its own systems and architecture.
+The Core Industrial foundation is implemented with broad Forge interoperability, data-driven processing and no fixed machine tier ladder. The current release target is **0.1.0-alpha**.
 
-Initial milestone:
+### Implemented
 
-- Forge Energy (FE) infrastructure
-- reusable machine base
-- generator and processing machine
-- machine menus/screens
-- custom processing recipes
-- future-ready upgrade/side configuration hooks
+- Forge Energy storage and transport through standard capabilities
+- Coal Generator, Basic Energy Cable and Energy Cell
+- Item and fluid transport through Forge capabilities
+- Basic Item Pipe, Basic Fluid Pipe, Fluid Reservoir, Fluid Pump and an 18-slot Item Buffer for configurable staging
+- Vanilla comparator output for Energy Cell, Fluid Reservoir and Item Buffer fill levels
+- Fluid Container Station for capability-driven filling and draining of Forge-compatible fluid containers
+- Endpoint routing for item and fluid pipes with filters, priorities, redstone conditions, source reserves and target stock limits
+- Shared conduit network/endpoint caching with loaded-chunk-safe topology scans, explicit per-face network segmentation and reactive cache invalidation
+- Multipart conduit arms with enlarged connector collars for clearer endpoint connections and easier face selection
+- Energy endpoint routing with consumer priority, source/target redstone control, fair distribution and Configurator-based per-face input/output modes
+- Shared machine core for energy, inventory, side configuration, processing state and opt-in direct item auto-eject
+- Crusher with data-driven primary/optional secondary outputs and Speed/Efficiency/Buffer/Batch modules
+- Coal Generator for data-driven solid fuels, Steam Generator for water-fed generation, and a datapack-driven Fluid Generator for liquid fuels
+- Charging Station for capability-driven charging of Forge Energy items
+- Industrial Mixer with backward-compatible item-only recipes plus optional fluid/tag inputs, Stamping Press with counted inputs for plates/gears, and Resistive Furnace
+- Rod Mill for tag-driven ingot-to-rod forming
+- Wire Mill for tag-driven rod-to-wire processing
+- Industrial Assembler for data-driven automation of machine components, upgrades and repeatable infrastructure using 1-4 counted inputs
+- Auto Crafter for locked 3x3 vanilla/mod crafting recipes with Forge item automation and container-item return handling
+- Vacuum Collector for energy-backed collection of nearby dropped item entities into Forge item logistics
+- Industrial Washer for data-driven item + fluid treatment, including automated concrete-powder hydration
+- Industrial Sawmill for data-driven wood cutting with increased plank yield and interoperable sawdust byproduct
+- Industrial Separator for counted recovery of 2-3 components from mixed/alloy dust batches
+- Machine-specific components such as the Precision Roller Assembly and Tensioning Spindle
+- Machine specialization through modules such as the Resistive Furnace Power Coil
+- Configurator modes for per-face automation, active-machine redstone control, machine item auto-eject (including the Item Buffer) and conduit-to-conduit connection toggling
+- Data-driven recipes loaded through Minecraft's Recipe Manager
+- Forge tag compatibility for shared dusts, ingots, plates, gears, rods and wires
+- Optional-mod recipes guarded by Forge conditions
+- JEI categories for JGT processing recipes, including fluid-aware Industrial Mixer inputs
+- English and Brazilian Portuguese translations
+- GitHub Actions build, runtime smoke and reproducible release-artifact validation
 
-## Development target
+### Progression direction
 
+Machines do not progress through a Basic/Reinforced/Advanced/Elite ladder. Progression is based on production roles, machine-specific components, specialization modules, material forms, logistics and automation.
+
+Ingots are treated as normal material forms. JGT does not use temperature states, pressure states or a tempered-ingot progression.
+
+### Compatibility
+
+Compatibility is architectural rather than based on mandatory mod-specific patches:
+
+- Forge Energy via `IEnergyStorage`
+- Item automation via `IItemHandler`
+- Fluid automation via `IFluidHandler`, including portable containers through `IFluidHandlerItem`
+- Forge/Minecraft tags for shared materials
+- Datapack-driven processing recipes
+- Optional integration layers only when another mod exposes behavior that standard Forge APIs cannot represent
+
+JEI is optional. JGT loads and runs without it; when present, JEI adds recipe categories for JGT processing machines.
+
+See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for extension points and soft-dependency rules.
+
+### Next
+
+Post-alpha development should remain role-driven rather than tier-driven:
+
+- Add machine-specific specialization modules only where they create a distinct production tradeoff
+- Continue production chains only when they add a clear industrial role
+- Continue profiling large conduit networks and refine diagnostics only where they expose a concrete automation bottleneck
+- Improve machine/cable/pipe textures and models
+- Continue broad compatibility through tags, capabilities and optional adapters
+
+## Environment
+
+- Release target: 0.1.0-alpha
 - Minecraft 1.16.5
-- Forge 36.2.39
-- Java 8
+- Forge 36.2.42
+- Java 8 target
+- ForgeGradle 6
+- Gradle Wrapper 8.4
+- JEI 7.8+ optional
 
-> The public mod name is provisional. The repository name comes from the author's nickname.
+## Installation target
+
+Use a Minecraft 1.16.5 Forge 36.2.42 profile and place the JGT jar in the profile's `mods` directory. JEI is optional; install a compatible JEI 7.8+ build only if recipe-browser integration is desired.
+
+## Build and verification
+
+CI and local builds use the repository-pinned Gradle Wrapper 8.4. Use JDK 17 to launch Gradle; the project compiles to the Java 8 target through the configured toolchain.
+
+```bash
+./gradlew clean build --stacktrace --no-daemon
+```
+
+On Windows use `gradlew.bat`. The reobfuscated mod jar is produced under `build/libs/`. Pull requests run the unit tests and repository verification guards; pushes to `dev/core-industrial` and `main` also perform dedicated-server and client-startup smoke tests. Set `-PjgtNoJei` on development run tasks to verify the optional no-JEI runtime path.
+
+The Release workflow publishes the exact jar artifact validated by the successful `main` push Build and verifies a clean release build is byte-for-byte identical before publication.
+
+See [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) before promoting `dev/core-industrial` to `main`.
+
+Development work happens on feature branches and is merged through pull requests.

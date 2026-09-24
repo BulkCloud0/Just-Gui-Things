@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:plates/nickel"
+      }
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gears/nickel"
+      }
+    }
+  ],
+  "type": "justguithings:pressing",
+  "ingredient": {
+    "tag": "forge:plates/nickel"
+  },
+  "input_count": 4,
+  "result": {
+    "tag": "forge:gears/nickel",
+    "count": 1
+  },
+  "processing_time": 160,
+  "energy_per_tick": 40
+}
